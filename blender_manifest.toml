@@ -8,5 +8,5 @@ type = "add-on"
 tags = ["User Interface"]
 blender_version_min = "4.5.0"
 license = ["SPDX:GPL-3.0-or-later"]
-website = "https://github.com/yashu1482/AllPie"
+website = "https://github.com/yazz1482/AllPie"
 copyright = ["2026 YAZZ"]
