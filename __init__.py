@@ -1,32 +1,36 @@
 import bpy
 import importlib
-from . import AddonPrefs
+from . import AddonPreferences
 from . import SculptPies
 from . import EditModePies
-from . import COperators
+from . import CustomOperators
+from . import SettingsPanel
 
 submodules = (
-AddonPrefs,
+AddonPreferences,
+CustomOperators,
 SculptPies,
-EditModePies,
-COperators,
+SettingsPanel
+# EditModePies,
 )
 
 def register():
     for mod in submodules:
         if mod.__name__ in locals() or mod.__name__ in __import__('sys').modules:
             importlib.reload(mod)    
-    AddonPrefs.register()
-    COperators.register()
+    AddonPreferences.register()
+    CustomOperators.register()
     SculptPies.register()
-    EditModePies.register()
+    SettingsPanel.register()
+    # EditModePies.register()
 
 def unregister():
 
-    AddonPrefs.unregister()
-    COperators.unregister()
+    AddonPreferences.unregister()
+    CustomOperators.unregister()
     SculptPies.unregister()
-    EditModePies.unregister()
+    SettingsPanel.unregister()
+    # EditModePies.unregister()
 
 
 if __name__ == "__main__":
