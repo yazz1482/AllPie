@@ -24,12 +24,12 @@ piekeymapitems = [
         # Edit Mode Keybinds
         ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "C_MT_EditModeSelectionPie"),
         ("EnableEditModeShadingPie", "Mesh", "Z", "PRESS", "C_MT_ShadingPie"),
-        ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "C_MT_EditModeDeletetionPie"),
+        ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "C_MT_EditModeDeletionPie"),
         ("EnableEditModeMergePie", "Mesh", "M", "PRESS", "C_MT_EditModeMergePie"),
         ("EnableEditModeModelPie", "Mesh", "W", "PRESS", "C_MT_EditModeModelPie"),
-        ("EnableEditModeModelPie", "Mesh", "ONE", "PRESS", "C_MT_EditModeModelVertexPie"),
-        ("EnableEditModeModelPie", "Mesh", "TWO", "PRESS", "C_MT_EditModeModelEdgePie"),
-        ("EnableEditModeModelPie", "Mesh", "THREE", "PRESS", "C_MT_EditModeModelFacePie"),
+        ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "C_MT_EditModeVertexPie"),
+        ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "C_MT_EditModeEdgePie"),
+        ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "C_MT_EditModeFacePie"),
         ("EnableEditModeModelPie", "Mesh", "T", "PRESS", "C_MT_EditModeToolSelectPie"),
         ]
 
@@ -164,15 +164,17 @@ class AllpieCustomAddonPref(AddonPreferences):
 
         layout = self.layout
 
-        header, body = layout.panel("Sculpt_Mode_Pie_Menus", default_closed=True)
-        header.label(text="Sculpt Mode Pie Menus")
-        prefs = context.preferences.addons[__package__].preferences
+        # Sculpt Mode Pie Menu Settings
+        header, body = layout.panel("Sculpt_Mode_Pie_Menu_Settings", default_closed=True)
+        header.label(text="Sculpt Mode Pie Menu Settings")
         if body:
             # Essential Brushes Pie Menu Keybind
-            body.prop(self, "EnableEssentialsPieMenu", text = "Enable Essential Brushes Pie Menu")
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEssentialsPie", text = "Enable Essential Brushes Pie Menu")
             if self.EnableEssentialsPie == True:
                 row = body.row()
-                row.separator(factor=2)
+                row.separator(factor=4)
                 row.prop(self, "EnableEssentialsNestedPieMenu", text="Enable Nested Menu")
                 if kc:
                     km = kc.keymaps.get("Sculpt")
@@ -180,23 +182,25 @@ class AllpieCustomAddonPref(AddonPreferences):
                         for kmi in km.keymap_items:
                             if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EssentialsBrushPie":
                                 row = body.row()
-                                row.separator(factor=2)
+                                row.separator(factor=4)
                                 row.label(text="Key:")
                                 row.prop(kmi, "type",text="", event=True)
                                 row.prop(kmi, "value")
                                 row = body.row()
-                                row.separator(factor=2)
-                                row.label(text="Key Modifiers:")
                                 row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
                                 row.prop(kmi, "ctrl_ui", toggle=True)
                                 row.prop(kmi, "shift_ui", toggle=True)
                                 row.prop(kmi, "alt_ui", toggle=True)
                                 break
+
             # Utility Brushes Pie Menu Keybind
-            body.prop(self, "EnableUtilBrushPie", text = "Enable Utility Brushes Pie Menu")
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableUtilBrushPie", text = "Enable Utility Brushes Pie Menu")
             if self.EnableUtilBrushPie == True:
                 row = body.row()
-                row.separator(factor=2)
                 if kc:
                     km = kc.keymaps.get("Sculpt")
                     if km:
@@ -210,23 +214,432 @@ class AllpieCustomAddonPref(AddonPreferences):
                                 row = body.row()
                                 row.separator(factor=2)
                                 row.label(text="Key Modifiers:")
-                                row.separator(factor=4)
+                                row.separator(factor=8)
                                 row.prop(kmi, "ctrl_ui", toggle=True)
                                 row.prop(kmi, "shift_ui", toggle=True)
                                 row.prop(kmi, "alt_ui", toggle=True)
                                 break
 
+            # Remesh Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableRemeshPie", text = "Enable Remesh Pie Menu")
+            if self.EnableRemeshPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_RemeshPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Transform Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableSculptTransformPie", text = "Enable Sculpt Transform Pie Menu")
+            if self.EnableSculptTransformPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_SculptTransformPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Symmetry Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableSymmetryPie", text = "Enable Sculpt Symmetry Pie Menu")
+            if self.EnableSymmetryPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_SymmetryPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Multires Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableMultiResPie", text = "Enable Multires Pie Menu")
+            if self.EnableMultiResPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_MultiResPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Shading Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableShadingPie", text = "Enable Shading Pie Menu")
+            if self.EnableShadingPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_ShadingPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Brush Settings Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableSculptBrushSettingsPie", text = "Enable Sculpt Brush Settings Pie Menu")
+            if self.EnableSculptBrushSettingsPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_SculptBrushSettingsPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Paint Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableSculptPaintPie", text = "Enable Sculpt Paint Pie Menu")
+            if self.EnableSculptPaintPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_SculptPaintPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Visibility Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableSculptVisibilityPie", text = "Enable Sculpt Visibility Pie Menu")
+            if self.EnableSculptVisibilityPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_SculptVisibilityPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # Sculpt Visibility Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableCustomBrushPie", text = "Enable Custom Sculpt Brush Pie Menu")
+            if self.EnableSculptVisibilityPie == True:
+                row = body.row()
+                if kc:
+                    km = kc.keymaps.get("Sculpt")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_CustomBrushPie":
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=2)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+        #Edit Mode Pie Menu Settings
+        header, body = layout.panel("Edit_Mode_Pie_Menu_Settings", default_closed=True)
+        header.label(text="Edit Mode Pie Menu Settings")
+        if body:
+            # EditMode Model Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeModelPie", text = "Enable Edit Mode Model Pie Menu")
+            if self.EnableEditModeModelPie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeModelPie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # EditMode Vertex Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeVertexPie", text = "Enable Edit Mode Vertex Pie Menu")
+            if self.EnableEditModeVertexPie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeVertexPie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
+            # EditMode Edge Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeEdgePie", text = "Enable Edit Mode Edge Pie Menu")
+            if self.EnableEditModeEdgePie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeEdgePie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
+            # EditMode Face Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeFacePie", text = "Enable Edit Mode Face Pie Menu")
+            if self.EnableEditModeFacePie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeFacePie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
+            # EditMode Selection Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeSelectionPie", text = "Enable Edit Mode Selection Pie Menu")
+            if self.EnableEditModeSelectionPie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeSelectionPie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
+            # EditMode Deletion Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeDeletionPie", text = "Enable Edit Mode Deletion Pie Menu")
+            if self.EnableEditModeDeletionPie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeDeletionPie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
+            # EditMode Shading Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeShadingPie", text = "Enable Edit Mode Shading Pie Menu")
+            if self.EnableEditModeShadingPie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_ShadingPie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
+            # EditMode Merge Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableEditModeMergePie", text = "Enable Edit Mode Shading Pie Menu")
+            if self.EnableEditModeMergePie == True:
+                if kc:
+                    km = kc.keymaps.get("Mesh")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EditModeMergePie":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
 
 def register():
     bpy.utils.register_class(AllpieCustomAddonPref)

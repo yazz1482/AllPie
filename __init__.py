@@ -1,7 +1,7 @@
 import bpy
 import importlib
 from . import AddonPreferences
-from . import SculptPies
+from . import SculptModePies
 from . import EditModePies
 from . import CustomOperators
 from . import SettingsPanel
@@ -9,9 +9,9 @@ from . import SettingsPanel
 submodules = (
 AddonPreferences,
 CustomOperators,
-SculptPies,
-SettingsPanel
-# EditModePies,
+SculptModePies,
+EditModePies,
+SettingsPanel,
 )
 
 def register():
@@ -20,17 +20,17 @@ def register():
             importlib.reload(mod)    
     AddonPreferences.register()
     CustomOperators.register()
-    SculptPies.register()
+    SculptModePies.register()
     SettingsPanel.register()
-    # EditModePies.register()
+    EditModePies.register()
 
 def unregister():
 
     AddonPreferences.unregister()
     CustomOperators.unregister()
-    SculptPies.unregister()
+    SculptModePies.unregister()
     SettingsPanel.unregister()
-    # EditModePies.unregister()
+    EditModePies.unregister()
 
 
 if __name__ == "__main__":
