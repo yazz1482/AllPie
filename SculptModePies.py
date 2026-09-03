@@ -429,7 +429,7 @@ class C_MT_SculptPaintPie(Menu):
 
 #Utility Brushes Menu
 class C_MT_UtilBrushPie(Menu):
-    bl_label = "Utiliry Brushes Pie"
+    bl_label = "Utility Brushes Pie"
 
     def draw(self, context):
         layout = self.layout
