@@ -15,9 +15,9 @@ class C_MT_ObjectModeAdd(Menu):
         #Right
         pie.operator("mesh.primitive_cube_add", text="Add Cube", icon="MESH_CUBE")
         #Bottom
-        pie.operator("wm.search_single_menu", text="Search Add menu").menu_idname = "VIEW3D_MT_add"
+        pie.operator("wm.search_single_menu", text="Search Add Menu", icon="VIEWZOOM").menu_idname = "VIEW3D_MT_add"
         #Top
-        pie.operator("wm.search_single_menu", text="Search Add menu").menu_idname = "VIEW3D_MT_add"
+        pie.operator("wm.call_menu", text="Add Menu", icon="ADD").name = "VIEW3D_MT_add"
         #Top Left
         pie.operator("mesh.primitive_cone_add", text="Add Cone", icon="MESH_CONE")
         #Top Right
