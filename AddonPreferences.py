@@ -20,7 +20,7 @@ piekeymapitems = [
     ("EnableSculptBrushSettingsPie", "Sculpt", "X", "PRESS", "C_MT_SculptBrushSettingsPie", False, False, False),
     ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "C_MT_SculptPaintPie", False, False, False),
     ("EnableSculptVisibilityPie", "Sculpt", "V", "PRESS", "C_MT_SculptVisibilityPie", False, False, False),
-    ("EnableCustomBrushPie", "Sculpt", "B", "PRESS", "C_MT_CustomBrushPie", False, False, False),
+    ("EnableCustomBrushPie", "Sculpt", "W", "PRESS", "C_MT_CustomBrushPie", True, False, False),
 
     # Edit Mode Keybinds
     ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "C_MT_EditModeSelectionPie", False, False, False),
@@ -466,7 +466,7 @@ class AllpieCustomAddonPref(AddonPreferences):
             # EditMode Model Pie Menu Keybind
             row = body.row()
             row.separator(factor=2)
-            row.prop(self, "EnableEditModeModelPie", text = "Enable Edit Mode Model Pie Menu")
+            row.prop(self, "EnableEditModeModelPie", text = "Enable Edit Mode Quick Model Pie Menu")
             if self.EnableEditModeModelPie == True:
                 if kc:
                     km = kc.keymaps.get("Mesh")
