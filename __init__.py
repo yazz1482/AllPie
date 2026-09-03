@@ -1,6 +1,7 @@
 import bpy
 import importlib
 from . import AddonPreferences
+from . import ObjectModePies
 from . import SculptModePies
 from . import EditModePies
 from . import CustomOperators
@@ -12,6 +13,8 @@ CustomOperators,
 SculptModePies,
 EditModePies,
 SettingsPanel,
+ObjectModePies,
+
 )
 
 def register():
@@ -20,6 +23,7 @@ def register():
             importlib.reload(mod)    
     AddonPreferences.register()
     CustomOperators.register()
+    ObjectModePies.register()
     SculptModePies.register()
     SettingsPanel.register()
     EditModePies.register()
@@ -28,6 +32,7 @@ def unregister():
 
     AddonPreferences.unregister()
     CustomOperators.unregister()
+    ObjectModePies.unregister()
     SculptModePies.unregister()
     SettingsPanel.unregister()
     EditModePies.unregister()

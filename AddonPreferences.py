@@ -8,30 +8,34 @@ from bpy.props import EnumProperty
 addon_keymaps = []
 
 piekeymapitems = [
-        # Sculpt Mode Keybinds
-        ("EnableEssentialsPie", "Sculpt", "W", "PRESS", "C_MT_EssentialsBrushPie"),
-        ("EnableUtilBrushPie", "Sculpt", "E", "PRESS", "C_MT_UtilBrushPie"),
-        ("EnableRemeshPie", "Sculpt", "R", "PRESS", "C_MT_RemeshPie"),
-        ("EnableSculptTransformPie", "Sculpt", "T", "PRESS", "C_MT_SculptTransformPie"),
-        ("EnableSymmetryPie", "Sculpt", "S", "PRESS", "C_MT_SymmetryPie"),
-        ("EnableMultiResPie", "Sculpt", "D", "PRESS", "C_MT_MultiResPie"),
-        ("EnableShadingPie", "Sculpt", "Z", "PRESS", "C_MT_ShadingPie"),
-        ("EnableSculptBrushSettingsPie", "Sculpt", "X", "PRESS", "C_MT_SculptBrushSettingsPie"),
-        ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "C_MT_SculptPaintPie"),
-        ("EnableSculptVisibilityPie", "Sculpt", "V", "PRESS", "C_MT_SculptVisibilityPie"),
-        ("EnableCustomBrushPie", "Sculpt", "B", "PRESS", "C_MT_CustomBrushPie"),
+    # Sculpt Mode Keybinds
+    # ("Preference Name", "Keymap name", "Key", "Key Value", "PieMenu Class Name", Shift KeyModifier, Ctrl KeyModifier, Alt KeyModifier)
+    ("EnableEssentialsPie", "Sculpt", "W", "PRESS", "C_MT_EssentialsBrushPie", False, False, False),
+    ("EnableUtilBrushPie", "Sculpt", "E", "PRESS", "C_MT_UtilBrushPie", False, False, False),
+    ("EnableRemeshPie", "Sculpt", "R", "PRESS", "C_MT_RemeshPie", False, False, False),
+    ("EnableSculptTransformPie", "Sculpt", "T", "PRESS", "C_MT_SculptTransformPie", False, False, False),
+    ("EnableSymmetryPie", "Sculpt", "S", "PRESS", "C_MT_SymmetryPie", False, False, False),
+    ("EnableMultiResPie", "Sculpt", "D", "PRESS", "C_MT_MultiResPie", False, False, False),
+    ("EnableShadingPie", "Sculpt", "Z", "PRESS", "C_MT_ShadingPie", False, False, False),
+    ("EnableSculptBrushSettingsPie", "Sculpt", "X", "PRESS", "C_MT_SculptBrushSettingsPie", False, False, False),
+    ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "C_MT_SculptPaintPie", False, False, False),
+    ("EnableSculptVisibilityPie", "Sculpt", "V", "PRESS", "C_MT_SculptVisibilityPie", False, False, False),
+    ("EnableCustomBrushPie", "Sculpt", "B", "PRESS", "C_MT_CustomBrushPie", False, False, False),
 
-        # Edit Mode Keybinds
-        ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "C_MT_EditModeSelectionPie"),
-        ("EnableEditModeShadingPie", "Mesh", "Z", "PRESS", "C_MT_ShadingPie"),
-        ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "C_MT_EditModeDeletionPie"),
-        ("EnableEditModeMergePie", "Mesh", "M", "PRESS", "C_MT_EditModeMergePie"),
-        ("EnableEditModeModelPie", "Mesh", "W", "PRESS", "C_MT_EditModeModelPie"),
-        ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "C_MT_EditModeVertexPie"),
-        ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "C_MT_EditModeEdgePie"),
-        ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "C_MT_EditModeFacePie"),
-        ("EnableEditModeModelPie", "Mesh", "T", "PRESS", "C_MT_EditModeToolSelectPie"),
-        ]
+    # Edit Mode Keybinds
+    ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "C_MT_EditModeSelectionPie", False, False, False),
+    ("EnableEditModeShadingPie", "Mesh", "Z", "PRESS", "C_MT_ShadingPie", False, False, False),
+    ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "C_MT_EditModeDeletionPie", False, False, False),
+    ("EnableEditModeMergePie", "Mesh", "M", "PRESS", "C_MT_EditModeMergePie", False, False, False),
+    ("EnableEditModeModelPie", "Mesh", "W", "PRESS", "C_MT_EditModeModelPie", False, False, False),
+    ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "C_MT_EditModeVertexPie", False, False, False),
+    ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "C_MT_EditModeEdgePie", False, False, False),
+    ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "C_MT_EditModeFacePie", False, False, False),
+    ("EnableEditModeModelPie", "Mesh", "T", "PRESS", "C_MT_EditModeToolSelectPie", False, False, False),
+
+    # Object Mode Keybinds
+    ("EnableObjectModeAddPie", "Object Mode", "A", "PRESS", "C_MT_ObjectModeAdd", True, False, False),
+]
 
 def get_asset_libs(self, context):
     items = []
@@ -46,7 +50,7 @@ def ApKeymapResgister():
     if not kc:
         return
 
-    for pref_name, km_name, key, value, menu_name in piekeymapitems:
+    for pref_name, km_name, key, value, menu_name, mod_shift, mod_ctrl, mod_alt in piekeymapitems:
 
         #Dont register if the prefernce is disabled
         if not getattr(prefs, pref_name):
@@ -73,6 +77,9 @@ def ApKeymapResgister():
                 "wm.call_menu_pie",
                 type=key,
                 value=value,
+                ctrl=mod_ctrl,
+                shift=mod_shift,
+                alt=mod_alt,
                 )
         kmi.properties.name = menu_name
         addon_keymaps.append((km, kmi))
@@ -157,6 +164,13 @@ class AllpieCustomAddonPref(AddonPreferences):
     EnableEditModeEdgePie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeFacePie: BoolProperty(default=True, update=update_pie_keymaps)
 
+
+    #Object Mode Properties
+
+    # Bools Properties
+    # Object Mode Addon Prefernce Properties
+    EnableObjectModeAddPie: BoolProperty(default=True, update=update_pie_keymaps)
+
     def draw(self, context):
 
         wm = context.window_manager
@@ -205,7 +219,7 @@ class AllpieCustomAddonPref(AddonPreferences):
                     km = kc.keymaps.get("Sculpt")
                     if km:
                         for kmi in km.keymap_items:
-                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_EssentialsBrushPie":
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_UtilBrushPie":
                                 row = body.row()
                                 row.separator(factor=2)
                                 row.label(text="Key:")
@@ -640,6 +654,35 @@ class AllpieCustomAddonPref(AddonPreferences):
                                 row.prop(kmi, "shift_ui", toggle=True)
                                 row.prop(kmi, "alt_ui", toggle=True)
                                 break
+
+        #Object Mode Pie Menu Settings
+        header, body = layout.panel("Object_Mode_Pie_Menu_Settings", default_closed=True)
+        header.label(text="Object Mode Pie Menu Settings")
+        if body:
+            # ObjectMode Add Pie Menu Keybind
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(self, "EnableObjectModeAddPie", text = "Enable Object Mode Add Pie Menu")
+            if self.EnableObjectModeAddPie == True:
+                if kc:
+                    km = kc.keymaps.get("Object Mode")
+                    if km:
+                        for kmi in km.keymap_items:
+                            if kmi.idname == "wm.call_menu_pie" and kmi.properties.name == "C_MT_ObjectModeAdd":
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key:")
+                                row.prop(kmi, "type",text="", event=True)
+                                row.prop(kmi, "value")
+                                row = body.row()
+                                row.separator(factor=4)
+                                row.label(text="Key Modifiers:")
+                                row.separator(factor=8)
+                                row.prop(kmi, "ctrl_ui", toggle=True)
+                                row.prop(kmi, "shift_ui", toggle=True)
+                                row.prop(kmi, "alt_ui", toggle=True)
+                                break
+
 
 def register():
     bpy.utils.register_class(AllpieCustomAddonPref)

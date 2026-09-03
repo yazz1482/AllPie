@@ -1,6 +1,5 @@
 import bpy
 from bpy.types import Menu
-from bpy.types import Panel
 from . import CustomOperators
 from . import AddonPreferences
 
