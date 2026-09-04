@@ -29,7 +29,8 @@ piekeymapitems = [
     ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "ALLPIE_MT_EditModeVertexPie", False, False, False),
     ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "ALLPIE_MT_EditModeEdgePie", False, False, False),
     ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "ALLPIE_MT_EditModeFacePie", False, False, False),
-    ("EnableEditModeModelPie", "Mesh", "T", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, False),
+    ("EnableEditModeToolSelectPie", "Mesh", "T", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, False),
+    ("EnableEditModeUVPie", "Mesh", "U", "PRESS", "ALLPIE_MT_EditModeUVPie", False, False, False),
 
     # Object Mode Keybinds
     ("EnableObjectModeAddPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeAdd", True, False, False),
@@ -324,7 +325,8 @@ class AllpieCustomAddonPref(AddonPreferences):
     EnableEditModeEdgePie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeFacePie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeContextPie: BoolProperty(default=True, update=update_pie_keymaps)
-
+    EnableEditModeToolSelectPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableEditModeUVPie: BoolProperty(default=True, update=update_pie_keymaps)
     # Object Mode Properties
 
     # Bool Properties
@@ -583,7 +585,7 @@ class AllpieCustomAddonPref(AddonPreferences):
             # Edit Mode Tool Select Pie Menu
             # This uses the same EnableEditModeModelPie property as in the
             # original file because that is how your current settings are structured.
-            if self.EnableEditModeModelPie and kc:
+            if self.EnableEditModeToolSelectPie and kc:
                 row = body.row()
                 row.separator(factor=2)
                 row.label(text="Tool Select Pie Menu")
@@ -720,6 +722,23 @@ class AllpieCustomAddonPref(AddonPreferences):
                     self,
                     "Mesh",
                     "ALLPIE_MT_EditModeMergePie",
+                )
+            # Edit Mode UV Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(
+                self,
+                "EnableEditModeMergePie",
+                text="Enable Edit Mode Merge Pie Menu",
+            )
+
+            if self.EnableEditModeUVPie and kc:
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "Mesh",
+                    "ALLPIE_MT_EditModeUVPie",
                 )
 
         # Object Mode Pie Menu Settings

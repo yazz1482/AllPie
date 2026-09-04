@@ -3,9 +3,9 @@ from bpy.types import Panel
 from . import CustomOperators
 from . import AddonPreferences
 
-class C_PT_AllPieSettingsPanel(Panel):
+class AllPie_PT_AllPieSettingsPanel(Panel):
     bl_label = "AllPie Brush Settings"
-    bl_idname = "C_PT_AllPieBrush_panel"
+    bl_idname = "ALLPIE_PT_AllPieBrush_panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "AllPie"  # Tab name in the N-panel
@@ -212,7 +212,7 @@ class C_PT_AllPieSettingsPanel(Panel):
 
 
 classes = (
-    C_PT_AllPieSettingsPanel,
+    AllPie_PT_AllPieSettingsPanel,
 )
 
 

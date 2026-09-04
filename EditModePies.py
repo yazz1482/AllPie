@@ -5,7 +5,8 @@ from . import CustomOperators
 from . import AddonPreferences
 
 
-class C_MT_EditModeSelectionPie(Menu):
+class AllPie_MT_EditModeSelectionPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeSelectionPie"
     bl_label = "EditMode Selection Pie"
 
     def draw(self, context):
@@ -43,7 +44,8 @@ class C_MT_EditModeSelectionPie(Menu):
         ).select_bigger = True
 
 
-class C_MT_EditModeDeletionPie(Menu):
+class AllPie_MT_EditModeDeletionPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeDeletionPie"
     bl_label = "EditMode Deletion Pie"
 
     def draw(self, context):
@@ -73,7 +75,8 @@ class C_MT_EditModeDeletionPie(Menu):
         pie.operator("mesh.dissolve_faces", icon="FACESEL", text="Face Dissolve")
 
 
-class C_MT_EditModeMergePie(Menu):
+class AllPie_MT_EditModeMergePie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeMergePie"
     bl_label = "EditMode Selection Pie"
 
     def draw(self, context):
@@ -114,43 +117,47 @@ class C_MT_EditModeMergePie(Menu):
         ).type = "LAST"
 
 
-class C_MT_EditModeModelPie(Menu):
+class AllPie_MT_EditModeModelPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeModelPie"
     bl_label = "EditMode Model Pie"
 
     def draw(self, context):
         layout = self.layout
 
         pie = layout.menu_pie()
-        # Left
-        pie.operator("mesh.loopcut_slide", icon="SPLIT_VERTICAL", text="Loop Cut")
-        # Right
-        pie.operator("mesh.bevel", icon="MOD_BEVEL", text="Bevel")
+        # # Left
+        pie.operator("mesh.separate", icon="MOD_EDGESPLIT", text="Separate Menu")
+        # # Right
+        pie.operator(
+            "wm.call_menu_pie", icon="MODIFIER", text="Modifer Pie"
+        ).name = "ALLPIE_MT_EditModeModifierPie"
         # Bottom
         pie.operator_context = "INVOKE_REGION_WIN"
         pie.operator("screen.redo_last", icon="RECOVER_LAST", text="Redo Menu")
         # Top
         pie.operator(
             "wm.call_menu_pie", icon="EDGESEL", text="Edge Pie"
-        ).name = "C_MT_EditModeEdgePie"
+        ).name = "ALLPIE_MT_EditModeEdgePie"
         # Top Left
         pie.operator(
             "wm.call_menu_pie", icon="VERTEXSEL", text="Vertex Pie"
-        ).name = "C_MT_EditModeVertexPie"
+        ).name = "ALLPIE_MT_EditModeVertexPie"
         # Top Right
         pie.operator(
             "wm.call_menu_pie", icon="FACESEL", text="Face Pie"
-        ).name = "C_MT_EditModeFacePie"
+        ).name = "ALLPIE_MT_EditModeFacePie"
         # Bottom Left
         pie.operator(
-            "mesh.knife_tool", icon="SCULPTMODE_HLT", text="Knife Tool"
-        )
+            "wm.call_menu_pie", icon="UV", text="UV Unwrap Pie"
+        ).name = "ALLPIE_MT_EditModeUVPie"
         # Bottom Right
         pie.operator(
             "wm.call_menu_pie", icon="AUTOMERGE_OFF", text="Merge Pie"
-        ).name = "C_MT_EditModeMergePie"
+        ).name = "ALLPIE_MT_EditModeMergePie"
 
 
-class C_MT_EditModeVertexPie(Menu):
+class AllPie_MT_EditModeVertexPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeVertexPie"
     bl_label = "EditMode Vertex Pie"
 
     def draw(self, context):
@@ -165,7 +172,7 @@ class C_MT_EditModeVertexPie(Menu):
         ).affect = "VERTICES"
         # Bottom
         pie.operator(
-            "mesh.dupli_extrude_cursor", icon="VERTEXSEL", text="Extrude To Cursor"
+            "mesh.extrude_vertices_move", icon="VERTEXSEL", text="Extrude Vertices"
         )
         # Top
         pie.operator(
@@ -174,16 +181,15 @@ class C_MT_EditModeVertexPie(Menu):
         # Top Left
         pie.operator("transform.vert_crease", icon="VERTEXSEL", text="Crease Vertices")
         # Top Right
-        pie.operator(
-            "mesh.extrude_vertices_move", icon="VERTEXSEL", text="Extrude Vertices"
-        )
+        pie.operator("mesh.knife_tool", icon="SCULPTMODE_HLT", text="Knife Tool")
         # Bottom Left
         pie.operator("mesh.rip_move", icon="VERTEXSEL", text="Rip Vertices")
         # Bottom Right
         pie.operator("mesh.vert_connect_path", icon="VERTEXSEL", text="Join Vertices")
 
 
-class C_MT_EditModeEdgePie(Menu):
+class AllPie_MT_EditModeEdgePie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeEdgePie"
     bl_label = "EditMode Edge Pie"
 
     def draw(self, context):
@@ -193,7 +199,7 @@ class C_MT_EditModeEdgePie(Menu):
         # Left
         pie.operator("mesh.loopcut_slide", icon="EDGESEL", text="Loop Cut")
         # Right
-        pie.operator("mesh.bevel", icon="EDGESEL", text="Edge Bevel").affect = "EDGES"
+        pie.operator("mesh.bevel", icon="EDGE_BEVEL", text="Edge Bevel").affect = "EDGES"
         # Bottom
         pie.operator("mesh.extrude_edges_move", icon="EDGESEL", text="Extrude Edges")
         # Top
@@ -201,16 +207,17 @@ class C_MT_EditModeEdgePie(Menu):
             "wm.call_menu", icon="EDGESEL", text="Edges Menu"
         ).name = "VIEW3D_MT_edit_mesh_edges"
         # Top Left
-        pie.operator("transform.edge_crease", icon="EDGESEL", text="Crease Edges")
+        pie.operator("transform.edge_crease", icon = "EDGE_CREASE",text="Crease Edges")
         # Top Right
         pie.operator("mesh.bridge_edge_loops", icon="EDGESEL", text="Bridge EdgeLoops")
         # Bottom Left
         pie.operator("mesh.mark_sharp", icon="EDGESEL", text="Clear Sharp").clear = True
         # Bottom Right
-        pie.operator("mesh.mark_sharp", icon="EDGESEL", text="Mark Sharp")
+        pie.operator("mesh.mark_sharp", icon="EDGE_SHARP", text="Mark Sharp")
 
 
-class C_MT_EditModeFacePie(Menu):
+class AllPie_MT_EditModeFacePie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeFacePie"
     bl_label = "EditMode Face Pie"
 
     def draw(self, context):
@@ -243,8 +250,9 @@ class C_MT_EditModeFacePie(Menu):
         )
 
 
-class C_MT_EditModeToolSelectPie(Menu):
+class AllPie_MT_EditModeToolSelectPie(Menu):
     bl_label = "EditMode ToolSelect Pie"
+    bl_idname = "ALLPIE_MT_EditModeToolSelectPie"
 
     def draw(self, context):
         layout = self.layout
@@ -284,15 +292,103 @@ class C_MT_EditModeToolSelectPie(Menu):
         ).name = "builtin.select_circle"
 
 
+class AllPie_MT_EditModeModifierPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeModifierPie"
+    bl_label = "EditMode Modifier Pie"
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+        # # Left
+        pie.operator(
+            "object.modifier_add", icon="MOD_SUBSURF", text="SubDivision"
+        ).type = "SUBSURF"
+        # # Right
+        pie.operator(
+            "object.modifier_add", icon="MOD_MIRROR", text="Mirror"
+        ).type = "MIRROR"
+        # Bottom
+        pie.operator(
+            "wm.search_single_menu", icon="VIEWZOOM", text="Add Modifier Search"
+        ).menu_idname = "OBJECT_MT_modifier_add"
+        # Top
+        pie.operator(
+            "wm.call_menu_pie", icon="EDGESEL", text="Edge Pie"
+        ).name = "ALLPIE_MT_EditModeEdgePie"
+        # Top Left
+        pie.operator(
+            "object.modifier_add", icon="MOD_MULTIRES", text="Multires"
+        ).type = "MULTIRES"
+        # Top Right
+        pie.operator(
+            "object.modifier_add", icon="MOD_SOLIDIFY", text="Solidify"
+        ).type = "SOLIDIFY"
+        # Bottom Left
+        pie.operator(
+            "object.modifier_add", icon="MOD_SHRINKWRAP", text="ShrinkWrap"
+        ).type = "SHRINKWRAP"
+        # Bottom Right
+        slot6 = pie.operator(
+            "object.modifier_add_node_group", icon="MOD_ARRAY", text="Array"
+        )
+        slot6.asset_library_type = "ESSENTIALS"
+        slot6.asset_library_identifier = ""
+        slot6.relative_asset_identifier = (
+            "nodes/geometry_nodes_essentials.blend/NodeTree/Array"
+        )
+
+
+class AllPie_MT_EditModeUVPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeUVPie"
+    bl_label = "EditMode UV Unwrap Pie"
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+
+        # # Left
+        pie.operator(
+            "uv.unwrap", icon="MOD_UVPROJECT", text="Unwrap Conformal"
+        ).method = "ANGLE_BASED"
+        # # Right
+        pie.operator(
+            "uv.unwrap", icon="MOD_UVPROJECT", text="Unwrap Minimum Stretch"
+        ).method = "CONFORMAL"
+        # Bottom
+        pie.operator(
+            "uv.unwrap", icon="UV", text="Unwrap Minimum Stretch"
+        ).method = "MINIMUM_STRETCH"
+        # Top
+        pie.operator(
+            "wm.call_menu", icon="UV", text="UV Menu"
+        ).name = "VIEW3D_MT_uv_map"
+        # Top Left
+        pie.operator(
+            "uv.follow_active_quads", icon="MOD_UVPROJECT", text="Follow Active Quads"
+        )
+        # Top Right
+        pie.operator(
+            "uv.smart_project", icon="MOD_UVPROJECT", text="Smart Project"
+        )
+        # Bottom Left
+        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seem").clear = True
+        # Bottom Right
+        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seem")
+
+
 classes = (
-    C_MT_EditModeSelectionPie,
-    C_MT_EditModeDeletionPie,
-    C_MT_EditModeMergePie,
-    C_MT_EditModeModelPie,
-    C_MT_EditModeVertexPie,
-    C_MT_EditModeEdgePie,
-    C_MT_EditModeFacePie,
-    C_MT_EditModeToolSelectPie,
+    AllPie_MT_EditModeSelectionPie,
+    AllPie_MT_EditModeDeletionPie,
+    AllPie_MT_EditModeMergePie,
+    AllPie_MT_EditModeModelPie,
+    AllPie_MT_EditModeVertexPie,
+    AllPie_MT_EditModeEdgePie,
+    AllPie_MT_EditModeFacePie,
+    AllPie_MT_EditModeToolSelectPie,
+    AllPie_MT_EditModeModifierPie,
+    AllPie_MT_EditModeUVPie,
 )
 
 

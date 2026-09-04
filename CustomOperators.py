@@ -1,13 +1,15 @@
 import bpy
+import math
 from bpy.types import Operator
 from bpy.props import StringProperty
 from bpy.props import FloatProperty
 from bpy.props import BoolProperty
 from bpy.props import IntProperty
 from bpy.props import EnumProperty
+from . import EditModePies
 
 
-class C_OT_Symmetry(Operator):
+class AllPie_OT_Symmetry(Operator):
     bl_idname = "cop.symdirection"
     bl_label = "Symmetrize"
 
@@ -28,7 +30,7 @@ class C_OT_Symmetry(Operator):
         return {"FINISHED"}
 
 
-class C_OT_Remesh(Operator):
+class AllPie_OT_Remesh(Operator):
     bl_idname = "cop.cremesh"
     bl_label = "Remesh Operator"
     bl_options = {"REGISTER", "UNDO_GROUPED"}
@@ -68,7 +70,7 @@ class C_OT_Remesh(Operator):
         return {"FINISHED"}
 
 
-class C_OT_Shading(Operator):
+class AllPie_OT_Shading(Operator):
     bl_idname = "cop.cshading"
     bl_label = "Shading Operator"
 
@@ -97,7 +99,7 @@ class C_OT_Shading(Operator):
         return {"FINISHED"}
 
 
-class C_OT_MultiRes(Operator):
+class AllPie_OT_MultiRes(Operator):
     bl_idname = "cop.cmultirespie"
     bl_label = "MultiRes Pie"
     bl_options = {"REGISTER", "UNDO_GROUPED"}
@@ -157,7 +159,7 @@ class C_OT_MultiRes(Operator):
         return {"FINISHED"}
 
 
-class C_OT_ColorSelectorPopup(Operator):
+class AllPie_OT_ColorSelectorPopup(Operator):
     bl_idname = "cop.color_selector_popup"
     bl_label = "Brush Color"
 
@@ -166,7 +168,7 @@ class C_OT_ColorSelectorPopup(Operator):
 
     def draw(self, context):
         layout = self.layout
-         
+
         brush = bpy.context.scene.tool_settings.sculpt.unified_paint_settings
         layout.template_color_picker(brush, "color", value_slider=True)
         layout.operator("paint.brush_colors_flip", text="Swap Colors")
@@ -183,7 +185,7 @@ class C_OT_ColorSelectorPopup(Operator):
         return {"FINISHED"}
 
 
-class C_OT_CustomQuadriFlow(Operator):
+class AllPie_OT_CustomQuadriFlow(Operator):
     """Quadriflow remesher with some custom settings"""
 
     bl_label = "QuadRiflow Remesh Custom"
@@ -332,7 +334,7 @@ ESSENTIALS_BRUSH_ITEMS = [
 ]
 
 
-class C_OT_Search_SculptBrushes(Operator):
+class AllPie_OT_Search_SculptBrushes(Operator):
     bl_idname = "cop.searchsculptbrushes"
     bl_label = "Search Sculpt Brushes"
     bl_property = "SearchBrush"
@@ -357,7 +359,7 @@ class C_OT_Search_SculptBrushes(Operator):
         return {"FINISHED"}
 
 
-class C_OT_ToggleAutoMasking(Operator):
+class AllPie_OT_ToggleAutoMasking(Operator):
     bl_idname = "cop.toggle_auto_masking"
     bl_label = "ToggleAutoMasking Operator"
 
@@ -409,10 +411,9 @@ class C_OT_ToggleAutoMasking(Operator):
         return {"FINISHED"}
 
 
-
 # Edit Mode Operators
 
-class C_OT_ToggleAutoMerge(bpy.types.Operator):
+class AllPie_OT_ToggleAutoMerge(bpy.types.Operator):
     bl_idname = "cop.toggle_auto_merge"
     bl_label = "Toggle Auto Merge"
 
@@ -421,30 +422,74 @@ class C_OT_ToggleAutoMerge(bpy.types.Operator):
         ts.use_mesh_automerge = not ts.use_mesh_automerge
         return {"FINISHED"}
 
+class AllPie_OT_EditModeContextPie(Operator):
+    bl_idname = "cop.editmode_context_pie"
+    bl_label = "Simple Gesture Pie (6-Way)"
+
+    def execute(self, context):
+        CurrentSelectionMode = tuple(context.tool_settings.mesh_select_mode)
+
+        if CurrentSelectionMode == (True, False, False):
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeVertexPie" )
+
+        elif CurrentSelectionMode == (False, True, False):
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+
+        elif CurrentSelectionMode == (False, False, True):
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie" )
+
+        elif CurrentSelectionMode == (True, True, False):
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+
+        elif CurrentSelectionMode == (False, True, True):
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie" )
+
+        else: 
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+
+        return{"FINISHED"}
+
 
 classes = (
-    C_OT_Symmetry,
-    C_OT_Remesh,
-    C_OT_Shading,
-    C_OT_MultiRes,
-    C_OT_ColorSelectorPopup,
-    C_OT_CustomQuadriFlow,
-    C_OT_Search_SculptBrushes,
-    C_OT_ToggleAutoMasking,
-    C_OT_ToggleAutoMerge,
+    AllPie_OT_Symmetry,
+    AllPie_OT_Remesh,
+    AllPie_OT_Shading,
+    AllPie_OT_MultiRes,
+    AllPie_OT_ColorSelectorPopup,
+    AllPie_OT_CustomQuadriFlow,
+    AllPie_OT_Search_SculptBrushes,
+    AllPie_OT_ToggleAutoMasking,
+    AllPie_OT_ToggleAutoMerge,
+    AllPie_OT_EditModeContextPie,
 )
 
+addon_keymaps = []
 
 def register():
 
     for cls in classes:
         bpy.utils.register_class(cls)
 
+        wm = bpy.context.window_manager
+        kc = wm.keyconfigs.addon
+        if kc:
+            km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
+            kmi = km.keymap_items.new(AllPie_OT_EditModeContextPie.bl_idname, type='Q', value='PRESS')
+        if kc:
+            km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
+            kmi = km.keymap_items.new("wm.call_menu", type='Q', value='PRESS', alt = True)
+            kmi.properties.name = "SCREEN_MT_user_menu"
+            addon_keymaps.append((km, kmi))
+
 
 def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
+
+        for km, kmi in addon_keymaps:
+            km.keymap_items.remove(kmi)
+        addon_keymaps.clear()
 
 
 if __name__ == "__main__":
