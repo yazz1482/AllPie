@@ -6,7 +6,8 @@ from . import AddonPreferences
 EssentialsLibraryPath = "brushes/essentials_brushes-mesh_sculpt.blend/Brush/"
 
 #Essential Brushes Menu
-class C_MT_EssentialsBrushPie(Menu):
+class AllPie_MT_EssentialsBrushPie(Menu):
+    bl_idname = "ALLPIE_MT_EssentialsBrushPie"
     bl_label = "Essential Brushes"
 
     def draw(self, context):
@@ -53,7 +54,7 @@ class C_MT_EssentialsBrushPie(Menu):
         if prefs.EnableEssentialsNestedPieMenu == True:
             pie.operator(
                 "wm.call_menu_pie", text="Nested Menu", icon="EVENT_NDOF_BUTTON_8"
-            ).name = "C_MT_EssentialsNestedBrushPie"  # NestPie
+            ).name = "ALLPIE_MT_EssentialsNestedBrushPie"  # NestPie
         else:
             pie.operator(
                 "wm.call_asset_shelf_popover", icon="EVENT_NDOF_BUTTON_8"
@@ -105,7 +106,8 @@ class C_MT_EssentialsBrushPie(Menu):
 
 
 #Essential Brushes Nested Menu
-class C_MT_EssentialsNestedBrushPie(Menu):
+class AllPie_MT_EssentialsNestedBrushPie(Menu):
+    bl_idname = "ALLPIE_MT_EssentialsNestedBrushPie"
     bl_label = "Essential Brushes Nested"
 
     def draw(self, context):
@@ -198,7 +200,8 @@ class C_MT_EssentialsNestedBrushPie(Menu):
         )
 
 #Symmetry Menu
-class C_MT_SymmetryPie(Menu):
+class AllPie_MT_SymmetryPie(Menu):
+    bl_idname = "ALLPIE_MT_SymmetryPie"
     bl_label = "Symmetry Pie"
 
     def draw(self, context):
@@ -238,7 +241,8 @@ class C_MT_SymmetryPie(Menu):
             ).direction = "POSITIVE_Z"
 
 #Remesh Menu
-class C_MT_RemeshPie(Menu):
+class AllPie_MT_RemeshPie(Menu):
+    bl_idname = "ALLPIE_MT_RemeshPie"
     bl_label = "Remesh Pie"
 
     def draw(self, context):
@@ -277,7 +281,8 @@ class C_MT_RemeshPie(Menu):
             ).DecreaseVoxelSize10 = True
 
 #Shading Menu
-class C_MT_ShadingPie(Menu):
+class AllPie_MT_ShadingPie(Menu):
+    bl_idname = "ALLPIE_MT_ShadingPie"
     bl_label = "Shading Pie"
 
     def draw(self, context):
@@ -318,7 +323,8 @@ class C_MT_ShadingPie(Menu):
         ).SetShadingLight = "FLAT"
 
 #Multires Menu
-class C_MT_MultiResPie(Menu):
+class AllPie_MT_MultiResPie(Menu):
+    bl_idname = "ALLPIE_MT_MultiResPie"
     bl_label = "Multies Pie"
 
     def draw(self, context):
@@ -375,7 +381,8 @@ PaintBrushes = {
 }
 
 
-class C_MT_SculptPaintPie(Menu):
+class AllPie_MT_SculptPaintPie(Menu):
+    bl_idname = "ALLPIE_MT_SculptPaintPie"
     bl_label = "Painting Pie"
 
     def draw(self, context):
@@ -428,7 +435,8 @@ class C_MT_SculptPaintPie(Menu):
         slot6.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b10"]
 
 #Utility Brushes Menu
-class C_MT_UtilBrushPie(Menu):
+class AllPie_MT_UtilBrushPie(Menu):
+    bl_idname = "ALLPIE_MT_UtilBrushPie"
     bl_label = "Utility Brushes Pie"
 
     def draw(self, context):
@@ -453,7 +461,7 @@ class C_MT_UtilBrushPie(Menu):
         # Top
         pie.operator(
             "wm.call_menu_pie", icon="EVENT_NDOF_BUTTON_8", text="Nested Menu"
-        ).name = "C_MT_UtilBrushNestedPie"
+        ).name = "ALLPIE_MT_UtilBrushNestedPie"
         # Top Left
         pie.operator(
             "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_3", text="FaceSet Lasso"
@@ -473,7 +481,8 @@ class C_MT_UtilBrushPie(Menu):
 
 
 #Utility Brushes Nested Menu
-class C_MT_UtilBrushNestedPie(Menu):
+class AllPie_MT_UtilBrushNestedPie(Menu):
+    bl_idname = "ALLPIE_MT_UtilBrushNestedPie"
     bl_label = "UtilBrush NestedPie"
 
     def draw(self, context):
@@ -523,7 +532,8 @@ class C_MT_UtilBrushNestedPie(Menu):
         )
 
 #Transform Menu
-class C_MT_SculptTransformPie(Menu):
+class AllPie_MT_SculptTransformPie(Menu):
+    bl_idname = "ALLPIE_MT_SculptTransformPie"
     bl_label = "SculptTransform Pie"
 
     def draw(self, context):
@@ -563,7 +573,8 @@ class C_MT_SculptTransformPie(Menu):
         ).type = "INFLATE"
 
 #Brush Settings Pie
-class C_MT_SculptBrushSettingsPie(Menu):
+class AllPie_MT_SculptBrushSettingsPie(Menu):
+    bl_idname = "ALLPIE_MT_SculptBrushSettingsPie"
     bl_label = "SculptBrushSettings Pie"
 
     def draw(self, context):
@@ -606,7 +617,8 @@ class C_MT_SculptBrushSettingsPie(Menu):
         ).ToggleAutoMaskingCavity = True
 
 #CustomBrushes Pie
-class C_MT_CustomBrushPie(Menu):
+class AllPie_MT_CustomBrushPie(Menu):
+    bl_idname = "ALLPIE_MT_CustomBrushPie"
     bl_label = "Custom Brushes Pie"
 
     def draw(self, context):
@@ -698,7 +710,8 @@ class C_MT_CustomBrushPie(Menu):
         slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot6}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot6}"
 
 #Visibility Menu
-class C_MT_SculptVisibilityPie(Menu):
+class AllPie_MT_SculptVisibilityPie(Menu):
+    bl_idname = "ALLPIE_MT_SculptVisibilityPie"
     bl_label = "Sculpt Visibility Pie"
 
     def draw(self, context):
@@ -747,19 +760,19 @@ class C_MT_SculptVisibilityPie(Menu):
 
 
 classes = (
-    C_MT_EssentialsBrushPie,
-    C_MT_EssentialsNestedBrushPie,
-    C_MT_SymmetryPie,
-    C_MT_RemeshPie,
-    C_MT_ShadingPie,
-    C_MT_MultiResPie,
-    C_MT_SculptPaintPie,
-    C_MT_UtilBrushPie,
-    C_MT_UtilBrushNestedPie,
-    C_MT_SculptTransformPie,
-    C_MT_SculptBrushSettingsPie,
-    C_MT_CustomBrushPie,
-    C_MT_SculptVisibilityPie,
+    AllPie_MT_EssentialsBrushPie,
+    AllPie_MT_EssentialsNestedBrushPie,
+    AllPie_MT_SymmetryPie,
+    AllPie_MT_RemeshPie,
+    AllPie_MT_ShadingPie,
+    AllPie_MT_MultiResPie,
+    AllPie_MT_SculptPaintPie,
+    AllPie_MT_UtilBrushPie,
+    AllPie_MT_UtilBrushNestedPie,
+    AllPie_MT_SculptTransformPie,
+    AllPie_MT_SculptBrushSettingsPie,
+    AllPie_MT_CustomBrushPie,
+    AllPie_MT_SculptVisibilityPie,
 )
 
 

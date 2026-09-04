@@ -2,7 +2,8 @@ import bpy
 from bpy.types import Menu
 from . import AddonPreferences
 
-class C_MT_ObjectModeAdd(Menu):
+class AllPie_MT_ObjectModeAdd(Menu):
+    bl_idname = "ALLPIE_MT_ObjectModeAdd"
     bl_label = "Add Primitives/Add Menu Pie"
 
     def draw(self, context):
@@ -28,7 +29,7 @@ class C_MT_ObjectModeAdd(Menu):
         pie.operator("mesh.primitive_uv_sphere_add", text="Add UV Sphere", icon="MESH_UVSPHERE")
 
 classes = (
-    C_MT_ObjectModeAdd,
+    AllPie_MT_ObjectModeAdd,
         )
 
 def register():
