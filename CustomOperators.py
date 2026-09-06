@@ -1,5 +1,4 @@
 import bpy
-import math
 from bpy.types import Operator
 from bpy.props import StringProperty
 from bpy.props import FloatProperty
@@ -422,32 +421,33 @@ class AllPie_OT_ToggleAutoMerge(bpy.types.Operator):
         ts.use_mesh_automerge = not ts.use_mesh_automerge
         return {"FINISHED"}
 
+
 class AllPie_OT_EditModeContextPie(Operator):
     bl_idname = "cop.editmode_context_pie"
-    bl_label = "Simple Gesture Pie (6-Way)"
+    bl_label = "Edit Mode Context Pie"
 
     def execute(self, context):
         CurrentSelectionMode = tuple(context.tool_settings.mesh_select_mode)
 
         if CurrentSelectionMode == (True, False, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeVertexPie" )
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeVertexPie")
 
         elif CurrentSelectionMode == (False, True, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
 
         elif CurrentSelectionMode == (False, False, True):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie" )
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie")
 
         elif CurrentSelectionMode == (True, True, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
 
         elif CurrentSelectionMode == (False, True, True):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie" )
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie")
 
-        else: 
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie" )
+        else:
+            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
 
-        return{"FINISHED"}
+        return {"FINISHED"}
 
 
 classes = (
@@ -465,6 +465,7 @@ classes = (
 
 addon_keymaps = []
 
+
 def register():
 
     for cls in classes:
@@ -474,10 +475,12 @@ def register():
         kc = wm.keyconfigs.addon
         if kc:
             km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
-            kmi = km.keymap_items.new(AllPie_OT_EditModeContextPie.bl_idname, type='Q', value='PRESS')
+            kmi = km.keymap_items.new(
+                AllPie_OT_EditModeContextPie.bl_idname, type="W", value="PRESS"
+            )
         if kc:
             km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
-            kmi = km.keymap_items.new("wm.call_menu", type='Q', value='PRESS', alt = True)
+            kmi = km.keymap_items.new("wm.call_menu", type="Q", value="PRESS", alt=True)
             kmi.properties.name = "SCREEN_MT_user_menu"
             addon_keymaps.append((km, kmi))
 
