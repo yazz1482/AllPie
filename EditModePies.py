@@ -85,14 +85,30 @@ class AllPie_MT_EditModeMergePie(Menu):
 
         # Left
         pie.operator(
-            "mesh.merge", icon="AUTOMERGE_OFF", text="Merge At Center"
-        ).type = "CENTER"
+            "mesh.merge", icon="AUTOMERGE_OFF", text="At Cursor"
+        ).type = "CURSOR"
         # Right
         pie.operator( "mesh.remove_doubles", icon="AUTOMERGE_OFF", text="Merge By Disatance")
         # Bottom
+        op = pie.operator('mesh.merge', text="At Center", icon='FULLSCREEN_EXIT')
+        op.type = 'CENTER'
+        #Top
         pie.operator( "cop.toggle_auto_merge", icon="AUTOMERGE_ON", text="Toggle Auto Merge")
-        # Top
-        pie.operator( "mesh.merge", icon="AUTOMERGE_OFF", text="Merge Menu")
+        #Top Left
+        pie.separator()
+        #Top Right
+        pie.separator()
+        try:
+            # This will raise an error if the option isn't available.
+            op.type = 'CENTER'
+            #Bottom Left
+            pie.operator('mesh.merge', text="At First", icon='TRACKING_REFINE_BACKWARDS').type = 'FIRST'
+            #Bottom Right
+            pie.operator('mesh.merge', text="At Last", icon='TRACKING_REFINE_FORWARDS').type = 'LAST'
+            pie.separator()
+        except:
+            op.type = 'CENTER'
+
 
 
 class AllPie_MT_EditModeModelPie(Menu):
