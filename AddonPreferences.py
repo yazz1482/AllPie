@@ -11,7 +11,7 @@ piekeymapitems = [
     ("EnableEssentialsPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_EssentialsBrushPie", False, False, False),
     ("EnableUtilBrushPie", "Sculpt", "E", "PRESS", "ALLPIE_MT_UtilBrushPie", False, False, False),
     ("EnableRemeshPie", "Sculpt", "R", "PRESS", "ALLPIE_MT_RemeshPie", False, False, False),
-    ("EnableSculptTransformPie", "Sculpt", "T", "PRESS", "AllPie_MT_SculptTransformPie", False, False, False),
+    ("EnableSculptTransformPie", "Sculpt", "T", "PRESS", "ALLPIE_MT_SculptTransformPie", False, False, False),
     ("EnableSymmetryPie", "Sculpt", "S", "PRESS", "ALLPIE_MT_SymmetryPie", False, False, False),
     ("EnableMultiResPie", "Sculpt", "D", "PRESS", "ALLPIE_MT_MultiResPie", False, False, False),
     ("EnableShadingPie", "Sculpt", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
@@ -34,6 +34,9 @@ piekeymapitems = [
 
     # Object Mode Keybinds
     ("EnableObjectModeAddPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeAdd", True, False, False),
+    ("EnableObjectModeShadingPie", "Object Mode", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
+    ("EnableObjectModeToolSelectPie", "Object Mode", "T", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, False),
+    ("EnableObjectModeApplyTransformsPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeApplyTransforms", False, True, False),
 ]
 
 
@@ -331,6 +334,9 @@ class AllpieCustomAddonPref(AddonPreferences):
 
     # Bool Properties
     EnableObjectModeAddPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableObjectModeShadingPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableObjectModeToolSelectPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableObjectModeApplyTransformsPie: BoolProperty(default=True, update=update_pie_keymaps)
 
     def draw(self, context):
         wm = context.window_manager
@@ -583,8 +589,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                 )
 
             # Edit Mode Tool Select Pie Menu
-            # This uses the same EnableEditModeModelPie property as in the
-            # original file because that is how your current settings are structured.
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableEditModeToolSelectPie", text="Enable Edit Mode Tool Select Pie Menu",)
+
             if self.EnableEditModeToolSelectPie and kc:
                 row = body.row()
                 row.separator(factor=2)
@@ -752,11 +760,7 @@ class AllpieCustomAddonPref(AddonPreferences):
             # Object Mode Add Pie Menu
             row = body.row()
             row.separator(factor=2)
-            row.prop(
-                self,
-                "EnableObjectModeAddPie",
-                text="Enable Object Mode Add Pie Menu",
-            )
+            row.prop( self, "EnableObjectModeAddPie", text="Enable Object Mode Add Pie Menu",)
 
             if self.EnableObjectModeAddPie and kc:
                 draw_pie_keybind(
@@ -766,7 +770,50 @@ class AllpieCustomAddonPref(AddonPreferences):
                     "Object Mode",
                     "ALLPIE_MT_ObjectModeAdd",
                 )
+            # Object Mode Shading Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableObjectModeShadingPie", text="Enable Object Mode Shading Pie Menu",)
 
+            if self.EnableObjectModeShadingPie and kc:
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "Object Mode",
+                    "ALLPIE_MT_ShadingPie",
+                )
+            # Object Mode ToolSelect Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableObjectModeToolSelectPie", text="Enable Object Mode Tool Select Pie Menu",)
+
+            if self.EnableObjectModeToolSelectPie and kc:
+                row = body.row()
+                row.separator(factor=2)
+
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "Object Mode",
+                    "ALLPIE_MT_EditModeToolSelectPie",
+                )
+            # Object Mode Apply Transform Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableObjectModeApplyTransformsPie", text="Enable Object Mode Apply Transforms Pie Menu",)
+            if self.EnableObjectModeApplyTransformsPie and kc:
+                row = body.row()
+                row.separator(factor=2)
+
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "Object Mode",
+                    "ALLPIE_MT_ObjectModeApplyTransforms",
+                )
 
 classes = (
     AllPieKeybind,
