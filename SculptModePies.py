@@ -5,7 +5,8 @@ from . import AddonPreferences
 
 EssentialsLibraryPath = "brushes/essentials_brushes-mesh_sculpt.blend/Brush/"
 
-#Essential Brushes Menu
+
+# Essential Brushes Menu
 class AllPie_MT_EssentialsBrushPie(Menu):
     bl_idname = "ALLPIE_MT_EssentialsBrushPie"
     bl_label = "Essential Brushes"
@@ -20,7 +21,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Middle Left
         slot1 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_1",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot1,
         )  # Grab Brush
         slot1.asset_library_type = "ESSENTIALS"
@@ -31,7 +32,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Middle Right
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_2",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot2,
         )  # Clay Strips
         slot2.asset_library_type = "ESSENTIALS"
@@ -42,7 +43,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Bottom
         slot3 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_7",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot7,
         )  # Scrape Fill
         slot3.asset_library_type = "ESSENTIALS"
@@ -53,17 +54,17 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Top
         if prefs.EnableEssentialsNestedPieMenu == True:
             pie.operator(
-                "wm.call_menu_pie", text="Nested Menu", icon="EVENT_NDOF_BUTTON_8"
+                "wm.call_menu_pie", text="Nested Menu", icon="REC"
             ).name = "ALLPIE_MT_EssentialsNestedBrushPie"  # NestPie
         else:
             pie.operator(
-                "wm.call_asset_shelf_popover", icon="EVENT_NDOF_BUTTON_8"
+                "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
             ).name = "VIEW3D_AST_brush_sculpt"  # AssetShelf
 
         # Top Left
         slot4 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_3",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot3,
         )  # Pinch
         slot4.asset_library_type = "ESSENTIALS"
@@ -74,7 +75,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Top Rightt
         slot5 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_4",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot4,
         )  # Draw Sharp
         slot5.asset_library_type = "ESSENTIALS"
@@ -85,7 +86,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Bottom Left
         slot6 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot5,
         )  # Inflate
         slot6.asset_library_type = "ESSENTIALS"
@@ -96,7 +97,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         # Bottom Right
         slot7 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_6",
+            icon="REC",
             text=prefs.EssentialPieBrush_Slot6,
         )  # Draw
         slot7.asset_library_type = "ESSENTIALS"
@@ -105,7 +106,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         )
 
 
-#Essential Brushes Nested Menu
+# Essential Brushes Nested Menu
 class AllPie_MT_EssentialsNestedBrushPie(Menu):
     bl_idname = "ALLPIE_MT_EssentialsNestedBrushPie"
     bl_label = "Essential Brushes Nested"
@@ -120,7 +121,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Middle Left
         slot1 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_1",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot1,
         )  # Grab Brush
         slot1.asset_library_type = "ESSENTIALS"
@@ -131,7 +132,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Middle Right
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_2",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot2,
         )  # Clay Strips
         slot2.asset_library_type = "ESSENTIALS"
@@ -142,7 +143,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Bottom
         slot3 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_7",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot7,
         )  # Scrape Fill
         slot3.asset_library_type = "ESSENTIALS"
@@ -152,13 +153,13 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
 
         # Top
         pie.operator(
-            "wm.call_asset_shelf_popover", icon="EVENT_NDOF_BUTTON_8"
+            "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
         ).name = "VIEW3D_AST_brush_sculpt"  # AssetShelf
 
         # Top Left
         slot4 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_3",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot3,
         )  # Pinch
         slot4.asset_library_type = "ESSENTIALS"
@@ -169,7 +170,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Top Rightt
         slot5 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_4",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot4,
         )  # Draw Sharp
         slot5.asset_library_type = "ESSENTIALS"
@@ -180,7 +181,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Bottom Left
         slot6 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot5,
         )  # Inflate
         slot6.asset_library_type = "ESSENTIALS"
@@ -191,7 +192,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         # Bottom Right
         slot7 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_6",
+            icon="REC",
             text=prefs.EssentialPieBrushNested_Slot6,
         )  # Draw
         slot7.asset_library_type = "ESSENTIALS"
@@ -199,7 +200,8 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot6
         )
 
-#Symmetry Menu
+
+# Symmetry Menu
 class AllPie_MT_SymmetryPie(Menu):
     bl_idname = "ALLPIE_MT_SymmetryPie"
     bl_label = "Symmetry Pie"
@@ -240,7 +242,8 @@ class AllPie_MT_SymmetryPie(Menu):
                 "cop.symdirection", text="+Z to -Z", icon="MOD_MIRROR"
             ).direction = "POSITIVE_Z"
 
-#Remesh Menu
+
+# Remesh Menu
 class AllPie_MT_RemeshPie(Menu):
     bl_idname = "ALLPIE_MT_RemeshPie"
     bl_label = "Remesh Pie"
@@ -280,7 +283,8 @@ class AllPie_MT_RemeshPie(Menu):
                 "cop.cremesh", text="Voxel Size -10%", icon="MESH_GRID"
             ).DecreaseVoxelSize10 = True
 
-#Shading Menu
+
+# Shading Menu
 class AllPie_MT_ShadingPie(Menu):
     bl_idname = "ALLPIE_MT_ShadingPie"
     bl_label = "Shading Pie"
@@ -322,7 +326,8 @@ class AllPie_MT_ShadingPie(Menu):
             "cop.cshading", text="Flat ", icon="MATSPHERE"
         ).SetShadingLight = "FLAT"
 
-#Multires Menu
+
+# Multires Menu
 class AllPie_MT_MultiResPie(Menu):
     bl_idname = "ALLPIE_MT_MultiResPie"
     bl_label = "Multies Pie"
@@ -364,7 +369,8 @@ class AllPie_MT_MultiResPie(Menu):
             "cop.cmultirespie", text="MaxSculpt Level", icon="MOD_MULTIRES"
         ).MaxSculptLevel = True
 
-#Sculpt Paint Menu
+
+# Sculpt Paint Menu
 PaintBrushes = {
     "b1": "Airbrush",
     "b2": "Blend Hard",
@@ -391,50 +397,49 @@ class AllPie_MT_SculptPaintPie(Menu):
 
         # Left
         slot1 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_1", text=PaintBrushes["b6"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b6"]
         )
         slot1.asset_library_type = "ESSENTIALS"
         slot1.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b6"]
         # Right
         slot2 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_2", text=PaintBrushes["b8"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b8"]
         )
         slot2.asset_library_type = "ESSENTIALS"
         slot2.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b8"]
+        # Bottom
+        pie.operator("cop.color_selector_popup", icon="COLOR", text="Color Picker")
         # Top
         pie.operator(
-            "cop.color_selector_popup", icon="EVENT_NDOF_BUTTON_7", text="Color Picker"
-        )
-        # Bottom
-        pie.operator(
-            "wm.call_asset_shelf_popover", icon="EVENT_NDOF_BUTTON_8"
+            "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
         ).name = "VIEW3D_AST_brush_sculpt"
         # Top Left
         slot3 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_3", text=PaintBrushes["b7"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b7"]
         )
         slot3.asset_library_type = "ESSENTIALS"
         slot3.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b7"]
         # Top Right
         slot4 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_4", text=PaintBrushes["b9"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b9"]
         )
         slot4.asset_library_type = "ESSENTIALS"
         slot4.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b9"]
         # Bottom Left
         slot5 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_5", text=PaintBrushes["b4"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b4"]
         )
         slot5.asset_library_type = "ESSENTIALS"
         slot5.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b4"]
         # Bottom Right
         slot6 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_6", text=PaintBrushes["b10"]
+            "brush.asset_activate", icon="REC", text=PaintBrushes["b10"]
         )
         slot6.asset_library_type = "ESSENTIALS"
         slot6.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b10"]
 
-#Utility Brushes Menu
+
+# Utility Brushes Menu
 class AllPie_MT_UtilBrushPie(Menu):
     bl_idname = "ALLPIE_MT_UtilBrushPie"
     bl_label = "Utility Brushes Pie"
@@ -444,43 +449,43 @@ class AllPie_MT_UtilBrushPie(Menu):
         pie = layout.menu_pie()
         # Left
         slot1 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_1", text="FaceSet Brush"
+            "brush.asset_activate", icon="REC", text="FaceSet Brush"
         )
         slot1.asset_library_type = "ESSENTIALS"
         slot1.relative_asset_identifier = EssentialsLibraryPath + "Face Set Paint"
         # Right
         slot2 = pie.operator(
-            "brush.asset_activate", icon="EVENT_NDOF_BUTTON_2", text="Mask Brush"
+            "brush.asset_activate", icon="REC", text="Mask Brush"
         )
         slot2.asset_library_type = "ESSENTIALS"
         slot2.relative_asset_identifier = EssentialsLibraryPath + "Mask"
         # Bottom
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_7", text="Lasso Trim"
+            "wm.tool_set_by_id", icon="REC", text="Lasso Trim"
         ).name = "builtin.lasso_trim"
         # Top
         pie.operator(
-            "wm.call_menu_pie", icon="EVENT_NDOF_BUTTON_8", text="Nested Menu"
+            "wm.call_menu_pie", icon="REC", text="Nested Menu"
         ).name = "ALLPIE_MT_UtilBrushNestedPie"
         # Top Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_3", text="FaceSet Lasso"
+            "wm.tool_set_by_id", icon="REC", text="FaceSet Lasso"
         ).name = "builtin.lasso_face_set"
         # Top Right
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_4", text="Mask Lasso"
+            "wm.tool_set_by_id", icon="REC", text="Mask Lasso"
         ).name = "builtin.lasso_mask"
         # Bottom Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_5", text="FaceSet Polyline"
+            "wm.tool_set_by_id", icon="REC", text="FaceSet Polyline"
         ).name = "builtin.polyline_face_set"
         # Bottom Right
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_6", text="Mask Polyline"
+            "wm.tool_set_by_id", icon="REC", text="Mask Polyline"
         ).name = "builtin.polyline_mask"
 
 
-#Utility Brushes Nested Menu
+# Utility Brushes Nested Menu
 class AllPie_MT_UtilBrushNestedPie(Menu):
     bl_idname = "ALLPIE_MT_UtilBrushNestedPie"
     bl_label = "UtilBrush NestedPie"
@@ -491,47 +496,48 @@ class AllPie_MT_UtilBrushNestedPie(Menu):
         # Left
         pie.operator(
             "sculpt.face_sets_create",
-            icon="EVENT_NDOF_BUTTON_1",
+            icon="REC",
             text="FaceSet From Mask",
         ).mode = "MASKED"
         # Right
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_2", text="Mesh Filter"
+            "wm.tool_set_by_id", icon="REC", text="Mesh Filter"
         ).name = "builtin.mesh_filter"
         # Bottom
         pie.operator(
-            "sculpt.paint_mask_extract", icon="EVENT_NDOF_BUTTON_8", text="Mask Extract"
+            "sculpt.paint_mask_extract", icon="REC", text="Mask Extract"
         )
         # Top
         pie.operator(
             "sculpt.face_set_extract",
-            icon="EVENT_NDOF_BUTTON_7",
+            icon="REC",
             text="FaceSet Extract",
         )
         # Top Left
         pie.operator(
             "sculpt.face_sets_create",
-            icon="EVENT_NDOF_BUTTON_3",
+            icon="REC",
             text="FaceSet From EditMode",
         ).mode = "SELECTION"
         # Top Right
         pie.operator(
-            "sculpt.paint_mask_slice", icon="EVENT_NDOF_BUTTON_4", text="Mask Slice"
+            "sculpt.paint_mask_slice", icon="REC", text="Mask Slice"
         ).new_object = False
         # Bottom Left
         pie.operator(
             "sculpt.face_sets_create",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text="FaceSet From Visible",
         ).mode = "VISIBLE"
         # Bottom Right
         pie.operator(
             "sculpt.paint_mask_slice",
-            icon="EVENT_NDOF_BUTTON_6",
+            icon="REC",
             text="Mask Slice New Obj",
         )
 
-#Transform Menu
+
+# Transform Menu
 class AllPie_MT_SculptTransformPie(Menu):
     bl_idname = "ALLPIE_MT_SculptTransformPie"
     bl_label = "SculptTransform Pie"
@@ -541,38 +547,39 @@ class AllPie_MT_SculptTransformPie(Menu):
         pie = layout.menu_pie()
         # Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_1", text="Move"
+            "wm.tool_set_by_id", icon="TRANSFORM_ORIGINS", text="Move"
         ).name = "builtin.move"
         # Right
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_2", text="transform"
+            "wm.tool_set_by_id", icon="REC", text="transform"
         ).name = "builtin.transform"
         # Bottom
         pie.operator(
-            "sculpt.set_pivot_position", icon="EVENT_NDOF_BUTTON_7", text="Set Pivot"
+            "sculpt.set_pivot_position", icon="REC", text="Set Pivot"
         ).mode = "SURFACE"
         # Top
         pie.operator(
-            "sculpt.set_pivot_position", icon="EVENT_NDOF_BUTTON_8", text="Reset Pivot"
+            "sculpt.set_pivot_position", icon="REC", text="Reset Pivot"
         ).mode = "ORIGIN"
         # Top Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_3", text="Scale"
+            "wm.tool_set_by_id", icon="FULLSCREEN_ENTER", text="Scale"
         ).name = "builtin.scale"
         # Top Right
         pie.operator(
-            "sculpt.mesh_filter", icon="EVENT_NDOF_BUTTON_4", text="MeshFilter Scale"
+            "sculpt.mesh_filter", icon="REC", text="MeshFilter Scale"
         ).type = "SCALE"
-        #Bottom Left
+        # Bottom Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_5", text="Rotate"
+            "wm.tool_set_by_id", icon="GESTURE_ROTATE", text="Rotate"
         ).name = "builtin.rotate"
-        #Bottom Right
+        # Bottom Right
         pie.operator(
-            "sculpt.mesh_filter", icon="EVENT_NDOF_BUTTON_6", text="MeshFilter Inflate"
+            "sculpt.mesh_filter", icon="REC", text="MeshFilter Inflate"
         ).type = "INFLATE"
 
-#Brush Settings Pie
+
+# Brush Settings Pie
 class AllPie_MT_SculptBrushSettingsPie(Menu):
     bl_idname = "ALLPIE_MT_SculptBrushSettingsPie"
     bl_label = "SculptBrushSettings Pie"
@@ -583,40 +590,43 @@ class AllPie_MT_SculptBrushSettingsPie(Menu):
         scene = context.scene
         # Left
         pie.operator(
-            "wm.call_panel", text="Brush Stroke Menu", icon="BRUSH_DATA"
+            "wm.call_panel", text="Brush Stroke Menu", icon="REC"
         ).name = "VIEW3D_PT_tools_brush_stroke"
         # Right
         pie.operator(
-            "cop.toggle_auto_masking", text="Toggle Stabalize Stroke", icon="MOD_MASK"
+            "cop.toggle_auto_masking",
+            text="Toggle Stabalize Stroke",
+            icon="REC",
         ).ToggleStabalizeStrokeOnActiveBrush = True
         # bottom
         pie.operator(
-            "cop.toggle_auto_masking", text="AutoMasking Topology", icon="MOD_MASK"
+            "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
         ).ToggleAutoMaskingTopology = True
         # top
         pie.operator(
-            "wm.call_panel", text="Brush Menu", icon="BRUSH_DATA"
+            "wm.call_panel", text="Brush Menu", icon="REC"
         ).name = "VIEW3D_PT_tools_brush_settings_advanced"
         # Top Left
         pie.operator(
-            "wm.call_panel", text="Brush Falloff Menu", icon="BRUSH_DATA"
+            "wm.call_panel", text="Brush Falloff Menu", icon="REC"
         ).name = "VIEW3D_PT_tools_brush_falloff"
         # Top Right
         pie.operator(
-            "wm.call_panel", text="Brush Texture Menu", icon="BRUSH_DATA"
+            "wm.call_panel", text="Brush Texture Menu", icon="REC"
         ).name = "VIEW3D_PT_tools_brush_texture"
         # Bottom Left
         pie.operator(
             "cop.toggle_auto_masking",
             text="AutoMasking Cavity Inverted",
-            icon="MOD_MASK",
+            icon="REC",
         ).ToggleAutoMaskingCavityInverted = True
         # Bottom Right
         pie.operator(
-            "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="MOD_MASK"
+            "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="REC"
         ).ToggleAutoMaskingCavity = True
 
-#CustomBrushes Pie
+
+# CustomBrushes Pie
 class AllPie_MT_CustomBrushPie(Menu):
     bl_idname = "ALLPIE_MT_CustomBrushPie"
     bl_label = "Custom Brushes Pie"
@@ -631,7 +641,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Middle Left
         slot1 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_1",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot1,
         )
 
@@ -642,7 +652,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Middle Right
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_2",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot2,
         )
 
@@ -653,7 +663,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Bottom
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_7",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot7,
         )
 
@@ -663,12 +673,12 @@ class AllPie_MT_CustomBrushPie(Menu):
 
         # Top
         pie.operator(
-            "wm.call_asset_shelf_popover", icon="EVENT_NDOF_BUTTON_8"
+            "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
         ).name = "VIEW3D_AST_brush_sculpt"  # AssetShelf
         # Top Left
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_3",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot3,
         )
 
@@ -679,7 +689,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Top Rightt
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_4",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot4,
         )
 
@@ -690,7 +700,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Bottom Left
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot5,
         )
 
@@ -701,7 +711,7 @@ class AllPie_MT_CustomBrushPie(Menu):
         # Bottom Right
         slot2 = pie.operator(
             "brush.asset_activate",
-            icon="EVENT_NDOF_BUTTON_6",
+            icon="REC",
             text=prefs.CustomPieBrush_Slot6,
         )
 
@@ -709,7 +719,8 @@ class AllPie_MT_CustomBrushPie(Menu):
         slot2.asset_library_identifier = prefs.CustomLib_Slot6
         slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot6}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot6}"
 
-#Visibility Menu
+
+# Visibility Menu
 class AllPie_MT_SculptVisibilityPie(Menu):
     bl_idname = "ALLPIE_MT_SculptVisibilityPie"
     bl_label = "Sculpt Visibility Pie"
@@ -720,41 +731,41 @@ class AllPie_MT_SculptVisibilityPie(Menu):
         # Left
         pie.operator(
             "paint.visibility_invert",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text="Invert Visibility",
         )
         # Right
         pie.operator(
             "sculpt.face_set_change_visibility",
-            icon="EVENT_NDOF_BUTTON_6",
+            icon="REC",
             text="Hide Faceset",
         ).mode = "HIDE_ACTIVE"
         # Bottom
         pie.operator(
-            "paint.hide_show_all", icon="EVENT_NDOF_BUTTON_7", text="UnHide All"
+            "paint.hide_show_all", icon="HIDE_OFF", text="UnHide All"
         ).action = "SHOW"
         # Top
         pie.operator(
-            "wm.call_panel", icon="EVENT_NDOF_BUTTON_8", text="Sculpt Mode Overlay"
+            "wm.call_panel", icon="SCULPTMODE_HLT", text="Sculpt Mode Overlay"
         ).name = "VIEW3D_PT_overlay_sculpt"
         # Top Left
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_3", text="Hide Polyline"
+            "wm.tool_set_by_id", icon="REC", text="Hide Polyline"
         ).name = "builtin.polyline_hide"
         # Top Right
         pie.operator(
-            "wm.tool_set_by_id", icon="EVENT_NDOF_BUTTON_4", text="Hide Lasso"
+            "wm.tool_set_by_id", icon="REC", text="Hide Lasso"
         ).name = "builtin.lasso_hide"
         # Bottom Left
         pie.operator(
             "paint.hide_show_masked",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text="Hide Masked",
         ).action = "HIDE"
         # Bottom Right
         pie.operator(
             "sculpt.face_set_change_visibility",
-            icon="EVENT_NDOF_BUTTON_5",
+            icon="REC",
             text="Solo Faceset",
         ).mode = "TOGGLE"
 
