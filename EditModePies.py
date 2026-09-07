@@ -70,7 +70,7 @@ class AllPie_MT_EditModeDeletionPie(Menu):
         # Top Right
         pie.operator("mesh.delete", icon="FACESEL", text="Face Delete").type = "FACE"
         # Bottom Left
-        pie.operator("mesh.dissolve_verts", icon="VERTEXSEL", text="Vert Dissolve")
+        pie.operator("mesh.dissolve_verts", icon="VERTEXSEL", text="Vertices Dissolve")
         # Bottom Right
         pie.operator("mesh.dissolve_faces", icon="FACESEL", text="Face Dissolve")
 
@@ -107,8 +107,8 @@ class AllPie_MT_EditModeModelPie(Menu):
         pie.operator("mesh.separate", icon="MOD_EDGESPLIT", text="Separate Menu")
         # # Right
         pie.operator(
-            "wm.call_menu_pie", icon="MODIFIER", text="Modifer Pie"
-        ).name = "ALLPIE_MT_EditModeModifierPie"
+            "wm.call_menu_pie", icon="AUTOMERGE_OFF", text="Merge Pie"
+        ).name = "ALLPIE_MT_EditModeMergePie"
         # Bottom
         pie.operator_context = "INVOKE_REGION_WIN"
         pie.operator("screen.redo_last", icon="RECOVER_LAST", text="Redo Menu")
@@ -126,12 +126,12 @@ class AllPie_MT_EditModeModelPie(Menu):
         ).name = "ALLPIE_MT_EditModeFacePie"
         # Bottom Left
         pie.operator(
-            "wm.call_menu_pie", icon="UV", text="UV Unwrap Pie"
-        ).name = "ALLPIE_MT_EditModeUVPie"
+            "wm.call_menu_pie", icon="MODIFIER", text="Modifer Pie"
+        ).name = "ALLPIE_MT_EditModeModifierPie"
         # Bottom Right
         pie.operator(
-            "wm.call_menu_pie", icon="AUTOMERGE_OFF", text="Merge Pie"
-        ).name = "ALLPIE_MT_EditModeMergePie"
+            "wm.call_menu_pie", icon="UV", text="UV Unwrap Pie"
+        ).name = "ALLPIE_MT_EditModeUVPie"
 
 
 class AllPie_MT_EditModeVertexPie(Menu):
@@ -210,13 +210,13 @@ class AllPie_MT_EditModeEdgeNestedPie(Menu):
             "wm.call_menu", icon="EDGESEL", text="Edges Menu"
         ).name = "VIEW3D_MT_edit_mesh_edges"
         # Top Left
-        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seem").clear = True
-        # Top Right
-        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seem")
-        # Bottom Left
         pie.operator("mesh.mark_sharp", icon="EDGESEL", text="Clear Sharp").clear = True
-        # Bottom Right
+        # Top Right
         pie.operator("mesh.mark_sharp", icon="EDGE_SHARP", text="Mark Sharp")
+        # Bottom Left
+        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seem").clear = True
+        # Bottom Right
+        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seem")
 
 
 class AllPie_MT_EditModeFacePie(Menu):
@@ -261,8 +261,8 @@ class AllPie_MT_EditModeToolSelectPie(Menu):
         ).name = "builtin.move"
         # Right
         pie.operator(
-            "wm.tool_set_by_id", icon="CENTER_ONLY", text="Vertex Slide Tool"
-        ).name = "builtin.vertex_slide"
+            "wm.tool_set_by_id", icon="SELECT_SET", text="Box Select"
+        ).name = "builtin.select_box"
         # Bottom
         pie.operator(
             "wm.tool_set_by_id", icon="ACTION_TWEAK", text="Tweak Tool"
