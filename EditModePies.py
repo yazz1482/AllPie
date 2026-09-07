@@ -364,15 +364,13 @@ class AllPie_MT_EditModeUVPie(Menu):
         # # Left
         pie.operator(
             "uv.unwrap", icon="MOD_UVPROJECT", text="Unwrap Conformal"
-        ).method = "ANGLE_BASED"
-        # # Right
-        pie.operator(
-            "uv.unwrap", icon="MOD_UVPROJECT", text="Unwrap Minimum Stretch"
         ).method = "CONFORMAL"
-        # Bottom
+        # # Right
         pie.operator(
             "uv.unwrap", icon="UV", text="Unwrap Minimum Stretch"
         ).method = "MINIMUM_STRETCH"
+        # Bottom
+        pie.operator("screen.redo_last", icon="RECOVER_LAST", text="Redo Menu")
         # Top
         pie.operator(
             "wm.call_menu", icon="UV", text="UV Menu"
