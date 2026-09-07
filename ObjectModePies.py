@@ -28,8 +28,50 @@ class AllPie_MT_ObjectModeAdd(Menu):
         #Bottom Right
         pie.operator("mesh.primitive_uv_sphere_add", text="Add UV Sphere", icon="MESH_UVSPHERE")
 
+class AllPie_MT_ObjectModeApplyTransforms(Menu):
+    bl_idname = "ALLPIE_MT_ObjectModeApplyTransforms"
+    bl_label = "Apply Transforms"
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+
+        #Left
+        transform_apply = pie.operator("object.transform_apply", text="Rotation & Scale", icon="REC")
+        transform_apply.location = False
+        transform_apply.rotation = True
+        transform_apply.scale = True
+        #Right
+        transform_apply = pie.operator("object.transform_apply", text="All Transforms", icon="REC")
+        transform_apply.location = True
+        transform_apply.rotation = True
+        transform_apply.scale = True
+        #Bottom
+        transform_apply = pie.operator("object.transform_apply", text="Rotation & Scale", icon="REC")
+        transform_apply.location = False
+        transform_apply.rotation = True
+        transform_apply.scale = False
+        #Top
+        pie.operator("wm.call_menu", text="Apply Transforms Menu", icon="COLLAPSEMENU").name = "VIEW3D_MT_object_apply"
+        #Top Left
+        pie.separator()
+        #Top Right
+        pie.separator()
+        #Bottom Left
+        transform_apply = pie.operator("object.transform_apply", text="Location", icon="REC")
+        transform_apply.location = True
+        transform_apply.rotation = False
+        transform_apply.scale = False
+        #Bottom Right
+        transform_apply = pie.operator("object.transform_apply", text="Scale", icon="REC")
+        transform_apply.location = False
+        transform_apply.rotation = False
+        transform_apply.scale = True
+
 classes = (
     AllPie_MT_ObjectModeAdd,
+    AllPie_MT_ObjectModeApplyTransforms,
         )
 
 def register():
