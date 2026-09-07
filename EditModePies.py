@@ -105,7 +105,6 @@ class AllPie_MT_EditModeMergePie(Menu):
             pie.operator('mesh.merge', text="At First", icon='TRACKING_REFINE_BACKWARDS').type = 'FIRST'
             #Bottom Right
             pie.operator('mesh.merge', text="At Last", icon='TRACKING_REFINE_FORWARDS').type = 'LAST'
-            pie.separator()
         except:
             op.type = 'CENTER'
 
@@ -216,7 +215,7 @@ class AllPie_MT_EditModeEdgeNestedPie(Menu):
 
         pie = layout.menu_pie()
         # Left
-        pie.operator("transform.edge_bevelweight", icon="EDGE_BEVEL", text="Edge Bevel")
+        pie.operator("transform.edge_bevelweight", icon="EDGE_BEVEL", text="Edge Bevel Weight")
         # Right
         pie.operator("transform.edge_crease", icon="EDGE_CREASE", text="Edge Crease")
         # Bottom
