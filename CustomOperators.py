@@ -412,7 +412,8 @@ class AllPie_OT_ToggleAutoMasking(Operator):
 
 # Edit Mode Operators
 
-class AllPie_OT_ToggleAutoMerge(bpy.types.Operator):
+
+class AllPie_OT_ToggleAutoMerge(Operator):
     bl_idname = "cop.toggle_auto_merge"
     bl_label = "Toggle Auto Merge"
 

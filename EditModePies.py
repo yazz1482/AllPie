@@ -88,26 +88,33 @@ class AllPie_MT_EditModeMergePie(Menu):
             "mesh.merge", icon="AUTOMERGE_OFF", text="At Cursor"
         ).type = "CURSOR"
         # Right
-        pie.operator( "mesh.remove_doubles", icon="AUTOMERGE_OFF", text="Merge By Disatance")
+        pie.operator(
+            "mesh.remove_doubles", icon="AUTOMERGE_OFF", text="Merge By Disatance"
+        )
         # Bottom
-        op = pie.operator('mesh.merge', text="At Center", icon='FULLSCREEN_EXIT')
-        op.type = 'CENTER'
-        #Top
-        pie.operator( "cop.toggle_auto_merge", icon="AUTOMERGE_ON", text="Toggle Auto Merge")
-        #Top Left
+        op = pie.operator("mesh.merge", text="At Center", icon="FULLSCREEN_EXIT")
+        op.type = "CENTER"
+        # Top
+        pie.operator(
+            "cop.toggle_auto_merge", icon="AUTOMERGE_ON", text="Toggle Auto Merge"
+        )
+        # Top Left
         pie.separator()
-        #Top Right
+        # Top Right
         pie.separator()
         try:
             # This will raise an error if the option isn't available.
-            op.type = 'CENTER'
-            #Bottom Left
-            pie.operator('mesh.merge', text="At First", icon='TRACKING_REFINE_BACKWARDS').type = 'FIRST'
-            #Bottom Right
-            pie.operator('mesh.merge', text="At Last", icon='TRACKING_REFINE_FORWARDS').type = 'LAST'
+            op.type = "CENTER"
+            # Bottom Left
+            pie.operator(
+                "mesh.merge", text="At First", icon="TRACKING_REFINE_BACKWARDS"
+            ).type = "FIRST"
+            # Bottom Right
+            pie.operator(
+                "mesh.merge", text="At Last", icon="TRACKING_REFINE_FORWARDS"
+            ).type = "LAST"
         except:
-            op.type = 'CENTER'
-
+            op.type = "CENTER"
 
 
 class AllPie_MT_EditModeModelPie(Menu):
@@ -160,7 +167,9 @@ class AllPie_MT_EditModeVertexPie(Menu):
         # Left
         pie.operator("mesh.vert_connect_path", icon="VERTEXSEL", text="Join Vertices")
         # Right
-        pie.operator( "mesh.bevel", icon="MOD_BEVEL", text="Vertex Bevel").affect = "VERTICES"
+        pie.operator(
+            "mesh.bevel", icon="MOD_BEVEL", text="Vertex Bevel"
+        ).affect = "VERTICES"
 
         # Bottom
         pie.operator("screen.redo_last", icon="FILE_REFRESH", text="Redo Menu")
@@ -173,9 +182,13 @@ class AllPie_MT_EditModeVertexPie(Menu):
         # Top Right
         pie.operator("mesh.knife_tool", icon="SCULPTMODE_HLT", text="Knife Tool")
         # Bottom Left
-        pie.operator( "mesh.merge", icon="AUTOMERGE_OFF", text="Merge At Center").type = "CENTER"
+        pie.operator(
+            "mesh.merge", icon="AUTOMERGE_OFF", text="Merge At Center"
+        ).type = "CENTER"
         # Bottom Right
-        pie.operator( "mesh.extrude_vertices_move", icon="VERTEXSEL", text="Extrude Vertices")
+        pie.operator(
+            "mesh.extrude_vertices_move", icon="VERTEXSEL", text="Extrude Vertices"
+        )
 
 
 class AllPie_MT_EditModeEdgePie(Menu):
@@ -197,14 +210,16 @@ class AllPie_MT_EditModeEdgePie(Menu):
             "wm.call_menu_pie", icon="EDGESEL", text="Edge Mark Menu"
         ).name = "ALLPIE_MT_EditModeEdgeNestedPie"
         # Top Left
-        pie.operator("mesh.bridge_edge_loops", icon="MOD_OPACITY", text="Bridge EdgeLoops")
+        pie.operator(
+            "mesh.bridge_edge_loops", icon="MOD_OPACITY", text="Bridge EdgeLoops"
+        )
         # Top Right
         pie.operator("mesh.loopcut_slide", icon="SPLIT_VERTICAL", text="Loop Cut")
         # Bottom Left
         pie.operator("mesh.fill_grid", icon="MESH_GRID", text="Grid Fill")
         # Bottom Right
         pie.operator("mesh.extrude_edges_move", icon="EDGESEL", text="Extrude Edges")
-        
+
 
 class AllPie_MT_EditModeEdgeNestedPie(Menu):
     bl_idname = "ALLPIE_MT_EditModeEdgeNestedPie"
@@ -215,7 +230,9 @@ class AllPie_MT_EditModeEdgeNestedPie(Menu):
 
         pie = layout.menu_pie()
         # Left
-        pie.operator("transform.edge_bevelweight", icon="EDGE_BEVEL", text="Edge Bevel Weight")
+        pie.operator(
+            "transform.edge_bevelweight", icon="EDGE_BEVEL", text="Edge Bevel Weight"
+        )
         # Right
         pie.operator("transform.edge_crease", icon="EDGE_CREASE", text="Edge Crease")
         # Bottom
@@ -245,7 +262,11 @@ class AllPie_MT_EditModeFacePie(Menu):
         # Left
         pie.operator("mesh.inset", icon="FACESEL", text="Inset")
         # Right
-        pie.operator( "mesh.extrude_region_shrink_fatten", icon="FACESEL", text="Extrude Along Normals",)
+        pie.operator(
+            "mesh.extrude_region_shrink_fatten",
+            icon="FACESEL",
+            text="Extrude Along Normals",
+        )
         # Bottom
         pie.operator("screen.redo_last", icon="FILE_REFRESH", text="Redo Menu")
         # Top
@@ -255,9 +276,11 @@ class AllPie_MT_EditModeFacePie(Menu):
         # Top Left
         pie.operator("mesh.poke", icon="FACESEL", text="Poke")
         # Top Right
-        pie.operator( "mesh.extrude_faces_move", icon="FACESEL", text="Extrude Innvididual")
+        pie.operator(
+            "mesh.extrude_faces_move", icon="FACESEL", text="Extrude Innvididual"
+        )
         # Bottom Left
-        pie.operator( "mesh.solidify", icon="FACESEL", text=" Solidify")
+        pie.operator("mesh.solidify", icon="FACESEL", text=" Solidify")
         # Bottom Right
         pie.operator("mesh.extrude_region_move", icon="FACESEL", text="Extrude")
 
