@@ -371,32 +371,32 @@ class AllPie_OT_ToggleAutoMasking(Operator):
 
         if self.ToggleAutoMaskingTopology == True:
             currentautomasking = (
-                bpy.context.scene.tool_settings.sculpt.use_automasking_topology
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_topology
             )
             if currentautomasking == True:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_topology = False
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_topology = False
             else:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_topology = True
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_topology = True
             self.ToggleAutoMaskingTopology = False
 
         elif self.ToggleAutoMaskingCavity == True:
             currentautomasking = (
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity
             )
             if currentautomasking == True:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity = False
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity = False
             else:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity = True
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity = True
             self.ToggleAutoMaskingCavity = False
 
         elif self.ToggleAutoMaskingCavityInverted == True:
             currentautomasking = (
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity_inverted
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity_inverted
             )
             if currentautomasking == True:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity_inverted = False
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity_inverted = False
             else:
-                bpy.context.scene.tool_settings.sculpt.use_automasking_cavity_inverted = True
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_cavity_inverted = True
             self.ToggleAutoMaskingCavityInverted = False
 
         elif self.ToggleStabalizeStrokeOnActiveBrush == True:
