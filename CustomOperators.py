@@ -5,27 +5,74 @@ from bpy.props import FloatProperty
 from bpy.props import BoolProperty
 from bpy.props import IntProperty
 from bpy.props import EnumProperty
-from . import EditModePies
-
 
 class AllPie_OT_Symmetry(Operator):
-    bl_idname = "cop.symdirection"
-    bl_label = "Symmetrize"
+    bl_idname = "cop.symmetry"
+    bl_label = "Symmetry Pie"
 
-    direction: EnumProperty(
-        name="Direction",
+    action: EnumProperty(
+        name="Action",
         items=[
-            ("NEGATIVE_X", "-X to +X", ""),
-            ("POSITIVE_X", "+X to -X", ""),
-            ("NEGATIVE_Y", "-Y to +Y", ""),
-            ("POSITIVE_Y", "+Y to -Y", ""),
-            ("NEGATIVE_Z", "-Z to +Z", ""),
-            ("POSITIVE_Z", "+Z to -Z", ""),
+            ("Toggle_X", "Toggle_X", ""),
+            ("Toggle_Y", "Toggle_Y", ""),
+            ("Toggle_Z", "Toggle_Z", ""),
+            ("Flip_X", "Flip_X", ""),
+            ("Flip_Y", "Flip_Y", ""),
+            ("Flip_Z", "Flip_Z", ""),
         ],
     )
 
+    @classmethod
+    def poll(cls, context):
+        return (
+            context.object is not None
+            and context.object.type == 'MESH'
+            and context.mode == 'SCULPT'
+        )
+
     def execute(self, context):
-        context.scene.tool_settings.sculpt.symmetrize_direction = self.direction
+
+        currentmirrorx = context.object.data.use_mirror_x
+        currentmirrory = context.object.data.use_mirror_y
+        currentmirrorz = context.object.data.use_mirror_z
+        symmetrydirection = context.scene.tool_settings.sculpt.symmetrize_direction
+
+        if self.action == "Toggle_X":
+            if currentmirrorx == True:
+                context.object.data.use_mirror_x = False
+            else:
+                context.object.data.use_mirror_x = True
+
+        elif self.action == "Toggle_Y":
+            if currentmirrory == True:
+                context.object.data.use_mirror_y = False
+            else:
+                context.object.data.use_mirror_y = True
+   
+        elif self.action == "Toggle_Z":
+            if currentmirrorz == True:
+                context.object.data.use_mirror_z = False
+            else:
+                context.object.data.use_mirror_z = True
+
+        elif self.action == "Flip_X":
+            if symmetrydirection == "NEGATIVE_X":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_X"
+            else:
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_X"
+
+        elif self.action == "Flip_Y":
+            if symmetrydirection == "NEGATIVE_Y":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Y"
+            else:
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Y"
+
+        elif self.action == "Flip_Z":
+            if symmetrydirection == "NEGATIVE_Z":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Z"
+            else:
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Z"
+
         return {"FINISHED"}
 
 
@@ -34,37 +81,43 @@ class AllPie_OT_Remesh(Operator):
     bl_label = "Remesh Operator"
     bl_options = {"REGISTER", "UNDO_GROUPED"}
 
-    ResetVoxelSize: BoolProperty(default=False)
-    IncreaseVoxelSize25: BoolProperty(default=False)
-    DecreaseVoxelSize25: BoolProperty(default=False)
-    IncreaseVoxelSize10: BoolProperty(default=False)
-    DecreaseVoxelSize10: BoolProperty(default=False)
+    action: EnumProperty(
+        name="Action",
+        items=[
+            ("IncreaseVoxelSize10", "IncreaseVoxelSize10", ""),
+            ("IncreaseVoxelSize25", "IncreaseVoxelSize25", ""),
+            ("DecreaseVoxelSize25", "DecreaseVoxelSize25", ""),
+            ("DecreaseVoxelSize10", "DecreaseVoxelSize10", ""),
+        ],
+    )
 
     def execute(self, context):
-        CurrentVoxelSize = round(bpy.context.object.data.remesh_voxel_size, 3)
+        obj = context.object
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
 
-        if self.DecreaseVoxelSize10 == True:
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
+
+        CurrentVoxelSize = round(obj.data.remesh_voxel_size, 3)
+
+        if self.action == "DecreaseVoxelSize10":
             DecreasedVoxelSize = round(CurrentVoxelSize * 0.9, 3)
             bpy.context.object.data.remesh_voxel_size = DecreasedVoxelSize
-            self.DecreaseVoxelSize10 = False
 
-        elif self.DecreaseVoxelSize25 == True:
+        elif self.action == "DecreaseVoxelSize25":
             DecreasedVoxelSize = round(CurrentVoxelSize * 0.75, 3)
             bpy.context.object.data.remesh_voxel_size = DecreasedVoxelSize
-            self.DecreaseVoxelSize25 = False
 
-        elif self.IncreaseVoxelSize10 == True:
+        elif self.action == "IncreaseVoxelSize10":
             IncreasedVoxelSize = round(CurrentVoxelSize * 1.1, 3)
             bpy.context.object.data.remesh_voxel_size = IncreasedVoxelSize
-            self.IncreaseVoxelSize10 = False
 
-        elif self.IncreaseVoxelSize25 == True:
+        elif self.action == "IncreaseVoxelSize25":
             IncreasedVoxelSize = round(CurrentVoxelSize * 1.25, 3)
             bpy.context.object.data.remesh_voxel_size = IncreasedVoxelSize
-            self.IncreaseVoxelSize25 = False
-
-        else:
-            bpy.context.object.data.remesh_voxel_size = CurrentVoxelSize
 
         return {"FINISHED"}
 
@@ -97,65 +150,91 @@ class AllPie_OT_Shading(Operator):
         bpy.context.space_data.shading.light = self.SetShadingLight
         return {"FINISHED"}
 
-
 class AllPie_OT_MultiRes(Operator):
     bl_idname = "cop.cmultirespie"
     bl_label = "MultiRes Pie"
     bl_options = {"REGISTER", "UNDO_GROUPED"}
 
-    MultiresSubdivide: BoolProperty(default=False)
-    IncreaseSculptLevel: BoolProperty(default=False)
-    DecreaseSculptLevel: BoolProperty(default=False)
-    SculptLevelToViewport: BoolProperty(default=False)
-    SculptLevelToRender: BoolProperty(default=False)
-    DeleteHigher: BoolProperty(default=False)
-    ApplyToBase: BoolProperty(default=False)
-    MaxSculptLevel: BoolProperty(default=False)
+    action: EnumProperty(
+        name="Action",
+        items=[
+            ("MultiresSubdivide", "MultiresSubdivide", ""),
+            ("IncreaseSculptLevel", "IncreaseSculptLevel", ""),
+            ("DecreaseSculptLevel", "DecreaseSculptLevel", ""),
+            ("SculptLevelToViewport", "SculptLevelToViewport", ""),
+            ("SculptLevelToRender", "SculptLevelToRender", ""),
+            ("DeleteHigher", "DeleteHigher", ""),
+            ("ConformToBase", "ApplyToBase", ""),
+            ("MaxSculptLevel", "MaxSculptLevel", ""),
+        ],
+    )
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.object
+
+        return (
+            obj is not None
+            and obj.type == 'MESH'
+            and "Multires" in obj.modifiers
+        )
 
     def execute(self, context):
+        obj = context.object
 
-        obj = bpy.context.object
-        if "Multires" in obj.modifiers:
-            if self.MultiresSubdivide == True:
-                bpy.ops.object.multires_subdivide(
-                    modifier="Multires", mode="CATMULL_CLARK"
-                )
-                self.MultiresSubdivide = False
+        # Safety checks
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
 
-            CurrentSculptLevel = bpy.context.object.modifiers["Multires"].sculpt_levels
-            if self.IncreaseSculptLevel == True:
-                bpy.context.object.modifiers["Multires"].sculpt_levels = (
-                    CurrentSculptLevel + 1
-                )
-                self.IncreaseSculptLevel = False
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
 
-            elif self.DecreaseSculptLevel == True:
-                bpy.context.object.modifiers["Multires"].sculpt_levels = (
-                    CurrentSculptLevel - 1
-                )
-                self.DecreaseSculptLevel = False
+        multires = obj.modifiers.get("Multires")
 
-            elif self.SculptLevelToViewport == True:
-                bpy.context.object.modifiers["Multires"].levels = CurrentSculptLevel
-                self.SculptLevelToViewport = False
+        if multires is None:
+            self.report({"WARNING"}, "Active object has no Multires modifier")
+            return {"CANCELLED"}
 
-            elif self.SculptLevelToRender == True:
-                bpy.context.object.modifiers[
-                    "Multires"
-                ].render_levels = CurrentSculptLevel
-                self.SculptLevelToRender = False
+        current_sculpt_level = multires.sculpt_levels
 
-            elif self.DeleteHigher == True:
-                bpy.ops.object.multires_higher_levels_delete(modifier="Multires")
-                self.DeleteHiger = False
+        if self.action == "MultiresSubdivide":
+            bpy.ops.object.multires_subdivide(
+                modifier="Multires",
+                mode="CATMULL_CLARK",
+            )
 
-            elif self.ApplyToBase == True:
-                bpy.ops.object.multires_base_apply(modifier="Multires")
+        elif self.action == "IncreaseSculptLevel":
+            if current_sculpt_level < multires.total_levels:
+                multires.sculpt_levels = current_sculpt_level + 1
 
-            elif self.MaxSculptLevel == True:
-                bpy.context.object.modifiers["Multires"].sculpt_levels = 20
+        elif self.action == "DecreaseSculptLevel":
+            if current_sculpt_level > 0:
+                multires.sculpt_levels = current_sculpt_level - 1
+
+        elif self.action == "SculptLevelToViewport":
+            multires.levels = current_sculpt_level
+
+        elif self.action == "SculptLevelToRender":
+            multires.render_levels = current_sculpt_level
+
+        elif self.action == "DeleteHigher":
+            bpy.ops.object.multires_higher_levels_delete(
+                modifier="Multires"
+            )
+
+        elif self.action == "ConformToBase":
+            bpy.ops.object.multires_base_apply(
+                modifier="Multires",
+                apply_heuristic=False,
+            )
+
+        elif self.action == "MaxSculptLevel":
+            multires.sculpt_levels = multires.total_levels
 
         return {"FINISHED"}
+
 
 
 class AllPie_OT_ColorSelectorPopup(Operator):
@@ -169,7 +248,8 @@ class AllPie_OT_ColorSelectorPopup(Operator):
         layout = self.layout
 
         brush = bpy.context.scene.tool_settings.sculpt.unified_paint_settings
-        layout.template_color_picker(brush, "color", value_slider=True)
+        # layout.template_color_picker(brush, "color", value_slider=True)
+        layout.prop( brush, "color", text="")
         layout.operator("paint.brush_colors_flip", text="Swap Colors")
         layout.operator("palette.new", text="Add Palete")
         paint = context.tool_settings.sculpt
@@ -207,6 +287,15 @@ class AllPie_OT_CustomQuadriFlow(Operator):
         layout.prop(self, "EnableProject", text="Enable Project")
 
     def execute(self, context):
+
+        obj = context.object
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
+
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
 
         TargetFaceCount = self.TargetFaceCount
         UseMeshSymmetry = self.UseMeshSymmetry
@@ -293,8 +382,7 @@ ESSENTIALS_BRUSH_ITEMS = [
     ("THUMB", "Thumb", "Thumb brush"),
     ("TWIST", "Twist", "Twist brush"),
     ("DENSITY", "Density", "Density brush"),
-    (
-        "ERASE MULTIRES DISPLACEMENT",
+    ( "ERASE MULTIRES DISPLACEMENT",
         "Erase Multires Displacement",
         "Erase Multires Displacement brush",
     ),
@@ -422,34 +510,56 @@ class AllPie_OT_ToggleAutoMerge(Operator):
         ts.use_mesh_automerge = not ts.use_mesh_automerge
         return {"FINISHED"}
 
+class AllPie_OT_OriginSet(Operator):
+    bl_idname = "cop.originset"
+    bl_label = "Set Origin"
 
-class AllPie_OT_EditModeContextPie(Operator):
-    bl_idname = "cop.editmode_context_pie"
-    bl_label = "Edit Mode Context Pie"
+    GeoToOrigin: BoolProperty(default=False)
+    OriginToGeo: BoolProperty(default=False)
+    OriginToCursor: BoolProperty(default=False)
+    OriginToSelected: BoolProperty(default=False)
 
     def execute(self, context):
-        CurrentSelectionMode = tuple(context.tool_settings.mesh_select_mode)
+        obj = context.object
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
 
-        if CurrentSelectionMode == (True, False, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeVertexPie")
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
 
-        elif CurrentSelectionMode == (False, True, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
+        if context.mode != 'EDIT_MESH':
+            self.report({"WARNING"}, "Origin tools require Edit Mode")
+            return {"CANCELLED"}
 
-        elif CurrentSelectionMode == (False, False, True):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie")
+        if self.GeoToOrigin == True:
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
+            bpy.ops.object.editmode_toggle()
+            self.GeoToOrigin = False
 
-        elif CurrentSelectionMode == (True, True, False):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
+        elif self.OriginToGeo == True:
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+            bpy.ops.object.editmode_toggle()
+            self.OriginToGeo = False
 
-        elif CurrentSelectionMode == (False, True, True):
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeFacePie")
+        elif self.OriginToCursor == True:
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+            bpy.ops.object.editmode_toggle()
+            self.OriginToCursor = False
 
-        else:
-            bpy.ops.wm.call_menu_pie(name="ALLPIE_MT_EditModeEdgePie")
+        elif self.OriginToSelected == True:
+            bpy.ops.view3d.snap_cursor_to_selected()
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+            bpy.ops.view3d.snap_cursor_to_center()
+            bpy.ops.object.editmode_toggle()
+            self.OriginToSelected = False
 
         return {"FINISHED"}
-
 
 classes = (
     AllPie_OT_Symmetry,
@@ -461,7 +571,7 @@ classes = (
     AllPie_OT_Search_SculptBrushes,
     AllPie_OT_ToggleAutoMasking,
     AllPie_OT_ToggleAutoMerge,
-    AllPie_OT_EditModeContextPie,
+    AllPie_OT_OriginSet,
 )
 
 addon_keymaps = []
@@ -472,29 +582,10 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-        wm = bpy.context.window_manager
-        kc = wm.keyconfigs.addon
-        if kc:
-            km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
-            kmi = km.keymap_items.new(
-                AllPie_OT_EditModeContextPie.bl_idname, type="W", value="PRESS"
-            )
-        if kc:
-            km = kc.keymaps.new(name="Mesh", space_type="EMPTY")
-            kmi = km.keymap_items.new("wm.call_menu", type="Q", value="PRESS", alt=True)
-            kmi.properties.name = "SCREEN_MT_user_menu"
-            addon_keymaps.append((km, kmi))
-
-
 def unregister():
 
     for cls in classes:
         bpy.utils.unregister_class(cls)
-
-        for km, kmi in addon_keymaps:
-            km.keymap_items.remove(kmi)
-        addon_keymaps.clear()
-
 
 if __name__ == "__main__":
     register()
