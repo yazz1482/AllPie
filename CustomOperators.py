@@ -251,7 +251,7 @@ class AllPie_OT_ColorSelectorPopup(Operator):
         # layout.template_color_picker(brush, "color", value_slider=True)
         layout.prop( brush, "color", text="")
         layout.operator("paint.brush_colors_flip", text="Swap Colors")
-        layout.operator("palette.new", text="Add Palete")
+        layout.operator("palette.new", text="Add Palette")
         paint = context.tool_settings.sculpt
         layout.template_ID(
             paint,

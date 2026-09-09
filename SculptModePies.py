@@ -648,7 +648,7 @@ class AllPie_MT_CustomBrushPie(Menu):
 
         slot3.asset_library_type = "CUSTOM"
         slot3.asset_library_identifier = prefs.CustomLib_Slot7
-        slot3.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot7}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot7}"
+        slot3.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot7}.asset.blend/Brush/{prefs.CustomPieBrush_Slot7}"
 
         # Top
         pie.operator(

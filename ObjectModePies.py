@@ -150,7 +150,7 @@ class AllPie_MT_ObjectModeSelectionPie(Menu):
         pie.operator( "object.hide_view_set", icon="REC", text="Solo Object"
         ).unselected = True
 
-bpy.ops.ui.eyedropper_color()
+
 classes = (
     AllPie_MT_ObjectModeAdd,
     AllPie_MT_ObjectModeApplyTransforms,
