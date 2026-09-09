@@ -10,7 +10,6 @@ piekeymapitems = [
     #  "PieMenu Class Name", Shift KeyModifier, Ctrl KeyModifier, Alt KeyModifier)
     ("EnableSculptBrushSettingsPie", "Sculpt", "Q", "PRESS", "ALLPIE_MT_SculptBrushSettingsPie", True, False, False),
     ("EnableEssentialsPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_EssentialsBrushPie", False, False, False),
-    ("EnableCustomBrushPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_CustomBrushPie", True, False, False),
     ("EnableSculptTransformPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_SculptTransformPie", False, False, True),
     ("EnableUtilBrushPie", "Sculpt", "E", "PRESS", "ALLPIE_MT_UtilBrushPie", False, False, False),
     ("EnableSculptVisibilityPie", "Sculpt", "E", "PRESS", "ALLPIE_MT_SculptVisibilityPie", True, False, False),
@@ -18,7 +17,8 @@ piekeymapitems = [
     ("EnableSymmetryPie", "Sculpt", "S", "PRESS", "ALLPIE_MT_SymmetryPie", False, False, False),
     ("EnableMultiResPie", "Sculpt", "D", "PRESS", "ALLPIE_MT_MultiResPie", False, False, False),
     ("EnableShadingPie", "Sculpt", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
-    ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "ALLPIE_MT_SculptPaintPie", True, False, False),
+    ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "ALLPIE_MT_SculptPaintPie", False, False, False),
+    ("EnableCustomBrushPie", "Sculpt", "C", "PRESS", "ALLPIE_MT_CustomBrushPie", True, False, False),
 
     # Edit Mode Keybinds
     ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "ALLPIE_MT_EditModeVertexPie", False, False, False),
