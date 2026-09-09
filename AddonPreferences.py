@@ -8,35 +8,38 @@ piekeymapitems = [
     # Sculpt Mode Keybinds
     # ("Preference Name", "Keymap name", "Key", "Key Value",
     #  "PieMenu Class Name", Shift KeyModifier, Ctrl KeyModifier, Alt KeyModifier)
+    ("EnableSculptBrushSettingsPie", "Sculpt", "Q", "PRESS", "ALLPIE_MT_SculptBrushSettingsPie", True, False, False),
     ("EnableEssentialsPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_EssentialsBrushPie", False, False, False),
+    ("EnableCustomBrushPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_CustomBrushPie", True, False, False),
+    ("EnableSculptTransformPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_SculptTransformPie", False, False, True),
     ("EnableUtilBrushPie", "Sculpt", "E", "PRESS", "ALLPIE_MT_UtilBrushPie", False, False, False),
+    ("EnableSculptVisibilityPie", "Sculpt", "E", "PRESS", "ALLPIE_MT_SculptVisibilityPie", True, False, False),
     ("EnableRemeshPie", "Sculpt", "R", "PRESS", "ALLPIE_MT_RemeshPie", False, False, False),
-    ("EnableSculptTransformPie", "Sculpt", "T", "PRESS", "ALLPIE_MT_SculptTransformPie", False, False, False),
     ("EnableSymmetryPie", "Sculpt", "S", "PRESS", "ALLPIE_MT_SymmetryPie", False, False, False),
     ("EnableMultiResPie", "Sculpt", "D", "PRESS", "ALLPIE_MT_MultiResPie", False, False, False),
     ("EnableShadingPie", "Sculpt", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
-    ("EnableSculptBrushSettingsPie", "Sculpt", "X", "PRESS", "ALLPIE_MT_SculptBrushSettingsPie", False, False, False),
-    ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "ALLPIE_MT_SculptPaintPie", False, False, False),
-    ("EnableSculptVisibilityPie", "Sculpt", "V", "PRESS", "ALLPIE_MT_SculptVisibilityPie", False, False, False),
-    ("EnableCustomBrushPie", "Sculpt", "W", "PRESS", "ALLPIE_MT_CustomBrushPie", True, False, False),
+    ("EnableSculptPaintPie", "Sculpt", "C", "PRESS", "ALLPIE_MT_SculptPaintPie", True, False, False),
 
     # Edit Mode Keybinds
-    ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "ALLPIE_MT_EditModeSelectionPie", False, False, False),
-    ("EnableEditModeShadingPie", "Mesh", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
-    ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "ALLPIE_MT_EditModeDeletionPie", False, False, False),
-    ("EnableEditModeMergePie", "Mesh", "M", "PRESS", "ALLPIE_MT_EditModeMergePie", False, False, False),
-    ("EnableEditModeModelPie", "Mesh", "Q", "PRESS", "ALLPIE_MT_EditModeModelPie", False, False, False),
     ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "ALLPIE_MT_EditModeVertexPie", False, False, False),
     ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "ALLPIE_MT_EditModeEdgePie", False, False, False),
     ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "ALLPIE_MT_EditModeFacePie", False, False, False),
-    ("EnableEditModeToolSelectPie", "Mesh", "T", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, False),
-    ("EnableEditModeUVPie", "Mesh", "U", "PRESS", "ALLPIE_MT_EditModeUVPie", False, False, False),
+    ("EnableEditModeMergePie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeMergePie", False, False, False),
+    ("EnableEditModeToolSelectPie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, True),
+    ("EnableEditModeUVPie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeUVPie", True, False, False),
+    ("EnableEditModeEdgeNestedPie", "Mesh", "E", "PRESS", "ALLPIE_MT_EditModeEdgeNestedPie", True, False, False),
+    ("EnableEditModeSelectionPie", "Mesh", "A", "PRESS", "ALLPIE_MT_EditModeSelectionPie", False, False, False),
+    ("EnableEditModeOriginPie", "Mesh", "A", "PRESS", "ALLPIE_MT_EditModeOriginPie", False, False, True),
+    ("EnableEditModeShadingPie", "Mesh", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
+    ("EnableEditModeDeletionPie", "Mesh", "X", "PRESS", "ALLPIE_MT_EditModeDeletionPie", False, False, False),
 
     # Object Mode Keybinds
+    ("EnableObjectModeModifiersPie", "Object Mode", "Q", "PRESS", "ALLPIE_MT_ObjectModeModifierPie", True, False, False),
+    ("EnableObjectModeToolSelectPie", "Object Mode", "W", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, True),
+    ("EnableObjectModeSelectionPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeSelectionPie", False, False, False),
     ("EnableObjectModeAddPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeAdd", True, False, False),
-    ("EnableObjectModeShadingPie", "Object Mode", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
-    ("EnableObjectModeToolSelectPie", "Object Mode", "T", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, False),
     ("EnableObjectModeApplyTransformsPie", "Object Mode", "A", "PRESS", "ALLPIE_MT_ObjectModeApplyTransforms", False, True, False),
+    ("EnableObjectModeShadingPie", "Object Mode", "Z", "PRESS", "ALLPIE_MT_ShadingPie", False, False, False),
 ]
 
 
@@ -48,6 +51,10 @@ class AllPieKeybind(PropertyGroup):
     we restore when the add-on registers its keymaps again.
     """
 
+    # Unique identifier for the preference/keybind.
+    # This must be the preference name, not the Blender menu class, because
+    # the same menu class can intentionally be used in multiple keymaps.
+    pref_name: StringProperty()
     menu_name: StringProperty()
     key: StringProperty()
     value: StringProperty()
@@ -63,15 +70,62 @@ def get_asset_libs(self, context):
     return items
 
 
-def get_keybind_store(prefs, menu_name):
+def get_keybind_store(prefs, pref_name):
+    """Return the persistent keybind entry for a unique preference name."""
     for keybind in prefs.keybinds:
-        if keybind.menu_name == menu_name:
+        if keybind.pref_name == pref_name:
             return keybind
     return None
 
 
+def migrate_legacy_keybinds(prefs):
+    """
+    Migrate keybind entries created by older AllPie versions.
+
+    Older versions identified entries only by menu_name, which caused shared
+    menu classes (for example Shading and Modifier menus) to collide.
+    Legacy entries have an empty pref_name. Their values are copied into the
+    new per-preference entries so existing user settings are not discarded.
+    """
+    legacy = {}
+    for keybind in prefs.keybinds:
+        if not keybind.pref_name and keybind.menu_name:
+            legacy.setdefault(keybind.menu_name, keybind)
+
+    if not legacy:
+        return
+
+    for (
+        pref_name,
+        km_name,
+        default_key,
+        default_value,
+        menu_name,
+        default_shift,
+        default_ctrl,
+        default_alt,
+    ) in piekeymapitems:
+        if get_keybind_store(prefs, pref_name) is not None:
+            continue
+
+        old = legacy.get(menu_name)
+        if old is None:
+            continue
+
+        keybind = prefs.keybinds.add()
+        keybind.pref_name = pref_name
+        keybind.menu_name = menu_name
+        keybind.key = old.key
+        keybind.value = old.value
+        keybind.shift = old.shift
+        keybind.ctrl = old.ctrl
+        keybind.alt = old.alt
+
+
 def initialize_keybinds(prefs):
-    """Create persistent keybind entries for any pie that does not have one yet."""
+    """Create one persistent keybind entry per preference name."""
+    migrate_legacy_keybinds(prefs)
+
     for (
         pref_name,
         km_name,
@@ -83,16 +137,20 @@ def initialize_keybinds(prefs):
         default_alt,
     ) in piekeymapitems:
 
-        keybind = get_keybind_store(prefs, menu_name)
+        keybind = get_keybind_store(prefs, pref_name)
 
         if keybind is None:
             keybind = prefs.keybinds.add()
+            keybind.pref_name = pref_name
             keybind.menu_name = menu_name
             keybind.key = default_key
             keybind.value = default_value
             keybind.shift = default_shift
             keybind.ctrl = default_ctrl
             keybind.alt = default_alt
+        else:
+            # Keep the menu name synchronized with the definition.
+            keybind.menu_name = menu_name
 
 
 def find_addon_kmi(kc, km_name, menu_name):
@@ -112,14 +170,14 @@ def find_addon_kmi(kc, km_name, menu_name):
     return None
 
 
-def sync_kmi_to_preferences(prefs, kmi):
-    """Copy the live Blender keymap item into persistent add-on preferences."""
-    menu_name = kmi.properties.name
-    keybind = get_keybind_store(prefs, menu_name)
+def sync_kmi_to_preferences(prefs, kmi, pref_name):
+    """Copy a live Blender keymap item into its uniquely identified preference entry."""
+    keybind = get_keybind_store(prefs, pref_name)
 
     if keybind is None:
         return
 
+    keybind.menu_name = kmi.properties.name
     keybind.key = kmi.type
     keybind.value = kmi.value
     keybind.shift = kmi.shift
@@ -150,7 +208,7 @@ def sync_all_keymaps_to_preferences():
         kmi = find_addon_kmi(kc, km_name, menu_name)
 
         if kmi is not None:
-            sync_kmi_to_preferences(prefs, kmi)
+            sync_kmi_to_preferences(prefs, kmi, pref_name)
 
 
 def ApKeymapResgister():
@@ -177,7 +235,7 @@ def ApKeymapResgister():
         if not getattr(prefs, pref_name):
             continue
 
-        keybind = get_keybind_store(prefs, menu_name)
+        keybind = get_keybind_store(prefs, pref_name)
 
         # This should only be possible if initialization failed.
         if keybind is None:
@@ -213,6 +271,9 @@ def ApKeymapResgister():
             kmi.alt = keybind.alt
             kmi.properties.name = menu_name
 
+            if (km, kmi) not in addon_keymaps:
+                addon_keymaps.append((km, kmi))
+
 
 def ApKeymapUnResgister():
     for km, kmi in addon_keymaps:
@@ -233,7 +294,7 @@ def update_pie_keymaps(self, context):
     ApKeymapResgister()
 
 
-def draw_pie_keybind(body, kc, prefs, km_name, menu_name):
+def draw_pie_keybind(body, kc, prefs, pref_name, km_name, menu_name):
     """Draw one pie keybind using Blender's native KeyMapItem event widget."""
     kmi = find_addon_kmi(kc, km_name, menu_name)
 
@@ -241,7 +302,7 @@ def draw_pie_keybind(body, kc, prefs, km_name, menu_name):
         return
 
     # Persist the current value so it survives Blender restart.
-    sync_kmi_to_preferences(prefs, kmi)
+    sync_kmi_to_preferences(prefs, kmi, pref_name)
 
     row = body.row()
     row.separator(factor=4)
@@ -323,13 +384,13 @@ class AllpieCustomAddonPref(AddonPreferences):
     EnableEditModeDeletionPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeShadingPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeMergePie: BoolProperty(default=True, update=update_pie_keymaps)
-    EnableEditModeModelPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeVertexPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeEdgePie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeFacePie: BoolProperty(default=True, update=update_pie_keymaps)
-    EnableEditModeContextPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeToolSelectPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableEditModeUVPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableEditModeEdgeNestedPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableEditModeOriginPie: BoolProperty(default=True, update=update_pie_keymaps)
     # Object Mode Properties
 
     # Bool Properties
@@ -337,6 +398,9 @@ class AllpieCustomAddonPref(AddonPreferences):
     EnableObjectModeShadingPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableObjectModeToolSelectPie: BoolProperty(default=True, update=update_pie_keymaps)
     EnableObjectModeApplyTransformsPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableObjectModeModifiersPie: BoolProperty(default=True, update=update_pie_keymaps)
+    EnableObjectModeSelectionPie: BoolProperty(default=True, update=update_pie_keymaps)
+
 
     def draw(self, context):
         wm = context.window_manager
@@ -370,7 +434,7 @@ class AllpieCustomAddonPref(AddonPreferences):
                 row.prop(
                     self,
                     "EnableEssentialsNestedPieMenu",
-                    text="Enable Nested Menu",
+                    text="Enable Essential Brushes Nested Pie Menu",
                 )
 
                 if kc:
@@ -378,9 +442,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                         body,
                         kc,
                         self,
+                        "EnableEssentialsPie",
                         "Sculpt",
                         "ALLPIE_MT_EssentialsBrushPie",
-                    )
+    )
 
             # Utility Brushes Pie Menu
             row = body.row()
@@ -396,9 +461,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableUtilBrushPie",
                     "Sculpt",
                     "ALLPIE_MT_UtilBrushPie",
-                )
+    )
 
             # Remesh Pie Menu
             row = body.row()
@@ -414,9 +480,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableRemeshPie",
                     "Sculpt",
                     "ALLPIE_MT_RemeshPie",
-                )
+    )
 
             # Sculpt Transform Pie Menu
             row = body.row()
@@ -432,9 +499,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableSculptTransformPie",
                     "Sculpt",
                     "ALLPIE_MT_SculptTransformPie",
-                )
+    )
 
             # Symmetry Pie Menu
             row = body.row()
@@ -450,9 +518,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableSymmetryPie",
                     "Sculpt",
                     "ALLPIE_MT_SymmetryPie",
-                )
+    )
 
             # Multires Pie Menu
             row = body.row()
@@ -468,9 +537,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableMultiResPie",
                     "Sculpt",
                     "ALLPIE_MT_MultiResPie",
-                )
+    )
 
             # Shading Pie Menu
             row = body.row()
@@ -486,9 +556,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableShadingPie",
                     "Sculpt",
                     "ALLPIE_MT_ShadingPie",
-                )
+    )
 
             # Sculpt Brush Settings Pie Menu
             row = body.row()
@@ -504,9 +575,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableSculptBrushSettingsPie",
                     "Sculpt",
                     "ALLPIE_MT_SculptBrushSettingsPie",
-                )
+    )
 
             # Sculpt Paint Pie Menu
             row = body.row()
@@ -522,9 +594,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableSculptPaintPie",
                     "Sculpt",
                     "ALLPIE_MT_SculptPaintPie",
-                )
+    )
 
             # Sculpt Visibility Pie Menu
             row = body.row()
@@ -540,9 +613,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableSculptVisibilityPie",
                     "Sculpt",
                     "ALLPIE_MT_SculptVisibilityPie",
-                )
+    )
 
             # Custom Brush Pie Menu
             row = body.row()
@@ -558,9 +632,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableCustomBrushPie",
                     "Sculpt",
                     "ALLPIE_MT_CustomBrushPie",
-                )
+    )
 
         # Edit Mode Pie Menu Settings
         header, body = layout.panel(
@@ -570,24 +645,6 @@ class AllpieCustomAddonPref(AddonPreferences):
         header.label(text="Edit Mode Pie Menu Settings")
 
         if body:
-            # Edit Mode Model Pie Menu
-            row = body.row()
-            row.separator(factor=2)
-            row.prop(
-                self,
-                "EnableEditModeModelPie",
-                text="Enable Edit Mode Quick Model Pie Menu",
-            )
-
-            if self.EnableEditModeModelPie and kc:
-                draw_pie_keybind(
-                    body,
-                    kc,
-                    self,
-                    "Mesh",
-                    "ALLPIE_MT_EditModeModelPie",
-                )
-
             # Edit Mode Tool Select Pie Menu
             row = body.row()
             row.separator(factor=2)
@@ -602,9 +659,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeToolSelectPie",
                     "Mesh",
                     "ALLPIE_MT_EditModeToolSelectPie",
-                )
+    )
 
             # Edit Mode Vertex Pie Menu
             row = body.row()
@@ -620,9 +678,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeVertexPie",
                     "Mesh",
                     "ALLPIE_MT_EditModeVertexPie",
-                )
+    )
 
             # Edit Mode Edge Pie Menu
             row = body.row()
@@ -638,9 +697,29 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeEdgePie",
                     "Mesh",
                     "ALLPIE_MT_EditModeEdgePie",
-                )
+    )
+
+            # Edit Mode Nested Edge Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(
+                self,
+                "EnableEditModeEdgeNestedPie",
+                text="Enable Edit Mode Edge Nested Pie Menu",
+            )
+
+            if self.EnableEditModeEdgeNestedPie and kc:
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "EnableEditModeEdgeNestedPie",
+                    "Mesh",
+                    "ALLPIE_MT_EditModeEdgeNestedPie",
+    )
 
             # Edit Mode Face Pie Menu
             row = body.row()
@@ -656,9 +735,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeFacePie",
                     "Mesh",
                     "ALLPIE_MT_EditModeFacePie",
-                )
+    )
 
             # Edit Mode Selection Pie Menu
             row = body.row()
@@ -674,9 +754,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeSelectionPie",
                     "Mesh",
                     "ALLPIE_MT_EditModeSelectionPie",
-                )
+    )
 
             # Edit Mode Deletion Pie Menu
             row = body.row()
@@ -692,9 +773,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeDeletionPie",
                     "Mesh",
                     "ALLPIE_MT_EditModeDeletionPie",
-                )
+    )
 
             # Edit Mode Shading Pie Menu
             row = body.row()
@@ -710,9 +792,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeShadingPie",
                     "Mesh",
                     "ALLPIE_MT_ShadingPie",
-                )
+    )
 
             # Edit Mode Merge Pie Menu
             row = body.row()
@@ -728,16 +811,18 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeMergePie",
                     "Mesh",
                     "ALLPIE_MT_EditModeMergePie",
-                )
+    )
+
             # Edit Mode UV Pie Menu
             row = body.row()
             row.separator(factor=2)
             row.prop(
                 self,
-                "EnableEditModeMergePie",
-                text="Enable Edit Mode Merge Pie Menu",
+                "EnableEditModeUVPie",
+                text="Enable Edit Mode UV Pie Menu",
             )
 
             if self.EnableEditModeUVPie and kc:
@@ -745,9 +830,29 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableEditModeUVPie",
                     "Mesh",
                     "ALLPIE_MT_EditModeUVPie",
-                )
+    )
+            # Edit Mode Origin Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop(
+                self,
+                "EnableEditModeOriginPie",
+                text="Enable Edit Mode Origin Pie Menu",
+            )
+
+            if self.EnableEditModeOriginPie and kc:
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "EnableEditModeOriginPie",
+                    "Mesh",
+                    "ALLPIE_MT_EditModeOriginPie",
+    )
+
 
         # Object Mode Pie Menu Settings
         header, body = layout.panel(
@@ -767,9 +872,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableObjectModeAddPie",
                     "Object Mode",
                     "ALLPIE_MT_ObjectModeAdd",
-                )
+    )
             # Object Mode Shading Pie Menu
             row = body.row()
             row.separator(factor=2)
@@ -780,9 +886,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableObjectModeShadingPie",
                     "Object Mode",
                     "ALLPIE_MT_ShadingPie",
-                )
+    )
             # Object Mode ToolSelect Pie Menu
             row = body.row()
             row.separator(factor=2)
@@ -796,9 +903,10 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableObjectModeToolSelectPie",
                     "Object Mode",
                     "ALLPIE_MT_EditModeToolSelectPie",
-                )
+    )
             # Object Mode Apply Transform Pie Menu
             row = body.row()
             row.separator(factor=2)
@@ -811,9 +919,42 @@ class AllpieCustomAddonPref(AddonPreferences):
                     body,
                     kc,
                     self,
+                    "EnableObjectModeApplyTransformsPie",
                     "Object Mode",
                     "ALLPIE_MT_ObjectModeApplyTransforms",
-                )
+    )
+            # Object Mode Selection Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableObjectModeSelectionPie", text="Enable Object Mode Selection Pie Menu",)
+            if self.EnableObjectModeSelectionPie and kc:
+                row = body.row()
+                row.separator(factor=2)
+
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "EnableObjectModeSelectionPie",
+                    "Object Mode",
+                    "ALLPIE_MT_ObjectModeSelectionPie",
+    )
+
+            # Object Mode Modifier Pie Menu
+            row = body.row()
+            row.separator(factor=2)
+            row.prop( self, "EnableObjectModeModifiersPie", text="Enable Object Mode Modifiers Pie Menu",)
+
+            if self.EnableObjectModeModifiersPie and kc:
+                draw_pie_keybind(
+                    body,
+                    kc,
+                    self,
+                    "EnableObjectModeModifiersPie",
+                    "Object Mode",
+                    "ALLPIE_MT_ObjectModeModifierPie",
+    )
+
 
 classes = (
     AllPieKeybind,
