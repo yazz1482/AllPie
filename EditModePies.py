@@ -77,8 +77,9 @@ class AllPie_MT_EditModeDeletionPie(Menu):
 
 class AllPie_MT_EditModeMergePie(Menu):
     bl_idname = "ALLPIE_MT_EditModeMergePie"
-    bl_label = "EditMode Selection Pie"
+    bl_label = "Separate/Merge Pie"
 
+# bpy.ops.mesh.separate(type='SELECTED')
     def draw(self, context):
         layout = self.layout
         pie = layout.menu_pie()
@@ -89,19 +90,17 @@ class AllPie_MT_EditModeMergePie(Menu):
         ).type = "CURSOR"
         # Right
         pie.operator(
-            "mesh.remove_doubles", icon="AUTOMERGE_OFF", text="Merge By Disatance"
+            "mesh.remove_doubles", icon="AUTOMERGE_OFF", text="Merge By Distance"
         )
         # Bottom
         op = pie.operator("mesh.merge", text="At Center", icon="FULLSCREEN_EXIT")
         op.type = "CENTER"
         # Top
-        pie.operator(
-            "cop.toggle_auto_merge", icon="AUTOMERGE_ON", text="Toggle Auto Merge"
-        )
+        pie.operator("mesh.separate", icon="AUTOMERGE_ON", text="Separate Selection").type = "SELECTED"
         # Top Left
-        pie.separator()
+        pie.operator("mesh.separate", icon="AUTOMERGE_ON", text="Separate By Material").type = "MATERIAL"
         # Top Right
-        pie.separator()
+        pie.operator("mesh.separate", icon="AUTOMERGE_ON", text="Separate By Loose Parts").type = "LOOSE"
         try:
             # This will raise an error if the option isn't available.
             op.type = "CENTER"
@@ -115,45 +114,6 @@ class AllPie_MT_EditModeMergePie(Menu):
             ).type = "LAST"
         except:
             op.type = "CENTER"
-
-
-class AllPie_MT_EditModeModelPie(Menu):
-    bl_idname = "ALLPIE_MT_EditModeModelPie"
-    bl_label = "EditMode Model Pie"
-
-    def draw(self, context):
-        layout = self.layout
-
-        pie = layout.menu_pie()
-        # # Left
-        pie.operator("mesh.separate", icon="MOD_EDGESPLIT", text="Separate Menu")
-        # # Right
-        pie.operator(
-            "wm.call_menu_pie", icon="AUTOMERGE_OFF", text="Merge Pie"
-        ).name = "ALLPIE_MT_EditModeMergePie"
-        # Bottom
-        pie.operator_context = "INVOKE_REGION_WIN"
-        pie.operator("screen.redo_last", icon="RECOVER_LAST", text="Redo Menu")
-        # Top
-        pie.operator(
-            "wm.call_menu_pie", icon="EDGESEL", text="Edge Pie"
-        ).name = "ALLPIE_MT_EditModeEdgePie"
-        # Top Left
-        pie.operator(
-            "wm.call_menu_pie", icon="VERTEXSEL", text="Vertex Pie"
-        ).name = "ALLPIE_MT_EditModeVertexPie"
-        # Top Right
-        pie.operator(
-            "wm.call_menu_pie", icon="FACESEL", text="Face Pie"
-        ).name = "ALLPIE_MT_EditModeFacePie"
-        # Bottom Left
-        pie.operator(
-            "wm.call_menu_pie", icon="MODIFIER", text="Modifer Pie"
-        ).name = "ALLPIE_MT_EditModeModifierPie"
-        # Bottom Right
-        pie.operator(
-            "wm.call_menu_pie", icon="UV", text="UV Unwrap Pie"
-        ).name = "ALLPIE_MT_EditModeUVPie"
 
 
 class AllPie_MT_EditModeVertexPie(Menu):
@@ -246,9 +206,9 @@ class AllPie_MT_EditModeEdgeNestedPie(Menu):
         # Top Right
         pie.operator("mesh.mark_sharp", icon="EDGE_SHARP", text="Mark Sharp")
         # Bottom Left
-        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seem").clear = True
+        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seam").clear = True
         # Bottom Right
-        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seem")
+        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seam")
 
 
 class AllPie_MT_EditModeFacePie(Menu):
@@ -260,7 +220,7 @@ class AllPie_MT_EditModeFacePie(Menu):
 
         pie = layout.menu_pie()
         # Left
-        pie.operator("mesh.inset", icon="FACESEL", text="Inset")
+        pie.operator("mesh.flip_normals", icon="FACESEL", text="Flip Normals")
         # Right
         pie.operator(
             "mesh.extrude_region_shrink_fatten",
@@ -277,10 +237,10 @@ class AllPie_MT_EditModeFacePie(Menu):
         pie.operator("mesh.poke", icon="FACESEL", text="Poke")
         # Top Right
         pie.operator(
-            "mesh.extrude_faces_move", icon="FACESEL", text="Extrude Innvididual"
+            "mesh.extrude_faces_move", icon="FACESEL", text="Extrude Individual"
         )
         # Bottom Left
-        pie.operator("mesh.solidify", icon="FACESEL", text=" Solidify")
+        pie.operator("mesh.inset", icon="FACESEL", text="Inset")
         # Bottom Right
         pie.operator("mesh.extrude_region_move", icon="FACESEL", text="Extrude")
 
@@ -327,52 +287,6 @@ class AllPie_MT_EditModeToolSelectPie(Menu):
         ).name = "builtin.select_circle"
 
 
-class AllPie_MT_EditModeModifierPie(Menu):
-    bl_idname = "ALLPIE_MT_EditModeModifierPie"
-    bl_label = "EditMode Modifier Pie"
-
-    def draw(self, context):
-        layout = self.layout
-
-        pie = layout.menu_pie()
-        # # Left
-        pie.operator(
-            "object.modifier_add", icon="MOD_SUBSURF", text="SubDivision"
-        ).type = "SUBSURF"
-        # # Right
-        pie.operator(
-            "object.modifier_add", icon="MOD_MIRROR", text="Mirror"
-        ).type = "MIRROR"
-        # Bottom
-        pie.operator(
-            "object.modifier_add", icon="MOD_DISPLACE", text="Displacement"
-        ).type = "DISPLACE"
-        # Top
-        pie.operator(
-            "wm.search_single_menu", icon="VIEWZOOM", text="Modifier Search"
-        ).menu_idname = "OBJECT_MT_modifier_add"
-        # Top Left
-        pie.operator(
-            "object.modifier_add", icon="MOD_MULTIRES", text="Multires"
-        ).type = "MULTIRES"
-        # Top Right
-        pie.operator(
-            "object.modifier_add", icon="MOD_SOLIDIFY", text="Solidify"
-        ).type = "SOLIDIFY"
-        # Bottom Left
-        pie.operator(
-            "object.modifier_add", icon="MOD_SHRINKWRAP", text="ShrinkWrap"
-        ).type = "SHRINKWRAP"
-        # Bottom Right
-        slot6 = pie.operator(
-            "object.modifier_add_node_group", icon="MOD_ARRAY", text="Array"
-        )
-        slot6.asset_library_type = "ESSENTIALS"
-        slot6.asset_library_identifier = ""
-        slot6.relative_asset_identifier = (
-            "nodes/geometry_nodes_essentials.blend/NodeTree/Array"
-        )
-
 
 class AllPie_MT_EditModeUVPie(Menu):
     bl_idname = "ALLPIE_MT_EditModeUVPie"
@@ -404,23 +318,49 @@ class AllPie_MT_EditModeUVPie(Menu):
         # Top Right
         pie.operator("uv.smart_project", icon="MOD_UVPROJECT", text="Smart Project")
         # Bottom Left
-        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seem").clear = True
+        pie.operator("mesh.mark_seam", icon="EDGESEL", text="Clear Seam").clear = True
         # Bottom Right
-        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seem")
+        pie.operator("mesh.mark_seam", icon="EDGE_SEAM", text="Mark Seam")
+
+class AllPie_MT_EditModeOriginPie(Menu):
+    bl_idname = "ALLPIE_MT_EditModeOriginPie"
+    bl_label = "EditMode Origin/Snap Pie"
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+        # Left
+        pie.operator("cop.originset", icon="ORIENTATION_GLOBAL", text="Origin To Cursor").OriginToCursor = True
+        # Right
+        pie.operator("view3d.snap_cursor_to_selected", icon="ORIENTATION_CURSOR", text="Cursor To Selected")
+        # # Bottom
+        pie.operator("cop.originset", icon="OBJECT_ORIGIN", text="Origin To Selected").OriginToSelected = True
+        # # Top
+        pie.operator(
+            "wm.call_panel", icon="SNAP_INCREMENT", text="Snapping Menu"
+        ).name = "VIEW3D_PT_snapping"
+        # # Top Left
+        pie.operator("cop.originset", icon="TRANSFORM_ORIGINS", text="Origin To Geometry").OriginToGeo = True
+        # # Top Right
+        pie.operator("view3d.snap_cursor_to_center", icon="PIVOT_CURSOR", text="Cursor To Origin")
+        # # Bottom Left
+        pie.operator("cop.originset", icon="ORIENTATION_NORMAL", text="Geometry To Origin").GeoToOrigin = True
+        # # Bottom Right
+        pie.operator("view3d.snap_selected_to_cursor", icon="ORIENTATION_NORMAL", text="Selected To Cursor").use_offset=True
 
 
 classes = (
     AllPie_MT_EditModeSelectionPie,
     AllPie_MT_EditModeDeletionPie,
     AllPie_MT_EditModeMergePie,
-    AllPie_MT_EditModeModelPie,
     AllPie_MT_EditModeVertexPie,
     AllPie_MT_EditModeEdgePie,
     AllPie_MT_EditModeEdgeNestedPie,
     AllPie_MT_EditModeFacePie,
     AllPie_MT_EditModeToolSelectPie,
-    AllPie_MT_EditModeModifierPie,
     AllPie_MT_EditModeUVPie,
+    AllPie_MT_EditModeOriginPie
 )
 
 
