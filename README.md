@@ -4,6 +4,9 @@
 
 It provides fast access to frequently used tools and operations through customisable pie menus.
 
+## Documentation
+> **Note:** I am currently recording video documentation and tutorials. Links will be added here when they’re available.
+
 ## Philosophy
 
 AllPie is built around three ideas:
@@ -16,8 +19,6 @@ Instead of remembering where a command is buried in Blender's menus or rememberi
 
 AllPie is also designed with **pen and display tablet workflows** in mind. Most keybinds are arranged so your left hand can stay on the left side of the keyboard while using as few keys as possible, leaving your other hand focused on the tablet.
 
-## Documentation
-> **Note:** I am currently recording video documentation and tutorials. Links will be added here when they’re available.
 
 ## Edit Mode
 
