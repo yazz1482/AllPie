@@ -15,7 +15,6 @@ class AllPie_MT_EssentialsBrushPie(Menu):
         layout = self.layout
         pie = layout.menu_pie()
 
-        bpy.utils.manual_language_code
         prefs = context.preferences.addons[__package__].preferences
 
         # Middle Left
@@ -23,7 +22,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot1,
-        )  # Grab Brush
+        )
         slot1.asset_library_type = "ESSENTIALS"
         slot1.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot1
@@ -34,7 +33,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot2,
-        )  # Clay Strips
+        )
         slot2.asset_library_type = "ESSENTIALS"
         slot2.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot2
@@ -45,7 +44,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot7,
-        )  # Scrape Fill
+        )
         slot3.asset_library_type = "ESSENTIALS"
         slot3.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot7
@@ -66,7 +65,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot3,
-        )  # Pinch
+        )
         slot4.asset_library_type = "ESSENTIALS"
         slot4.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot3
@@ -77,7 +76,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot4,
-        )  # Draw Sharp
+        )
         slot5.asset_library_type = "ESSENTIALS"
         slot5.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot4
@@ -88,7 +87,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot5,
-        )  # Inflate
+        )
         slot6.asset_library_type = "ESSENTIALS"
         slot6.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot5
@@ -99,7 +98,7 @@ class AllPie_MT_EssentialsBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrush_Slot6,
-        )  # Draw
+        )
         slot7.asset_library_type = "ESSENTIALS"
         slot7.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrush_Slot6
@@ -115,7 +114,6 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
         layout = self.layout
         pie = layout.menu_pie()
 
-        bpy.utils.manual_language_code
         prefs = context.preferences.addons[__package__].preferences
 
         # Middle Left
@@ -123,7 +121,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot1,
-        )  # Grab Brush
+        )
         slot1.asset_library_type = "ESSENTIALS"
         slot1.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot1
@@ -134,7 +132,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot2,
-        )  # Clay Strips
+        )
         slot2.asset_library_type = "ESSENTIALS"
         slot2.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot2
@@ -145,7 +143,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot7,
-        )  # Scrape Fill
+        )
         slot3.asset_library_type = "ESSENTIALS"
         slot3.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot7
@@ -161,7 +159,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot3,
-        )  # Pinch
+        )
         slot4.asset_library_type = "ESSENTIALS"
         slot4.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot3
@@ -172,7 +170,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot4,
-        )  # Draw Sharp
+        )
         slot5.asset_library_type = "ESSENTIALS"
         slot5.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot4
@@ -183,7 +181,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot5,
-        )  # Inflate
+        )
         slot6.asset_library_type = "ESSENTIALS"
         slot6.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot5
@@ -194,7 +192,7 @@ class AllPie_MT_EssentialsNestedBrushPie(Menu):
             "brush.asset_activate",
             icon="REC",
             text=prefs.EssentialPieBrushNested_Slot6,
-        )  # Draw
+        )
         slot7.asset_library_type = "ESSENTIALS"
         slot7.relative_asset_identifier = (
             EssentialsLibraryPath + prefs.EssentialPieBrushNested_Slot6
@@ -212,13 +210,9 @@ class AllPie_MT_SymmetryPie(Menu):
 
         if bpy.context.mode == "SCULPT":
             # Left
-            pie.operator(
-                "cop.symdirection", text="-X to +X", icon="MOD_MIRROR"
-            ).direction = "NEGATIVE_X"
+            pie.operator( "cop.symmetry", text="Flip Y Symmetry", icon="MOD_MIRROR").action = "Flip_Y"
             # Right
-            pie.operator(
-                "cop.symdirection", text="+X to -X", icon="MOD_MIRROR"
-            ).direction = "POSITIVE_X"
+            pie.operator( "cop.symmetry", text="Y Symmetry", icon="MOD_MIRROR").action = "Toggle_Y"
             # bottom
             pie.operator("sculpt.symmetrize", text="Symmetrize", icon="MOD_MIRROR")
             # top
@@ -226,21 +220,13 @@ class AllPie_MT_SymmetryPie(Menu):
                 "wm.call_panel", text="Symmetry Menu", icon="MOD_MIRROR"
             ).name = "VIEW3D_PT_sculpt_symmetry_for_topbar"
             # Top Left
-            pie.operator(
-                "cop.symdirection", text="-Y to +Y", icon="MOD_MIRROR"
-            ).direction = "NEGATIVE_Y"
+            pie.operator( "cop.symmetry", text="Flip X Symmetry", icon="MOD_MIRROR").action = "Flip_X"
             # Top Right
-            pie.operator(
-                "cop.symdirection", text="+Y to -Y", icon="MOD_MIRROR"
-            ).direction = "POSITIVE_Y"
+            pie.operator( "cop.symmetry", text="X Symmetry", icon="MOD_MIRROR").action = "Toggle_X"
             # Bottom Left
-            pie.operator(
-                "cop.symdirection", text="-Z to +Z", icon="MOD_MIRROR"
-            ).direction = "NEGATIVE_Z"
+            pie.operator( "cop.symmetry", text="Flip Z Symmetry", icon="MOD_MIRROR").action = "Flip_Z"
             # Bottom Right
-            pie.operator(
-                "cop.symdirection", text="+Z to -Z", icon="MOD_MIRROR"
-            ).direction = "POSITIVE_Z"
+            pie.operator( "cop.symmetry", text="Z Symmetry", icon="MOD_MIRROR").action = "Toggle_Z"
 
 
 # Remesh Menu
@@ -256,11 +242,11 @@ class AllPie_MT_RemeshPie(Menu):
             # Left
             pie.operator(
                 "cop.cremesh", text="Voxel Size +25%", icon="MESH_GRID"
-            ).IncreaseVoxelSize25 = True
+            ).action  = "IncreaseVoxelSize25"
             # Right
             pie.operator(
                 "cop.cremesh", text="Voxel Size -25%", icon="MESH_GRID"
-            ).DecreaseVoxelSize25 = True
+            ).action = "DecreaseVoxelSize25"
             # bottom
             pie.operator("object.voxel_remesh", text="Remesh", icon="MESH_GRID")
             # top
@@ -277,11 +263,11 @@ class AllPie_MT_RemeshPie(Menu):
             # Bottom Left
             pie.operator(
                 "cop.cremesh", text="Voxel Size +10%", icon="MESH_GRID"
-            ).IncreaseVoxelSize10 = True
+            ).action = "IncreaseVoxelSize10"
             # Bottom Right
             pie.operator(
                 "cop.cremesh", text="Voxel Size -10%", icon="MESH_GRID"
-            ).DecreaseVoxelSize10 = True
+            ).action = "DecreaseVoxelSize10"
 
 
 # Shading Menu
@@ -330,7 +316,7 @@ class AllPie_MT_ShadingPie(Menu):
 # Multires Menu
 class AllPie_MT_MultiResPie(Menu):
     bl_idname = "ALLPIE_MT_MultiResPie"
-    bl_label = "Multies Pie"
+    bl_label = "Multires Pie"
 
     def draw(self, context):
         layout = self.layout
@@ -339,35 +325,29 @@ class AllPie_MT_MultiResPie(Menu):
         # Left
         pie.operator(
             "cop.cmultirespie", text="- Sculpt Level", icon="MOD_MULTIRES"
-        ).DecreaseSculptLevel = True
+        ).action = "DecreaseSculptLevel"
         # Right
         pie.operator(
             "cop.cmultirespie", text="+ Sculpt Level", icon="MOD_MULTIRES"
-        ).IncreaseSculptLevel = True
+        ).action = "IncreaseSculptLevel"
         # bottom
         pie.operator(
             "cop.cmultirespie", text="Subdivide", icon="MOD_MULTIRES"
-        ).MultiresSubdivide = True
+        ).action = "MultiresSubdivide"
         # top
         pie.operator(
             "cop.cmultirespie", text="Delete Higher", icon="MOD_MULTIRES"
-        ).DeleteHigher = True
+        ).action = "DeleteHigher"
         # Top Left
-        pie.operator(
-            "cop.cmultirespie", text="Set Render Level", icon="MOD_MULTIRES"
-        ).SculptLevelToRender = True
+        pie.operator( "cop.cmultirespie", text="Set Render Level", icon="MOD_MULTIRES").action = "SculptLevelToRender"
         # Top Right
-        pie.operator(
-            "cop.cmultirespie", text="Set Viewport Level", icon="MOD_MULTIRES"
-        ).SculptLevelToViewport = True
+        pie.operator( "cop.cmultirespie", text="Set Viewport Level", icon="MOD_MULTIRES").action = "SculptLevelToViewport"
         # Bottom Left
-        pie.operator(
-            "cop.cmultirespie", text="Apply To Base", icon="MOD_MULTIRES"
-        ).ApplyToBase = True
+        pie.operator( "cop.cmultirespie", text="Apply To Base", icon="MOD_MULTIRES").action = "ConformToBase"
         # Bottom Right
         pie.operator(
             "cop.cmultirespie", text="MaxSculpt Level", icon="MOD_MULTIRES"
-        ).MaxSculptLevel = True
+        ).action = "MaxSculptLevel"
 
 
 # Sculpt Paint Menu
@@ -635,7 +615,6 @@ class AllPie_MT_CustomBrushPie(Menu):
         layout = self.layout
         pie = layout.menu_pie()
 
-        bpy.utils.manual_language_code
         prefs = context.preferences.addons[__package__].preferences
 
         # Middle Left
@@ -647,7 +626,7 @@ class AllPie_MT_CustomBrushPie(Menu):
 
         slot1.asset_library_type = "CUSTOM"
         slot1.asset_library_identifier = prefs.CustomLib_Slot1
-        slot1.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot1}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot1}"
+        slot1.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot1}.asset.blend/Brush/{prefs.CustomPieBrush_Slot1}"
 
         # Middle Right
         slot2 = pie.operator(
@@ -658,66 +637,66 @@ class AllPie_MT_CustomBrushPie(Menu):
 
         slot2.asset_library_type = "CUSTOM"
         slot2.asset_library_identifier = prefs.CustomLib_Slot2
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot2}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot2}"
+        slot2.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot2}.asset.blend/Brush/{prefs.CustomPieBrush_Slot2}"
 
         # Bottom
-        slot2 = pie.operator(
+        slot3 = pie.operator(
             "brush.asset_activate",
             icon="REC",
             text=prefs.CustomPieBrush_Slot7,
         )
 
-        slot2.asset_library_type = "CUSTOM"
-        slot2.asset_library_identifier = prefs.CustomLib_Slot7
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot7}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot7}"
+        slot3.asset_library_type = "CUSTOM"
+        slot3.asset_library_identifier = prefs.CustomLib_Slot7
+        slot3.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot7}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot7}"
 
         # Top
         pie.operator(
             "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
         ).name = "VIEW3D_AST_brush_sculpt"  # AssetShelf
         # Top Left
-        slot2 = pie.operator(
+        slot4 = pie.operator(
             "brush.asset_activate",
             icon="REC",
             text=prefs.CustomPieBrush_Slot3,
         )
 
-        slot2.asset_library_type = "CUSTOM"
-        slot2.asset_library_identifier = prefs.CustomLib_Slot3
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot3}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot3}"
+        slot4.asset_library_type = "CUSTOM"
+        slot4.asset_library_identifier = prefs.CustomLib_Slot3
+        slot4.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot3}.asset.blend/Brush/{prefs.CustomPieBrush_Slot3}"
 
         # Top Rightt
-        slot2 = pie.operator(
+        slot5 = pie.operator(
             "brush.asset_activate",
             icon="REC",
             text=prefs.CustomPieBrush_Slot4,
         )
 
-        slot2.asset_library_type = "CUSTOM"
-        slot2.asset_library_identifier = prefs.CustomLib_Slot4
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot4}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot4}"
+        slot5.asset_library_type = "CUSTOM"
+        slot5.asset_library_identifier = prefs.CustomLib_Slot4
+        slot5.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot4}.asset.blend/Brush/{prefs.CustomPieBrush_Slot4}"
 
         # Bottom Left
-        slot2 = pie.operator(
+        slot6 = pie.operator(
             "brush.asset_activate",
             icon="REC",
             text=prefs.CustomPieBrush_Slot5,
         )
 
-        slot2.asset_library_type = "CUSTOM"
-        slot2.asset_library_identifier = prefs.CustomLib_Slot5
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot5}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot5}"
+        slot6.asset_library_type = "CUSTOM"
+        slot6.asset_library_identifier = prefs.CustomLib_Slot5
+        slot6.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot5}.asset.blend/Brush/{prefs.CustomPieBrush_Slot5}"
 
         # Bottom Right
-        slot2 = pie.operator(
+        slot7 = pie.operator(
             "brush.asset_activate",
             icon="REC",
             text=prefs.CustomPieBrush_Slot6,
         )
 
-        slot2.asset_library_type = "CUSTOM"
-        slot2.asset_library_identifier = prefs.CustomLib_Slot6
-        slot2.relative_asset_identifier = f"Saved\\Brushes\\{prefs.CustomPieBrush_Slot6}.asset.blend\\Brush\\{prefs.CustomPieBrush_Slot6}"
+        slot7.asset_library_type = "CUSTOM"
+        slot7.asset_library_identifier = prefs.CustomLib_Slot6
+        slot7.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot6}.asset.blend/Brush/{prefs.CustomPieBrush_Slot6}"
 
 
 # Visibility Menu
@@ -742,7 +721,7 @@ class AllPie_MT_SculptVisibilityPie(Menu):
         ).mode = "HIDE_ACTIVE"
         # Bottom
         pie.operator(
-            "paint.hide_show_all", icon="HIDE_OFF", text="UnHide All"
+            "paint.hide_show_all", icon="REC", text="UnHide All"
         ).action = "SHOW"
         # Top
         pie.operator(
