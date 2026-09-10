@@ -91,7 +91,6 @@ All keybinds can be changed from the addon preferences, and individual pies can 
 | --- | --- |
 | Brush Settings | `Shift + Q` |
 | Essential Brushes | `W` |
-| Custom Brushes | `Shift + W` |
 | Transform | `Alt + W` |
 | Utility Brushes | `E` |
 | Visibility | `Shift + E` |
@@ -99,7 +98,8 @@ All keybinds can be changed from the addon preferences, and individual pies can 
 | Symmetry | `S` |
 | Multires | `D` |
 | Shading | `Z` |
-| Sculpt Paint | `Shift + C` |
+| Sculpt Paint |`C` |
+| Custom Brushes | `Shift + C` |
 
 > **Note:** These are the default AllPie keybinds. All keybinds can be changed from the addon preferences.
 
