@@ -6,6 +6,7 @@ from . import SculptModePies
 from . import EditModePies
 from . import CustomOperators
 from . import SettingsPanel
+from . import Modalop
 
 submodules = (
 AddonPreferences,
@@ -14,6 +15,7 @@ SculptModePies,
 EditModePies,
 SettingsPanel,
 ObjectModePies,
+Modalop,
 
 )
 
@@ -27,6 +29,7 @@ def register():
     SculptModePies.register()
     SettingsPanel.register()
     EditModePies.register()
+    Modalop.register()
 
 def unregister():
 
@@ -36,6 +39,7 @@ def unregister():
     SculptModePies.unregister()
     SettingsPanel.unregister()
     EditModePies.unregister()
+    Modalop.unregister()
 
 
 if __name__ == "__main__":

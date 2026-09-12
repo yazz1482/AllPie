@@ -480,9 +480,10 @@ class AllPie_MT_UtilBrushNestedPie(Menu):
             text="FaceSet From Mask",
         ).mode = "MASKED"
         # Right
-        pie.operator(
-            "wm.tool_set_by_id", icon="REC", text="Mesh Filter"
-        ).name = "builtin.mesh_filter"
+        pie.operator("mesh.selection_to_mask", icon="REC", text="Mask From Edit Mode Selection")
+        # pie.operator(
+        #     "wm.tool_set_by_id", icon="REC", text="Mesh Filter"
+        # ).name = "builtin.mesh_filter"
         # Bottom
         pie.operator(
             "sculpt.paint_mask_extract", icon="REC", text="Mask Extract"
