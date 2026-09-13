@@ -8,10 +8,7 @@ from bpy.props import StringProperty
 from . import CustomOperators
 
 
-# ============================================================
 # MENU HELPERS
-# ============================================================
-
 def OP(label, operator, **props):
     return ("OPERATOR", label, operator, props, False)
 
@@ -20,14 +17,8 @@ def INVOKE(label, operator, **props):
     return ("OPERATOR", label, operator, props, True)
 
 
-# ============================================================
 # MENUS
-# ============================================================
-
 EDGE_MENU = [
-    # OP("Mark Sharp", "mesh.mark_sharp"),
-    # OP("Mark Seam", "mesh.mark_seam"),
-    # OP("Clear Sharp", "mesh.mark_sharp", clear=True),
     INVOKE("LoopCut", "mesh.loopcut_slide"),
     INVOKE("LoopCut", "mesh.loopcut_slide"),
     INVOKE("Extrude", "mesh.extrude_region_move"),
@@ -112,10 +103,7 @@ REMESH_MENU = [
 ]
 
 
-# ============================================================
 # MENU REGISTRY
-# ============================================================
-
 MENUS = {
     "EDGE": EDGE_MENU,
     "VERTEX": VERTEX_MENU,
@@ -132,10 +120,7 @@ SPACE_MENUS = {
 }
 
 
-# ============================================================
 # MODAL SETTINGS
-# ============================================================
-
 INNER_RADIUS = 75
 OUTER_RADIUS = 175
 TEXT_RADIUS = 120
@@ -145,16 +130,15 @@ SEGMENTS = 24
 SLICE_COLOR = (0.08, 0.08, 0.08, 0.90)
 ACTIVE_SLICE_COLOR = (0.99, 0.99, 1.00, 0.40)
 
-DEFAULT_SEPARATOR_COLOR = (0.55, 0.55, 0.55, 0.9)
-SPACE_SEPARATOR_COLOR = (0.45, 0.35, 0.75, 0.9)
+SEPARATOR_COLORS = (
+    (0.55, 0.55, 0.55, 0.9),
+    (0.45, 0.35, 0.75, 0.9),
+)
 
 OUTLINE_WIDTH = 3.5
 
 
-# ============================================================
 # GET ACTIVE MENU
-# ============================================================
-
 def get_menu(menu_id, space=False):
 
     if space and menu_id in SPACE_MENUS:
@@ -163,10 +147,18 @@ def get_menu(menu_id, space=False):
     return MENUS[menu_id]
 
 
-# ============================================================
-# EXECUTE OPERATOR
-# ============================================================
+def set_menu(self, space, x, y):
 
+    self.space = space
+    self.menu = get_menu(self.menu_id, space)
+    self.slices = len(self.menu)
+    self.active = -1
+
+    build_geometry(self)
+    update_active(self, x, y)
+
+
+# EXECUTE OPERATOR
 def execute_slot(index, menu):
 
     item = menu[index]
@@ -183,10 +175,7 @@ def execute_slot(index, menu):
         op(**props)
 
 
-# ============================================================
 # UPDATE ACTIVE
-# ============================================================
-
 def update_active(self, x, y):
 
     dx = x - self.cx
@@ -204,14 +193,11 @@ def update_active(self, x, y):
     self.active = int(angle / (math.tau / self.slices))
 
 
-# ============================================================
 # BUILD GEOMETRY
-# ============================================================
-
 def build_geometry(self):
 
     self.batches = []
-    outline_verts = []
+    separator_verts = []
 
     for i in range(self.slices):
 
@@ -225,15 +211,8 @@ def build_geometry(self):
             cos_a = math.cos(angle)
             sin_a = math.sin(angle)
 
-            verts.append((
-                self.cx + cos_a * INNER_RADIUS,
-                self.cy + sin_a * INNER_RADIUS
-            ))
-
-            verts.append((
-                self.cx + cos_a * OUTER_RADIUS,
-                self.cy + sin_a * OUTER_RADIUS
-            ))
+            verts.append((self.cx + cos_a * INNER_RADIUS, self.cy + sin_a * INNER_RADIUS))
+            verts.append((self.cx + cos_a * OUTER_RADIUS, self.cy + sin_a * OUTER_RADIUS))
 
         indices = []
 
@@ -243,66 +222,39 @@ def build_geometry(self):
             indices.append((n, n + 1, n + 3))
             indices.append((n, n + 3, n + 2))
 
-        self.batches.append(
-            batch_for_shader(
-                self.shader,
-                "TRIS",
-                {"pos": verts},
-                indices=indices
-            )
-        )
+        self.batches.append(batch_for_shader(self.shader, "TRIS", {"pos": verts}, indices=indices))
 
-        outline_verts.extend((verts[0], verts[1]))
+        separator_verts.extend((verts[0], verts[1]))
 
-    self.outline_batch = batch_for_shader(
-        self.outline_shader,
-        "LINES",
-        {"pos": outline_verts}
-    )
+    self.separator_batch = batch_for_shader(self.separator_shader, "LINES", {"pos": separator_verts})
 
 
-# ============================================================
 # DRAW MENU
-# ============================================================
-
 def draw_menu(self):
 
     gpu.state.depth_test_set("NONE")
     gpu.state.blend_set("ALPHA")
 
     # Draw slices
-
     self.shader.bind()
 
     for i, batch in enumerate(self.batches):
 
-        self.shader.uniform_float(
-            "color",
-            ACTIVE_SLICE_COLOR if i == self.active else SLICE_COLOR
-        )
+        self.shader.uniform_float("color", ACTIVE_SLICE_COLOR if i == self.active else SLICE_COLOR)
 
         batch.draw(self.shader)
 
     # Draw separators
+    separator_color = SEPARATOR_COLORS[self.space]
 
-    separator_color = (
-        SPACE_SEPARATOR_COLOR
-        if self.space
-        else DEFAULT_SEPARATOR_COLOR
-    )
-
-    self.outline_shader.bind()
-    self.outline_shader.uniform_float(
-        "color",
-        separator_color
-    )
+    self.separator_shader.bind()
+    self.separator_shader.uniform_float("color", separator_color)
 
     gpu.state.line_width_set(OUTLINE_WIDTH)
-    self.outline_batch.draw(self.outline_shader)
+    self.separator_batch.draw(self.separator_shader)
     gpu.state.line_width_set(1.0)
 
     # Draw labels
-
     font_id = 0
     blf.size(font_id, 15)
 
@@ -310,10 +262,7 @@ def draw_menu(self):
 
         name = item[1]
 
-        angle = (
-            i * math.tau / self.slices
-            + math.tau / self.slices / 2
-        )
+        angle = (i * math.tau / self.slices + math.tau / self.slices / 2)
 
         x = self.cx + math.cos(angle) * TEXT_RADIUS
         y = self.cy + math.sin(angle) * TEXT_RADIUS
@@ -329,56 +278,30 @@ def draw_menu(self):
 
         for line_index, line in enumerate(lines):
 
-            width, height = blf.dimensions(
-                font_id,
-                line
-            )
+            width, height = blf.dimensions(font_id, line)
+            line_y = (y + total_height / 2 - (line_index + 1) * line_height)
 
-            line_y = (
-                y
-                + total_height / 2
-                - (line_index + 1) * line_height
-            )
-
-            blf.position(
-                font_id,
-                x - width / 2,
-                line_y,
-                0
-            )
-
-            blf.draw(
-                font_id,
-                line
-            )
+            blf.position(font_id, x - width / 2, line_y, 0)
+            blf.draw(font_id, line)
 
     gpu.state.blend_set("NONE")
     gpu.state.depth_test_set("LESS_EQUAL")
 
 
-# ============================================================
 # FINISH
-# ============================================================
-
 def finish(self, context):
 
     if self.handle is not None:
-        bpy.types.SpaceView3D.draw_handler_remove(
-            self.handle,
-            "WINDOW"
-        )
+        bpy.types.SpaceView3D.draw_handler_remove(self.handle, "WINDOW")
         self.handle = None
 
     self.batches.clear()
-    self.outline_batch = None
+    self.separator_batch = None
 
     context.area.tag_redraw()
 
 
-# ============================================================
 # RADIAL MENU
-# ============================================================
-
 class ModalRadialMenu(bpy.types.Operator):
 
     bl_idname = "view3d.modal_radial_menu"
@@ -389,34 +312,15 @@ class ModalRadialMenu(bpy.types.Operator):
 
     def invoke(self, context, event):
 
-        self.space = False
-        self.menu = get_menu(
-            self.menu_id,
-            False
-        )
-
-        self.slices = len(self.menu)
-
         self.cx = event.mouse_region_x
         self.cy = event.mouse_region_y
         self.active = -1
+        self.shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+        self.separator_shader = gpu.shader.from_builtin("UNIFORM_COLOR")
 
-        self.shader = gpu.shader.from_builtin(
-            "UNIFORM_COLOR"
-        )
+        set_menu(self, False, event.mouse_region_x, event.mouse_region_y)
 
-        self.outline_shader = gpu.shader.from_builtin(
-            "UNIFORM_COLOR"
-        )
-
-        build_geometry(self)
-
-        self.handle = bpy.types.SpaceView3D.draw_handler_add(
-            draw_menu,
-            (self,),
-            "WINDOW",
-            "POST_PIXEL"
-        )
+        self.handle = bpy.types.SpaceView3D.draw_handler_add(draw_menu, (self,), "WINDOW", "POST_PIXEL")
 
         context.window_manager.modal_handler_add(self)
         context.area.tag_redraw()
@@ -431,11 +335,7 @@ class ModalRadialMenu(bpy.types.Operator):
 
             old_active = self.active
 
-            update_active(
-                self,
-                event.mouse_region_x,
-                event.mouse_region_y
-            )
+            update_active(self, event.mouse_region_x, event.mouse_region_y)
 
             if self.active != old_active:
                 context.area.tag_redraw()
@@ -443,52 +343,33 @@ class ModalRadialMenu(bpy.types.Operator):
             return {"RUNNING_MODAL"}
 
         # Space toggle
-
         if event.type == "SPACE" and event.value == "PRESS":
 
-            self.space = not self.space
-
-            self.menu = get_menu(
-                self.menu_id,
-                self.space
-            )
-
-            self.slices = len(self.menu)
-            self.active = -1
-
-            build_geometry(self)
-
-            update_active(
-                self,
-                event.mouse_region_x,
-                event.mouse_region_y
-            )
+            set_menu(self, not self.space, event.mouse_region_x, event.mouse_region_y)
 
             context.area.tag_redraw()
 
             return {"RUNNING_MODAL"}
 
-        # Release opening key
-
-        if event.type == self.hotkey and event.value == "RELEASE":
-
-            active = self.active
-
-            if active >= 0:
-                finish(self, context)
-                execute_slot(active, self.menu)
-            else:
-                finish(self, context)
-
-            return {"FINISHED"}
-
-        # Ignore repeated opening-key presses while modal
+        # Opening key
 
         if event.type == self.hotkey:
+
+            if event.value == "RELEASE":
+
+                active = self.active
+
+                if active >= 0:
+                    finish(self, context)
+                    execute_slot(active, self.menu)
+                else:
+                    finish(self, context)
+
+                return {"FINISHED"}
+
             return {"RUNNING_MODAL"}
 
         # Cancel
-
         if event.type == "ESC":
 
             finish(self, context)
@@ -497,16 +378,7 @@ class ModalRadialMenu(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
 
-# ============================================================
-# KEYMAP
-# ============================================================
-
 addon_keymaps = []
-
-
-# ============================================================
-# REGISTER
-# ============================================================
 
 def register():
 
@@ -520,89 +392,43 @@ def register():
         km = kc.keymaps.new(name="Mesh")
 
         # Edge menu - E
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "E",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "E", "PRESS")
         kmi.properties.menu_id = "EDGE"
         kmi.properties.hotkey = "E"
-
         addon_keymaps.append((km, kmi))
 
         # Vertex menu - W
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "W",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "W", "PRESS")
         kmi.properties.menu_id = "VERTEX"
         kmi.properties.hotkey = "W"
-
         addon_keymaps.append((km, kmi))
 
         # Face menu - F
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "F",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "F", "PRESS")
         kmi.properties.menu_id = "FACE"
         kmi.properties.hotkey = "F"
-
         addon_keymaps.append((km, kmi))
 
         # Origin menu - D
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "D",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "D", "PRESS")
         kmi.properties.menu_id = "ORIGIN"
         kmi.properties.hotkey = "D"
-
         addon_keymaps.append((km, kmi))
 
         km = kc.keymaps.new(name="Sculpt")
 
         # Brush menu - W
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "W",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "W", "PRESS")
         kmi.properties.menu_id = "BRUSH"
         kmi.properties.hotkey = "W"
-
         addon_keymaps.append((km, kmi))
 
         # Remesh menu - R
-
-        kmi = km.keymap_items.new(
-            "view3d.modal_radial_menu",
-            "R",
-            "PRESS"
-        )
-
+        kmi = km.keymap_items.new("view3d.modal_radial_menu", "R", "PRESS")
         kmi.properties.menu_id = "REMESH"
         kmi.properties.hotkey = "R"
-
         addon_keymaps.append((km, kmi))
 
-
-# ============================================================
-# UNREGISTER
-# ============================================================
 
 def unregister():
 
@@ -613,10 +439,6 @@ def unregister():
 
     bpy.utils.unregister_class(ModalRadialMenu)
 
-
-# ============================================================
-# RUN
-# ============================================================
 
 if __name__ == "__main__":
     register()
