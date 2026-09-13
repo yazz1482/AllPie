@@ -24,7 +24,7 @@ piekeymapitems = [
     ("EnableEditModeVertexPie", "Mesh", "ONE", "PRESS", "ALLPIE_MT_EditModeVertexPie", False, False, False),
     ("EnableEditModeEdgePie", "Mesh", "TWO", "PRESS", "ALLPIE_MT_EditModeEdgePie", False, False, False),
     ("EnableEditModeFacePie", "Mesh", "THREE", "PRESS", "ALLPIE_MT_EditModeFacePie", False, False, False),
-    ("EnableEditModeMergePie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeMergePie", False, False, False),
+    # ("EnableEditModeMergePie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeMergePie", False, False, False),
     ("EnableEditModeToolSelectPie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeToolSelectPie", False, False, True),
     ("EnableEditModeUVPie", "Mesh", "W", "PRESS", "ALLPIE_MT_EditModeUVPie", True, False, False),
     ("EnableEditModeEdgeNestedPie", "Mesh", "E", "PRESS", "ALLPIE_MT_EditModeEdgeNestedPie", True, False, False),

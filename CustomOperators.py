@@ -513,6 +513,7 @@ class AllPie_OT_ToggleAutoMerge(Operator):
 class AllPie_OT_OriginSet(Operator):
     bl_idname = "cop.originset"
     bl_label = "Set Origin"
+    bl_options = {"REGISTER", "UNDO"}
 
     GeoToOrigin: BoolProperty(default=False)
     OriginToGeo: BoolProperty(default=False)
