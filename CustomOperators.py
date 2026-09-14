@@ -135,19 +135,22 @@ class AllPie_OT_Shading(Operator):
             ("MATERIAL", "MATERIAL", ""),
         ],
     )
-    SetShadingLight: EnumProperty(
-        name="SetShadingLight",
-        items=[
-            ("MATCAP", "MATCAP", ""),
-            ("STUDIO", "STUDIO", ""),
-            ("FLAT", "FLAT", ""),
-        ],
-    )
+    SwitchLighting: BoolProperty(default=False)
 
     def execute(self, context):
 
         bpy.context.space_data.shading.type = self.SetShading
-        bpy.context.space_data.shading.light = self.SetShadingLight
+
+        current_lighting=bpy.context.space_data.shading.light
+        if self.SwitchLighting == True:
+            if current_lighting == "STUDIO":
+                bpy.context.space_data.shading.light = "MATCAP"
+            elif current_lighting == "MATCAP":
+                bpy.context.space_data.shading.light = "STUDIO"
+            else:
+                bpy.context.space_data.shading.light = "MATCAP"
+
+
         return {"FINISHED"}
 
 class AllPie_OT_MultiRes(Operator):
