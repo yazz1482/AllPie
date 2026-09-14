@@ -16,9 +16,7 @@ class AllPie_OT_Symmetry(Operator):
             ("Toggle_X", "Toggle_X", ""),
             ("Toggle_Y", "Toggle_Y", ""),
             ("Toggle_Z", "Toggle_Z", ""),
-            ("Flip_X", "Flip_X", ""),
-            ("Flip_Y", "Flip_Y", ""),
-            ("Flip_Z", "Flip_Z", ""),
+            ("Flip", "Flip", ""),
         ],
     )
 
@@ -55,23 +53,11 @@ class AllPie_OT_Symmetry(Operator):
             else:
                 context.object.data.use_mirror_z = True
 
-        elif self.action == "Flip_X":
-            if symmetrydirection == "NEGATIVE_X":
-                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_X"
+        elif self.action == "Flip":
+            if "NEGATIVE"in symmetrydirection:
+                symmetrydirection = symmetrydirection.replace( "NEGATIVE", "POSITIVE")
             else:
-                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_X"
-
-        elif self.action == "Flip_Y":
-            if symmetrydirection == "NEGATIVE_Y":
-                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Y"
-            else:
-                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Y"
-
-        elif self.action == "Flip_Z":
-            if symmetrydirection == "NEGATIVE_Z":
-                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Z"
-            else:
-                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Z"
+                symmetrydirection = symmetrydirection.replace( "POSITIVE", "NEGATIVE")
 
         return {"FINISHED"}
 
@@ -165,10 +151,8 @@ class AllPie_OT_MultiRes(Operator):
             ("IncreaseSculptLevel", "IncreaseSculptLevel", ""),
             ("DecreaseSculptLevel", "DecreaseSculptLevel", ""),
             ("SculptLevelToViewport", "SculptLevelToViewport", ""),
-            ("SculptLevelToRender", "SculptLevelToRender", ""),
             ("DeleteHigher", "DeleteHigher", ""),
             ("ConformToBase", "ApplyToBase", ""),
-            ("MaxSculptLevel", "MaxSculptLevel", ""),
         ],
     )
 
@@ -219,9 +203,6 @@ class AllPie_OT_MultiRes(Operator):
         elif self.action == "SculptLevelToViewport":
             multires.levels = current_sculpt_level
 
-        elif self.action == "SculptLevelToRender":
-            multires.render_levels = current_sculpt_level
-
         elif self.action == "DeleteHigher":
             bpy.ops.object.multires_higher_levels_delete(
                 modifier="Multires"
@@ -232,9 +213,6 @@ class AllPie_OT_MultiRes(Operator):
                 modifier="Multires",
                 apply_heuristic=False,
             )
-
-        elif self.action == "MaxSculptLevel":
-            multires.sculpt_levels = multires.total_levels
 
         return {"FINISHED"}
 

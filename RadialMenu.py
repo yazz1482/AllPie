@@ -9,6 +9,7 @@ from bpy.props import StringProperty
 from . import CustomOperators
 from . import EditModePies
 from . import SculptModePies
+from . import ObjectModePies
 from . import Preferences
 
 
@@ -16,17 +17,20 @@ from . import Preferences
 MENUS = {
     **EditModePies.MENUS,
     **SculptModePies.MENUS,
+    **ObjectModePies.MENUS,
 }
 
 SPACE_MENUS = {
     **EditModePies.SPACE_MENUS,
     **SculptModePies.SPACE_MENUS,
+    **ObjectModePies.SPACE_MENUS,
 }
 
 
 # HOTKEYS
 MESH_HOTKEYS = EditModePies.MESH_HOTKEYS
 SCULPT_HOTKEYS = SculptModePies.SCULPT_HOTKEYS
+OBJECT_HOTKEYS = ObjectModePies.OBJECT_HOTKEYS
 
 
 # MODAL SETTINGS
@@ -71,7 +75,10 @@ def set_menu(self, space, x, y):
 # EXECUTE OPERATOR
 def execute_slot(index, menu):
 
-    item = next( (item for item in menu if item["slot"] == index), None)
+    item = next(
+        (item for item in menu if item["slot"] == index),
+        None
+    )
 
     if item is None:
         return
@@ -83,11 +90,14 @@ def execute_slot(index, menu):
     module, operator = operator.split(".")
     op = getattr(getattr(bpy.ops, module), operator)
 
-    if invoke:
-        op("INVOKE_DEFAULT", True, **props)
-    else:
-        op(**props)
+    try:
+        if invoke:
+            op("INVOKE_DEFAULT", True, **props)
+        else:
+            op(**props)
 
+    except RuntimeError as error:
+        print(f"[AllPie] Warning: {error}")
 
 # UPDATE ACTIVE
 def update_active(self, x, y):
@@ -502,6 +512,8 @@ def register():
         register_keymaps( kc, "Mesh")
 
         register_keymaps( kc, "Sculpt")
+
+        register_keymaps( kc, "Object Mode")
 
 
 def unregister():

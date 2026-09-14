@@ -5,6 +5,7 @@ from bpy.props import ( StringProperty, BoolProperty, CollectionProperty,)
 
 from . import EditModePies
 from . import SculptModePies
+from . import ObjectModePies
 
 
 # KEYBIND DATA
@@ -46,6 +47,17 @@ def get_keybind_definitions():
         definitions.append((
             f"SCULPT_{index}",
             "Sculpt",
+            key,
+            "PRESS",
+            menu_id,
+            modifiers,
+        ))
+    for index, (key, menu_id, modifiers) in enumerate(
+        ObjectModePies.OBJECT_HOTKEYS
+    ):
+        definitions.append((
+            f"OBJECT_{index}",
+            "Object Mode",
             key,
             "PRESS",
             menu_id,
@@ -335,6 +347,32 @@ class AllPiePreferences(AddonPreferences):
             ) in get_keybind_definitions():
 
                 if keymap_name != "Sculpt":
+                    continue
+
+                draw_keybind(
+                    body,
+                    kc,
+                    self,
+                    pref_id,
+                    keymap_name,
+                    menu_id,
+                )
+        # OBJECT MODE
+        header, body = layout.panel( "AllPie_Objectt_Mode", default_closed=False,)
+        header.label( text="Object Mode")
+
+        if body:
+
+            for (
+                pref_id,
+                keymap_name,
+                default_key,
+                default_value,
+                menu_id,
+                modifiers,
+            ) in get_keybind_definitions():
+
+                if keymap_name != "Object Mode":
                     continue
 
                 draw_keybind(

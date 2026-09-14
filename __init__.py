@@ -23,14 +23,12 @@ def register():
             importlib.reload(mod)    
     Preferences.register()
     CustomOperators.register()
-    ObjectModePies.register()
     RadialMenu.register()
 
 def unregister():
 
     Preferences.unregister()
     CustomOperators.unregister()
-    ObjectModePies.unregister()
     RadialMenu.unregister()
 
 
