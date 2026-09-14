@@ -1,21 +1,19 @@
 import bpy
 import importlib
-from . import AddonPreferences
+from . import Preferences
 from . import ObjectModePies
 from . import SculptModePies
 from . import EditModePies
 from . import CustomOperators
-from . import SettingsPanel
-from . import Modalop
+from . import RadialMenu
 
 submodules = (
-AddonPreferences,
+Preferences,
 CustomOperators,
 SculptModePies,
 EditModePies,
-SettingsPanel,
 ObjectModePies,
-Modalop,
+RadialMenu,
 
 )
 
@@ -23,23 +21,17 @@ def register():
     for mod in submodules:
         if mod.__name__ in locals() or mod.__name__ in __import__('sys').modules:
             importlib.reload(mod)    
-    AddonPreferences.register()
+    Preferences.register()
     CustomOperators.register()
     ObjectModePies.register()
-    SculptModePies.register()
-    SettingsPanel.register()
-    EditModePies.register()
-    Modalop.register()
+    RadialMenu.register()
 
 def unregister():
 
-    AddonPreferences.unregister()
+    Preferences.unregister()
     CustomOperators.unregister()
     ObjectModePies.unregister()
-    SculptModePies.unregister()
-    SettingsPanel.unregister()
-    EditModePies.unregister()
-    Modalop.unregister()
+    RadialMenu.unregister()
 
 
 if __name__ == "__main__":
