@@ -878,9 +878,7 @@ addon_keymaps = []
 
 def register():
 
-    bpy.utils.register_class(
-        ModalRadialMenu
-    )
+    bpy.utils.register_class( ModalRadialMenu)
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -920,9 +918,7 @@ def unregister():
 
     addon_keymaps.clear()
 
-    bpy.utils.unregister_class(
-        ModalRadialMenu
-    )
+    bpy.utils.unregister_class( ModalRadialMenu)
 
 
 if __name__ == "__main__":

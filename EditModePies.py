@@ -598,6 +598,63 @@ VIEW_MENU = [
     },
 ]
 
+MODE_MENU = [
+    {
+        "slot": 3,
+        "label": "Object Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "OBJECT",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Texture Paint\n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "TEXTURE_PAINT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Edit Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "EDIT",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Sculpt Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "SCULPT",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Weight Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "WEIGHT_PAINT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Vertex Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "VERTEX_PAINT",
+        },
+    },
+]
+
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
     "EDIT.DELETE": DELETE_MENU,
@@ -610,6 +667,7 @@ MENUS = {
     "EDIT.ORIGIN": ORIGIN_MENU,
     "EDIT.SHADING": SHADING_MENU,
     "EDIT.VIEW": VIEW_MENU,
+    "EDIT.MODE": MODE_MENU,
 }
 
 SPACE_MENUS = {
@@ -620,6 +678,7 @@ SPACE_MENUS = {
 
 
 MESH_HOTKEYS = [
+    ("TAB", "EDIT.MODE", {"ctrl":True}),
     ("ONE", "EDIT.VERTEX", {}),
     ("TWO", "EDIT.EDGE", {}),
     ("THREE", "EDIT.FACE", {}),

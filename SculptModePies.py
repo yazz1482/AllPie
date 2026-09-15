@@ -1,37 +1,21 @@
 # # Brush Settings Pie
-# class AllPie_MT_SculptBrushSettingsPie(Menu):
-#     bl_idname = "ALLPIE_MT_SculptBrushSettingsPie"
-#     bl_label = "SculptBrushSettings Pie"
-#
-#     def draw(self, context):
-#         layout = self.layout
-#         pie = layout.menu_pie()
-#         scene = context.scene
-#         # Left
 #         pie.operator( "wm.call_panel", text="Brush Stroke Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_stroke"
-#         # Right
-#         pie.operator( "cop.toggle_auto_masking", text="Toggle Stabalize Stroke", icon="REC",
-#         ).ToggleStabalizeStrokeOnActiveBrush = True
-#         # bottom
-#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
-#         ).ToggleAutoMaskingTopology = True
-#         # top
+
 #         pie.operator( "wm.call_panel", text="Brush Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_settings_advanced"
-#         # Top Left
-#         pie.operator( "wm.call_panel", text="Brush Falloff Menu", icon="REC"
-#         ).name = "VIEW3D_PT_tools_brush_falloff"
-#         # Top Right
+
 #         pie.operator( "wm.call_panel", text="Brush Texture Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_texture"
-#         # Bottom Left
-#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Cavity Inverted", icon="REC",
-#         ).ToggleAutoMaskingCavityInverted = True
-#         # Bottom Right
+
 #         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="REC"
 #         ).ToggleAutoMaskingCavity = True
 #
+#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
+#         ).ToggleAutoMaskingTopology = True
+
+#         pie.operator( "cop.toggle_auto_masking", text="Toggle Stabalize Stroke", icon="REC",
+#         ).ToggleStabalizeStrokeOnActiveBrush = True
 #
 # # CustomBrushes Pie
 # class AllPie_MT_CustomBrushPie(Menu):
@@ -900,6 +884,63 @@ PAINT_BRUSH_SPACE_MENU = [
     },
 ]
 
+MODE_MENU = [
+    {
+        "slot": 3,
+        "label": "Object Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "OBJECT",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Texture Paint\n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "TEXTURE_PAINT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Edit Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "EDIT",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Sculpt Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "SCULPT",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Weight Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "WEIGHT_PAINT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Vertex Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "VERTEX_PAINT",
+        },
+    },
+]
+
 MENUS = {
     "SCULPT.ESSENTIALS_BRUSH": ESSENTIALS_BRUSH_MENU,
     "SCULPT.PAINT_BRUSH": PAINT_BRUSH_MENU,
@@ -911,6 +952,7 @@ MENUS = {
     "SCULPT.TOOL_SELECT": TOOL_SELECT_MENU,
     "SCULPT.VISIBILITY": VISIBILITY_MENU,
     "SCULPT.VIEW": VIEW_MENU,
+    "SCULPT.MODE": MODE_MENU,
 }
 
 SPACE_MENUS = {
@@ -920,6 +962,7 @@ SPACE_MENUS = {
 }
 
 SCULPT_HOTKEYS = [
+    ("TAB", "SCULPT.MODE", {"ctrl": True}),
     ("ONE", "SCULPT.ESSENTIALS_BRUSH", {}),
     ("TWO", "SCULPT.PAINT_BRUSH", {}),
     ("Q", "SCULPT.VIEW", {"ctrl": True}),

@@ -291,19 +291,19 @@ class AllPiePreferences(AddonPreferences):
     deadzone: IntProperty(default=25, min= 15,max=50, step=1)
 
     slice_color: FloatVectorProperty( name="Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    active_slice_color: FloatVectorProperty( name="Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.59, 0.59, 0.59, 0.90), min=0.0, max=1.0,)
+    active_slice_color: FloatVectorProperty( name="Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
     #Spaced Slice Color
     spaced_slice_color: FloatVectorProperty( name="Spaced Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    spaced_active_slice_color: FloatVectorProperty( name="Spaced Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.59, 0.59, 0.59, 0.90), min=0.0, max=1.0,)
+    spaced_active_slice_color: FloatVectorProperty( name="Spaced Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
 
     font_color: FloatVectorProperty( name="Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
-    active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
+    active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.40, 1.00, 0.66, 1.0), min=0.0, max=1.0,)
     #Spaced Font Color
     spaced_font_color: FloatVectorProperty( name="Spaced Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
-    spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
+    spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.64, 0.52, 1.00, 1.0), min=0.0, max=1.0,)
 
-    separator_color: FloatVectorProperty( name="Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.55, 0.55, 0.55, 0.90), min=0.0, max=1.0,)
-    spaced_separator_color: FloatVectorProperty( name="Spaced Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.90), min=0.0, max=1.0,)
+    separator_color: FloatVectorProperty( name="Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.51, 0.50), min=0.0, max=1.0,)
+    spaced_separator_color: FloatVectorProperty( name="Spaced Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.50), min=0.0, max=1.0,)
 
     def draw(self, context):
 

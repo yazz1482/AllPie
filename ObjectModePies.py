@@ -413,7 +413,7 @@ VIEW_MENU = [
 
 MODE_MENU = [
     {
-        "slot": 0,
+        "slot": 3,
         "label": "Object Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -422,7 +422,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 0,
         "label": "Texture Paint\n Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -440,7 +440,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 3,
+        "slot": 4,
         "label": "Sculpt Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -468,7 +468,6 @@ MODE_MENU = [
     },
 ]
 
-# TODO - BUG: AFTER CHANGING KEYBIND, IT BREAKS HOVER FUNCTIONALITY
 MENUS = {
     "OBJECT.ADD": ADD_MENU,
     "OBJECT.APPLY_TRANSFORMS": APPLY_TRANSFORMS_MENU,
