@@ -1,22 +1,3 @@
-# # Brush Settings Pie
-#         pie.operator( "wm.call_panel", text="Brush Stroke Menu", icon="REC"
-#         ).name = "VIEW3D_PT_tools_brush_stroke"
-
-#         pie.operator( "wm.call_panel", text="Brush Menu", icon="REC"
-#         ).name = "VIEW3D_PT_tools_brush_settings_advanced"
-
-#         pie.operator( "wm.call_panel", text="Brush Texture Menu", icon="REC"
-#         ).name = "VIEW3D_PT_tools_brush_texture"
-
-#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="REC"
-#         ).ToggleAutoMaskingCavity = True
-#
-#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
-#         ).ToggleAutoMaskingTopology = True
-
-#         pie.operator( "cop.toggle_auto_masking", text="Toggle Stabalize Stroke", icon="REC",
-#         ).ToggleStabalizeStrokeOnActiveBrush = True
-#
 # # CustomBrushes Pie
 # class AllPie_MT_CustomBrushPie(Menu):
 #     bl_idname = "ALLPIE_MT_CustomBrushPie"
@@ -941,6 +922,57 @@ MODE_MENU = [
     },
 ]
 
+BRUSH_SETTINGS_MENU = [
+    {
+        "slot": 0,
+        "label": "Brush\nStroke\nMenu",
+        "operator": "wm.call_panel",
+        "props": {
+            "name": "VIEW3D_PT_tools_brush_stroke",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Brush\nSettings\nMenu",
+        "operator": "wm.call_panel",
+        "props": {
+            "name": "VIEW3D_PT_tools_brush_settings_advanced",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Brush\nTexture\nMenu",
+        "operator": "wm.call_panel",
+        "props": {
+            "name": "VIEW3D_PT_tools_brush_texture",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "AutoMasking\nCavity",
+        "operator": "cop.toggle_auto_masking",
+        "props": {
+            "ToggleAutoMaskingCavity": True,
+        },
+    },
+    {
+        "slot": 2,
+        "label": "AutoMasking\nTopology",
+        "operator": "cop.toggle_auto_masking",
+        "props": {
+            "ToggleAutoMaskingTopology": True,
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Toggle\nStabilize\nStroke",
+        "operator": "cop.toggle_auto_masking",
+        "props": {
+            "ToggleStabalizeStrokeOnActiveBrush": True,
+        },
+    },
+]
+
 MENUS = {
     "SCULPT.ESSENTIALS_BRUSH": ESSENTIALS_BRUSH_MENU,
     "SCULPT.PAINT_BRUSH": PAINT_BRUSH_MENU,
@@ -953,6 +985,7 @@ MENUS = {
     "SCULPT.VISIBILITY": VISIBILITY_MENU,
     "SCULPT.VIEW": VIEW_MENU,
     "SCULPT.MODE": MODE_MENU,
+    "SCULPT.BRUSH_SETTINGS": BRUSH_SETTINGS_MENU,
 }
 
 SPACE_MENUS = {
@@ -973,4 +1006,5 @@ SCULPT_HOTKEYS = [
     ("D", "SCULPT.MULTIRES", {}),
     ("Z", "SCULPT.SHADING", {}),
     ("V", "SCULPT.VISIBILITY", {}),
+    ("X", "SCULPT.BRUSH_SETTINGS", {}),
 ]
