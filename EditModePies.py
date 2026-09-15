@@ -3,6 +3,7 @@ SELECTION_MENU = [
         "slot": 5,
         "label": "Vert Select",
         "operator": "mesh.select_mode",
+        "invoke": True,
         "props": {
             "type": "VERT",
         },
@@ -11,6 +12,7 @@ SELECTION_MENU = [
         "slot": 0,
         "label": "Edge Select",
         "operator": "mesh.select_mode",
+        "invoke": True,
         "props": {
             "type": "EDGE",
         },
@@ -19,6 +21,7 @@ SELECTION_MENU = [
         "slot": 1,
         "label": "Face Select",
         "operator": "mesh.select_mode",
+        "invoke": True,
         "props": {
             "type": "FACE",
         },
@@ -291,6 +294,7 @@ FACE_MENU = [
         "slot": 0,
         "label": "Poke",
         "operator": "mesh.poke",
+        "invoke": True,
     },
     {
         "slot": 4,
@@ -314,6 +318,7 @@ FACE_MENU = [
         "slot": 5,
         "label": "Flip Normals",
         "operator": "mesh.flip_normals",
+        "invoke": True,
     },
     {
         "slot": 2,
@@ -490,7 +495,7 @@ SHADING_MENU = [
         },
     },
     {
-        "slot": 1,
+        "slot": 4,
         "label": "Wireframe",
         "operator": "cop.cshading",
         "invoke": True,
@@ -517,7 +522,7 @@ SHADING_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 1,
         "label": "Material",
         "operator": "cop.cshading",
         "invoke": True,
@@ -536,6 +541,63 @@ SHADING_MENU = [
     },
 ]
 
+VIEW_MENU = [
+    {
+        "slot": 0,
+        "label": "Top",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "TOP",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Front",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "FRONT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Right",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "RIGHT",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Bottom",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BOTTOM",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Left",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "LEFT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Back",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BACK",
+        },
+    },
+]
+
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
     "EDIT.DELETE": DELETE_MENU,
@@ -547,6 +609,7 @@ MENUS = {
     "EDIT.UV": UV_MENU,
     "EDIT.ORIGIN": ORIGIN_MENU,
     "EDIT.SHADING": SHADING_MENU,
+    "EDIT.VIEW": VIEW_MENU,
 }
 
 SPACE_MENUS = {
@@ -560,7 +623,8 @@ MESH_HOTKEYS = [
     ("ONE", "EDIT.VERTEX", {}),
     ("TWO", "EDIT.EDGE", {}),
     ("THREE", "EDIT.FACE", {}),
-    ("W", "EDIT.TOOL_SELECT", {"alt": True}),
+    ("Q", "EDIT.VIEW", {"ctrl": True}),
+    ("W", "EDIT.TOOL_SELECT", {}),
     ("A", "EDIT.SELECTION", {}),
     ("X", "EDIT.DELETE", {}),
     ("X", "EDIT.ORIGIN", {"alt": True}),

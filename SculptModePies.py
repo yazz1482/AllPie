@@ -1,137 +1,3 @@
-#
-# # Sculpt Paint Menu
-# PaintBrushes = {
-#     "b1": "Airbrush",
-#     "b2": "Blend Hard",
-#     "b3": "Blend Soft",
-#     "b4": "Blend Square",
-#     "b5": "Paint Blend",
-#     "b6": "Paint Hard",
-#     "b7": "Paint Hard Pressure",
-#     "b8": "Paint Soft",
-#     "b9": "Paint Soft Pressure",
-#     "b10": "Paint Square",
-#     "b11": "Sharpen",
-#     "b12": "Smear",
-# }
-#
-#
-# class AllPie_MT_SculptPaintPie(Menu):
-#     bl_idname = "ALLPIE_MT_SculptPaintPie"
-#     bl_label = "Painting Pie"
-#
-#     def draw(self, context):
-#         layout = self.layout
-#         pie = layout.menu_pie()
-#
-#         # Left
-#         slot1 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b6"]
-#         )
-#         slot1.asset_library_type = "ESSENTIALS"
-#         slot1.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b6"]
-#         # Right
-#         slot2 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b8"]
-#         )
-#         slot2.asset_library_type = "ESSENTIALS"
-#         slot2.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b8"]
-#         # Bottom
-#         pie.operator("cop.color_selector_popup", icon="COLOR", text="Color Picker")
-#         # Top
-#         pie.operator(
-#             "wm.call_asset_shelf_popover", icon="ASSET_MANAGER", text="Asset Shelf"
-#         ).name = "VIEW3D_AST_brush_sculpt"
-#         # Top Left
-#         slot3 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b7"]
-#         )
-#         slot3.asset_library_type = "ESSENTIALS"
-#         slot3.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b7"]
-#         # Top Right
-#         slot4 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b9"]
-#         )
-#         slot4.asset_library_type = "ESSENTIALS"
-#         slot4.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b9"]
-#         # Bottom Left
-#         slot5 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b4"]
-#         )
-#         slot5.asset_library_type = "ESSENTIALS"
-#         slot5.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b4"]
-#         # Bottom Right
-#         slot6 = pie.operator(
-#             "brush.asset_activate", icon="REC", text=PaintBrushes["b10"]
-#         )
-#         slot6.asset_library_type = "ESSENTIALS"
-#         slot6.relative_asset_identifier = EssentialsLibraryPath + PaintBrushes["b10"]
-#
-#
-# # Utility Brushes Menu
-# class AllPie_MT_UtilBrushPie(Menu):
-#     bl_idname = "ALLPIE_MT_UtilBrushPie"
-#     bl_label = "Utility Brushes Pie"
-#
-#     def draw(self, context):
-#         layout = self.layout
-#         pie = layout.menu_pie()
-#         pie.operator( "wm.tool_set_by_id", icon="REC", text="Mask Lasso").name = "builtin.lasso_mask"
-#         pie.operator( "wm.tool_set_by_id", icon="REC", text="Mask line").name = "builtin.line_mask"
-#         pie.operator( "wm.tool_set_by_id", icon="REC", text="Trim Lasso").name = "builtin.lasso_trim"
-#         pie.operator( "wm.tool_set_by_id", icon="REC", text="Trim line").name = "builtin.line_trim"
-#         maskop = pie.operator( "paint.mask_flood_fill", icon="REC", text="ClearMask")
-#         maskop.mode = 'VALUE'
-#         maskop.value = 0
-#         pie.operator( "paint.mask_flood_fill", icon="REC", text="InvertMask").mode='INVERT'
-
-# # Utility nested  Brushes Menu
-# class AllPie_MT_UtilBrushNestedPie(Menu):
-#     bl_idname = "ALLPIE_MT_UtilBrushPie"
-#     bl_label = "Utility Brushes Pie"
-
-#         pie.operator( "sculpt.face_sets_create", icon="REC", text="FaceSet From Mask",).mode = "MASKED"
-#         pie.operator("mesh.selection_to_mask", icon="REC", text="Mask From Edit Mode Selection")
-#         pie.operator( "sculpt.paint_mask_slice", icon="REC", text="Mask Slice").new_object = False
-#         pie.operator( "sculpt.paint_mask_slice", icon="REC", text="Mask Slice New Obj",)
-#         pie.operator( "sculpt.face_set_extract", icon="REC", text="FaceSet Extract",)
-#         pie.operator( "sculpt.paint_mask_extract", icon="REC", text="Mask Extract")
-#
-#
-# # Transform Menu
-# class AllPie_MT_SculptTransformPie(Menu):
-#     bl_idname = "ALLPIE_MT_SculptTransformPie"
-#     bl_label = "SculptTransform Pie"
-#
-#     def draw(self, context):
-#         layout = self.layout
-#         pie = layout.menu_pie()
-#         # Left
-#         pie.operator(
-#             "wm.tool_set_by_id", icon="TRANSFORM_ORIGINS", text="Move"
-#         ).name = "builtin.move"
-#         # Right
-#         pie.operator(
-#             "sculpt.set_pivot_position", icon="REC", text="Set Pivot"
-#         ).mode = "SURFACE"
-#         # Top
-#         pie.operator(
-#             "sculpt.set_pivot_position", icon="REC", text="Reset Pivot"
-#         ).mode = "ORIGIN"
-#         # Top Left
-#         pie.operator(
-#             "wm.tool_set_by_id", icon="FULLSCREEN_ENTER", text="Scale"
-#         ).name = "builtin.scale"
-#         # Bottom Left
-#         pie.operator(
-#             "wm.tool_set_by_id", icon="GESTURE_ROTATE", text="Rotate"
-#         ).name = "builtin.rotate"
-#         # Bottom Right
-#         pie.operator(
-#             "sculpt.mesh_filter", icon="REC", text="MeshFilter Inflate"
-#         ).type = "INFLATE"
-#
-#
 # # Brush Settings Pie
 # class AllPie_MT_SculptBrushSettingsPie(Menu):
 #     bl_idname = "ALLPIE_MT_SculptBrushSettingsPie"
@@ -142,40 +8,28 @@
 #         pie = layout.menu_pie()
 #         scene = context.scene
 #         # Left
-#         pie.operator(
-#             "wm.call_panel", text="Brush Stroke Menu", icon="REC"
+#         pie.operator( "wm.call_panel", text="Brush Stroke Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_stroke"
 #         # Right
-#         pie.operator(
-#             "cop.toggle_auto_masking",
-#             text="Toggle Stabalize Stroke",
-#             icon="REC",
+#         pie.operator( "cop.toggle_auto_masking", text="Toggle Stabalize Stroke", icon="REC",
 #         ).ToggleStabalizeStrokeOnActiveBrush = True
 #         # bottom
-#         pie.operator(
-#             "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
+#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Topology", icon="REC"
 #         ).ToggleAutoMaskingTopology = True
 #         # top
-#         pie.operator(
-#             "wm.call_panel", text="Brush Menu", icon="REC"
+#         pie.operator( "wm.call_panel", text="Brush Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_settings_advanced"
 #         # Top Left
-#         pie.operator(
-#             "wm.call_panel", text="Brush Falloff Menu", icon="REC"
+#         pie.operator( "wm.call_panel", text="Brush Falloff Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_falloff"
 #         # Top Right
-#         pie.operator(
-#             "wm.call_panel", text="Brush Texture Menu", icon="REC"
+#         pie.operator( "wm.call_panel", text="Brush Texture Menu", icon="REC"
 #         ).name = "VIEW3D_PT_tools_brush_texture"
 #         # Bottom Left
-#         pie.operator(
-#             "cop.toggle_auto_masking",
-#             text="AutoMasking Cavity Inverted",
-#             icon="REC",
+#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Cavity Inverted", icon="REC",
 #         ).ToggleAutoMaskingCavityInverted = True
 #         # Bottom Right
-#         pie.operator(
-#             "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="REC"
+#         pie.operator( "cop.toggle_auto_masking", text="AutoMasking Cavity", icon="REC"
 #         ).ToggleAutoMaskingCavity = True
 #
 #
@@ -272,87 +126,10 @@
 #         slot7.relative_asset_identifier = f"Saved/Brushes/{prefs.CustomPieBrush_Slot6}.asset.blend/Brush/{prefs.CustomPieBrush_Slot6}"
 #
 #
-# # Visibility Menu
-# class AllPie_MT_SculptVisibilityPie(Menu):
-#     bl_idname = "ALLPIE_MT_SculptVisibilityPie"
-#     bl_label = "Sculpt Visibility Pie"
-#
-#     def draw(self, context):
-#         layout = self.layout
-#         pie = layout.menu_pie()
-#         # Left
-#         pie.operator(
-#             "paint.visibility_invert",
-#             icon="REC",
-#             text="Invert Visibility",
-#         )
-#         # Right
-#         pie.operator(
-#             "sculpt.face_set_change_visibility",
-#             icon="REC",
-#             text="Hide Faceset",
-#         ).mode = "HIDE_ACTIVE"
-#         # Bottom
-#         pie.operator(
-#             "paint.hide_show_all", icon="REC", text="UnHide All"
-#         ).action = "SHOW"
-#         # Top
-#         pie.operator(
-#             "wm.call_panel", icon="SCULPTMODE_HLT", text="Sculpt Mode Overlay"
+
+#         pie.operator( "wm.call_panel", icon="SCULPTMODE_HLT", text="Sculpt Mode Overlay"
 #         ).name = "VIEW3D_PT_overlay_sculpt"
-#         # Top Left
-#         pie.operator(
-#             "wm.tool_set_by_id", icon="REC", text="Hide Polyline"
-#         ).name = "builtin.polyline_hide"
-#         # Top Right
-#         pie.operator(
-#             "wm.tool_set_by_id", icon="REC", text="Hide Lasso"
-#         ).name = "builtin.lasso_hide"
-#         # Bottom Left
-#         pie.operator(
-#             "paint.hide_show_masked",
-#             icon="REC",
-#             text="Hide Masked",
-#         ).action = "HIDE"
-#         # Bottom Right
-#         pie.operator(
-#             "sculpt.face_set_change_visibility",
-#             icon="REC",
-#             text="Solo Faceset",
-#         ).mode = "TOGGLE"
-#
-#
-# classes = (
-#     AllPie_MT_EssentialsBrushPie,
-#     AllPie_MT_EssentialsNestedBrushPie,
-#     AllPie_MT_SymmetryPie,
-#     AllPie_MT_RemeshPie,
-#     AllPie_MT_ShadingPie,
-#     AllPie_MT_MultiResPie,
-#     AllPie_MT_SculptPaintPie,
-#     AllPie_MT_UtilBrushPie,
-#     AllPie_MT_UtilBrushNestedPie,
-#     AllPie_MT_SculptTransformPie,
-#     AllPie_MT_SculptBrushSettingsPie,
-#     AllPie_MT_CustomBrushPie,
-#     AllPie_MT_SculptVisibilityPie,
-# )
-#
-#
-# def register():
-#
-#     for cls in classes:
-#         bpy.utils.register_class(cls)
-#
-#
-# def unregister():
-#
-#     for cls in classes:
-#         bpy.utils.unregister_class(cls)
-#
-#
-# if __name__ == "__main__":
-#     register()
+
 
 essentialspath = "brushes/essentials_brushes-mesh_sculpt.blend/Brush/"
 
@@ -367,13 +144,16 @@ Faceset = essentialspath + "FACE SET PAINT"
 Trim = essentialspath + "TRIM"
 Creasesharp = essentialspath + "CREASE SHARP"
 Snakehook = essentialspath + "SNAKE HOOK"
+Pinch = essentialspath + "PINCH/MAGNIFY"
+Pose = essentialspath + "POSE"
 
 
-ESSENTIALSBRUSH_MENU = [
+ESSENTIALS_BRUSH_MENU = [
     {
         "slot": 1,
         "label": "DRAW\nSHARP",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Drawsharp,
@@ -383,6 +163,7 @@ ESSENTIALSBRUSH_MENU = [
         "slot": 0,
         "label": "INFLATE",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Inflate,
@@ -392,6 +173,7 @@ ESSENTIALSBRUSH_MENU = [
         "slot": 5,
         "label": "DRAW",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Draw,
@@ -401,6 +183,7 @@ ESSENTIALSBRUSH_MENU = [
         "slot": 4,
         "label": "GRAB",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Grab,
@@ -410,6 +193,7 @@ ESSENTIALSBRUSH_MENU = [
         "slot": 3,
         "label": "SCRAPE",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Scrape,
@@ -419,6 +203,7 @@ ESSENTIALSBRUSH_MENU = [
         "slot": 2,
         "label": "CLAY\nSTRIPS",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Clay,
@@ -431,6 +216,7 @@ ESSENTIALS_BRUSH_SPACE_MENU = [
         "slot": 1,
         "label": "CREASE\nSHARP",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Creasesharp,
@@ -447,26 +233,29 @@ ESSENTIALS_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 5,
+        "label": "POSE",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": Pose,
+        },
+    },
+    {
+        "slot": 4,
         "label": "SNAKE\nHOOK",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Snakehook,
         },
     },
     {
-        "slot": 4,
-        "label": "FACESET",
-        "operator": "brush.asset_activate",
-        "props": {
-            "asset_library_type": "ESSENTIALS",
-            "relative_asset_identifier": Faceset,
-        },
-    },
-    {
         "slot": 3,
         "label": "TRIM",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
             "relative_asset_identifier": Trim,
@@ -474,11 +263,12 @@ ESSENTIALS_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 2,
-        "label": "MASK",
+        "label": "PINCH",
         "operator": "brush.asset_activate",
+        "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
-            "relative_asset_identifier": Mask,
+            "relative_asset_identifier": Pinch,
         },
     },
 ]
@@ -509,6 +299,7 @@ REMESH_MENU = [
         "slot": 4,
         "label": "+ VOXEL\n SIZE",
         "operator": "cop.cremesh",
+        "invoke": True,
         "props": {
             "action": "IncreaseVoxelSize25",
         },
@@ -523,6 +314,7 @@ REMESH_MENU = [
         "slot": 2,
         "label": "- VOXEL\n SIZE",
         "operator": "cop.cremesh",
+        "invoke": True,
         "props": {
             "action": "DecreaseVoxelSize25",
         },
@@ -541,29 +333,31 @@ UTIL_BRUSH_MENU = [
     },
     {
         "slot": 2,
-        "label": "Mask Line",
-        "operator": "wm.tool_set_by_id",
+        "label": "Mask Brush",
+        "operator": "brush.asset_activate",
         "invoke": True,
         "props": {
-            "name": "builtin.line_mask",
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": Mask,
         },
     },
     {
         "slot": 4,
-        "label": "Trim Lasso",
-        "operator": "wm.tool_set_by_id",
+        "label": "Faceset\nBrush",
+        "operator": "brush.asset_activate",
         "invoke": True,
         "props": {
-            "name": "builtin.lasso_trim",
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": Faceset,
         },
     },
     {
         "slot": 5,
-        "label": "Trim Line",
-        "operator": "wm.tool_set_by_id",
+        "label": "Faceset From \n Mask",
+        "operator": "sculpt.face_sets_create",
         "invoke": True,
         "props": {
-            "name": "builtin.line_trim",
+            "mode": "MASKED",
         },
     },
     {
@@ -585,20 +379,21 @@ UTIL_BRUSH_MENU = [
             "mode": "INVERT",
         },
     },
+
 ]
 
 UTIL_BRUSH_SPACE_MENU = [
     {
-        "slot": 3,
-        "label": "FaceSet From \nMask",
+        "slot": 0,
+        "label": "Mask From \nEdit Mode",
         "operator": "sculpt.face_sets_create",
         "invoke": True,
         "props": {
-            "mode": "MASKED",
+            "mode": "SELECTION",
         },
     },
     {
-        "slot": 0,
+        "slot": 3,
         "label": "Mask From \nEdit Mode",
         "operator": "mesh.selection_to_mask",
         "invoke": True,
@@ -757,7 +552,7 @@ SHADING_MENU = [
         },
     },
     {
-        "slot": 1,
+        "slot": 4,
         "label": "Wireframe",
         "operator": "cop.cshading",
         "invoke": True,
@@ -777,14 +572,11 @@ SHADING_MENU = [
     {
         "slot": 3,
         "label": "Switch\nLighting",
-        "operator": "cop.cshading",
+        "operator": "cop.togglesihoutte",
         "invoke": True,
-        "props": {
-            "SwitchLighting": True,
-        },
     },
     {
-        "slot": 4,
+        "slot": 1,
         "label": "Material",
         "operator": "cop.cshading",
         "invoke": True,
@@ -803,25 +595,339 @@ SHADING_MENU = [
     },
 ]
 
+
+TOOL_SELECT_MENU = [
+    {
+        "slot": 4,
+        "label": "Set Pivot",
+        "operator": "sculpt.set_pivot_position",
+        "invoke": True,
+        "props": {
+            "mode": "ORIGIN",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Transform",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.transform",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Rotate Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.rotate",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Set Pivot",
+        "operator": "sculpt.set_pivot_position",
+        "invoke": True,
+        "props": {
+            "mode": "SURFACE",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Move Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.move",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Scale Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.scale",
+        },
+    },
+]
+
+VISIBILITY_MENU = [
+    {
+        "slot": 5,
+        "label": "Hide \n Lasso",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.lasso_hide",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Hide \n Masked",
+        "operator": "paint.hide_show_masked",
+        "invoke": True,
+        "props": {
+            "action": "HIDE",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Solo \n Faceset",
+        "operator": "sculpt.face_set_change_visibility",
+        "invoke": True,
+        "props": {
+            "mode": "TOGGLE",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Invert \n Visible",
+        "operator": "paint.visibility_invert",
+        "invoke": True,
+    },
+    {
+        "slot": 0,
+        "label": "Show All",
+        "operator": "paint.hide_show_all",
+        "invoke": True,
+        "props": {
+            "action": "SHOW",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Hide \n Faceset",
+        "operator": "sculpt.face_set_change_visibility",
+        "invoke": True,
+        "props": {
+            "mode": "HIDE_ACTIVE",
+        },
+    },
+]
+
+VIEW_MENU = [
+    {
+        "slot": 0,
+        "label": "Top",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "TOP",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Front",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "FRONT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Right",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "RIGHT",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Bottom",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BOTTOM",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Left",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "LEFT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Back",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BACK",
+        },
+    },
+]
+
+PaintSoft = essentialspath + "PAINT SOFT"
+PaintHard = essentialspath + "PAINT HARD"
+PaintSquare = essentialspath + "PAINT SQUARE"
+PaintBlend = essentialspath + "PAINT BLEND"
+PaintAirbrush = essentialspath + "AIRBRUSH"
+PaintBlendHard = essentialspath + "BLEND HARD "
+PaintBlendSoft = essentialspath + "BLEND SOFT"
+PaintBlendSquare = essentialspath + "BLEND SQUARE"
+PaintBlur = essentialspath + "BLUR"
+PaintHardPressure = essentialspath + "PAINT HARD PRESSURE"
+PaintSoftPressure = essentialspath + "PAINT SOFT PRESSURE"
+PaintSharpen = essentialspath + "SHARPEN"
+PaintSmear = essentialspath + "SMEAR"
+
+
+PAINT_BRUSH_MENU = [
+    {
+        "slot": 0,
+        "label": "Airbrush",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintAirbrush,
+        },
+    },
+    {
+        "slot": 3,
+        "label": "ColorPicker",
+        "operator": "cop.color_selector_popup",
+        "invoke": True,
+    },
+    {
+        "slot": 1,
+        "label": "Paint Square",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintSquare,
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Paint Soft",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintSoft,
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Paint Hard",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintHard,
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Paint Blend",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintBlend,
+        },
+    },
+]
+
+PAINT_BRUSH_SPACE_MENU = [
+    {
+        "slot": 0,
+        "label": "AssetShelf",
+        "operator": "wm.call_asset_shelf_popover",
+        "invoke": True,
+        "props": {
+            "name": "VIEW3D_AST_brush_sculpt",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Smear",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintSquare,
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Paint Blend \n Square",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintBlendSquare,
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Paint Soft \n Pressure",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintSoftPressure,
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Paint Hard\n Pressure",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintHardPressure,
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Blend Soft",
+        "operator": "brush.asset_activate",
+        "invoke": True,
+        "props": {
+            "asset_library_type": "ESSENTIALS",
+            "relative_asset_identifier": PaintBlendSoft,
+        },
+    },
+]
+
 MENUS = {
-    "SCULPT.ESSENTIALS_BRUSH": ESSENTIALSBRUSH_MENU,
+    "SCULPT.ESSENTIALS_BRUSH": ESSENTIALS_BRUSH_MENU,
+    "SCULPT.PAINT_BRUSH": PAINT_BRUSH_MENU,
     "SCULPT.REMESH": REMESH_MENU,
     "SCULPT.UTIL_BRUSH": UTIL_BRUSH_MENU,
     "SCULPT.SYMMETRY": SYMMETRY_MENU,
     "SCULPT.MULTIRES": MULTIRES_MENU,
     "SCULPT.SHADING": SHADING_MENU,
+    "SCULPT.TOOL_SELECT": TOOL_SELECT_MENU,
+    "SCULPT.VISIBILITY": VISIBILITY_MENU,
+    "SCULPT.VIEW": VIEW_MENU,
 }
 
 SPACE_MENUS = {
     "SCULPT.ESSENTIALS_BRUSH": ESSENTIALS_BRUSH_SPACE_MENU,
     "SCULPT.UTIL_BRUSH": UTIL_BRUSH_SPACE_MENU,
+    "SCULPT.PAINT_BRUSH": PAINT_BRUSH_SPACE_MENU,
 }
 
 SCULPT_HOTKEYS = [
-    ("W", "SCULPT.ESSENTIALS_BRUSH", {}),
+    ("ONE", "SCULPT.ESSENTIALS_BRUSH", {}),
+    ("TWO", "SCULPT.PAINT_BRUSH", {}),
+    ("Q", "SCULPT.VIEW", {"ctrl": True}),
+    ("W", "SCULPT.TOOL_SELECT", {}),
     ("E", "SCULPT.UTIL_BRUSH", {}),
     ("R", "SCULPT.REMESH", {}),
     ("S", "SCULPT.SYMMETRY", {}),
     ("D", "SCULPT.MULTIRES", {}),
     ("Z", "SCULPT.SHADING", {}),
+    ("V", "SCULPT.VISIBILITY", {}),
 ]

@@ -56,8 +56,10 @@ class AllPie_OT_Symmetry(Operator):
         elif self.action == "Flip":
             if "NEGATIVE"in symmetrydirection:
                 symmetrydirection = symmetrydirection.replace( "NEGATIVE", "POSITIVE")
+                context.scene.tool_settings.sculpt.symmetrize_direction = symmetrydirection
             else:
                 symmetrydirection = symmetrydirection.replace( "POSITIVE", "NEGATIVE")
+                context.scene.tool_settings.sculpt.symmetrize_direction = symmetrydirection
 
         return {"FINISHED"}
 
@@ -126,8 +128,8 @@ class AllPie_OT_Shading(Operator):
     def execute(self, context):
 
         bpy.context.space_data.shading.type = self.SetShading
-
         current_lighting=bpy.context.space_data.shading.light
+
         if self.SwitchLighting == True:
             if current_lighting == "STUDIO":
                 bpy.context.space_data.shading.light = "MATCAP"
@@ -136,6 +138,26 @@ class AllPie_OT_Shading(Operator):
             else:
                 bpy.context.space_data.shading.light = "MATCAP"
 
+
+        return {"FINISHED"}
+
+class AllPie_OT_ToggleSilhoutte(Operator):
+    bl_idname = "cop.togglesihoutte"
+    bl_label = "Shading Operator"
+
+
+    def execute(self, context):
+
+        current_lighting=bpy.context.space_data.shading.light
+
+        if current_lighting == "STUDIO":
+            bpy.context.space_data.shading.light = "FLAT"
+        elif current_lighting == "MATCAP":
+            bpy.context.space_data.shading.light = "FLAT"
+        elif current_lighting == "FLAT":
+            bpy.context.space_data.shading.light = "MATCAP"
+        else:
+            bpy.context.space_data.shading.light = "MATCAP"
 
         return {"FINISHED"}
 
@@ -217,7 +239,6 @@ class AllPie_OT_MultiRes(Operator):
         return {"FINISHED"}
 
 
-
 class AllPie_OT_ColorSelectorPopup(Operator):
     bl_idname = "cop.color_selector_popup"
     bl_label = "Brush Color"
@@ -229,16 +250,14 @@ class AllPie_OT_ColorSelectorPopup(Operator):
         layout = self.layout
 
         brush = bpy.context.scene.tool_settings.sculpt.unified_paint_settings
-        # layout.template_color_picker(brush, "color", value_slider=True)
-        layout.prop( brush, "color", text="")
-        layout.operator("paint.brush_colors_flip", text="Swap Colors")
-        layout.operator("palette.new", text="Add Palette")
+        layout.template_color_picker(brush, "color", value_slider=True)
+        row = layout.row(align=True)
+        row.prop( brush, "color", text="")
+        row.prop( brush, "secondary_color", text="")
+        row.operator("paint.brush_colors_flip", text="", icon="FILE_REFRESH")
+        row.operator("paint.sample_color", text="", icon="EYEDROPPER")
         paint = context.tool_settings.sculpt
-        layout.template_ID(
-            paint,
-            "palette",
-            new="palette.new",
-        )
+        layout.template_ID( paint, "palette", new="palette.new",)
         layout.template_palette(paint, "palette")
 
     def execute(self, context):
@@ -481,22 +500,11 @@ class AllPie_OT_ToggleAutoMasking(Operator):
 
 # Edit Mode Operators
 
-
-class AllPie_OT_ToggleAutoMerge(Operator):
-    bl_idname = "cop.toggle_auto_merge"
-    bl_label = "Toggle Auto Merge"
-
-    def execute(self, context):
-        ts = context.scene.tool_settings
-        ts.use_mesh_automerge = not ts.use_mesh_automerge
-        return {"FINISHED"}
-
 class AllPie_OT_OriginSet(Operator):
     bl_idname = "cop.originset"
     bl_label = "Set Origin"
     bl_options = {"REGISTER", "UNDO"}
 
-    GeoToOrigin: BoolProperty(default=False)
     OriginToGeo: BoolProperty(default=False)
     OriginToCursor: BoolProperty(default=False)
     OriginToSelected: BoolProperty(default=False)
@@ -514,12 +522,6 @@ class AllPie_OT_OriginSet(Operator):
         if context.mode != 'EDIT_MESH':
             self.report({"WARNING"}, "Origin tools require Edit Mode")
             return {"CANCELLED"}
-
-        if self.GeoToOrigin == True:
-            bpy.ops.object.editmode_toggle()
-            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
-            bpy.ops.object.editmode_toggle()
-            self.GeoToOrigin = False
 
         elif self.OriginToGeo == True:
             bpy.ops.object.editmode_toggle()
@@ -547,12 +549,12 @@ classes = (
     AllPie_OT_Symmetry,
     AllPie_OT_Remesh,
     AllPie_OT_Shading,
+    AllPie_OT_ToggleSilhoutte,
     AllPie_OT_MultiRes,
     AllPie_OT_ColorSelectorPopup,
     AllPie_OT_CustomQuadriFlow,
     AllPie_OT_Search_SculptBrushes,
     AllPie_OT_ToggleAutoMasking,
-    AllPie_OT_ToggleAutoMerge,
     AllPie_OT_OriginSet,
 )
 

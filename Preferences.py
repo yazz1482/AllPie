@@ -1,7 +1,7 @@
 import bpy
 
 from bpy.types import AddonPreferences, PropertyGroup
-from bpy.props import ( StringProperty, BoolProperty, CollectionProperty,)
+from bpy.props import ( FloatProperty, FloatVectorProperty, StringProperty, IntProperty, BoolProperty, CollectionProperty,)
 
 from . import EditModePies
 from . import SculptModePies
@@ -123,6 +123,7 @@ def initialize_keybinds(prefs):
         else:
 
             keybind.menu_id = menu_id
+            keybind.value = "PRESS"
 
 
 # FIND LIVE KEYMAP ITEM
@@ -144,20 +145,20 @@ def find_addon_kmi(kc, pref_id):
 # SYNC LIVE KEYMAP TO PREFERENCES
 def sync_kmi_to_preferences(prefs, kmi, pref_id):
 
-    keybind = get_keybind_store(
-        prefs,
-        pref_id
-    )
+    keybind = get_keybind_store( prefs, pref_id)
 
     if keybind is None:
         return
 
     keybind.key = kmi.type
-    keybind.value = kmi.value
+    keybind.value = "PRESS"
 
     keybind.shift = kmi.shift
     keybind.ctrl = kmi.ctrl
     keybind.alt = kmi.alt
+    kmi.value = "PRESS"
+
+    # kmi.properties.hotkey = kmi.type
 
 
 # SYNC ALL LIVE KEYMAPS
@@ -191,11 +192,7 @@ def sync_all_keymaps_to_preferences():
 
         if kmi is not None:
 
-            sync_kmi_to_preferences(
-                prefs,
-                kmi,
-                pref_id
-            )
+            sync_kmi_to_preferences( prefs, kmi, pref_id)
 
 
 # UPDATE ENABLE STATE
@@ -263,6 +260,7 @@ def draw_keybind(
     )
 
     row = layout.row(align=True)
+    row.separator(factor=4)
     row.prop( keybind, "enabled", text="")
     row.label( text=get_menu_label(menu_id))
 
@@ -277,7 +275,6 @@ def draw_keybind(
     sync_kmi_to_preferences( prefs, kmi, pref_id)
 
     row.prop( kmi, "type", text="", event=True)
-    row.prop( kmi, "value", text="")
     row.prop( kmi, "ctrl_ui", text="Ctrl", toggle=True)
     row.prop( kmi, "shift_ui", text="Shift", toggle=True)
     row.prop( kmi, "alt_ui", text="Alt", toggle=True)
@@ -288,9 +285,25 @@ class AllPiePreferences(AddonPreferences):
 
     bl_idname = __package__
 
-    keybinds: CollectionProperty(
-        type=AllPieKeybind
-    )
+    keybinds: CollectionProperty( type=AllPieKeybind)
+
+    hold_time: FloatProperty(default=0.125, min = 0.010,max=0.500, step=1)
+    deadzone: IntProperty(default=25, min= 15,max=50, step=1)
+
+    slice_color: FloatVectorProperty( name="Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
+    active_slice_color: FloatVectorProperty( name="Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.59, 0.59, 0.59, 0.90), min=0.0, max=1.0,)
+    #Spaced Slice Color
+    spaced_slice_color: FloatVectorProperty( name="Spaced Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
+    spaced_active_slice_color: FloatVectorProperty( name="Spaced Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.59, 0.59, 0.59, 0.90), min=0.0, max=1.0,)
+
+    font_color: FloatVectorProperty( name="Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
+    active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
+    #Spaced Font Color
+    spaced_font_color: FloatVectorProperty( name="Spaced Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
+    spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
+
+    separator_color: FloatVectorProperty( name="Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.55, 0.55, 0.55, 0.90), min=0.0, max=1.0,)
+    spaced_separator_color: FloatVectorProperty( name="Spaced Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.90), min=0.0, max=1.0,)
 
     def draw(self, context):
 
@@ -303,6 +316,70 @@ class AllPiePreferences(AddonPreferences):
             sync_all_keymaps_to_preferences()
 
         layout = self.layout
+        header, body = layout.panel( "AllPie_Radial_Menu_Settings", default_closed=False,)
+        header.label( text="Radial Menu Settings")
+
+        if body:
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Key Hold Time")
+            row.prop(self, "hold_time", text="")
+            row = layout.row(align=True)
+
+            row.separator(factor=4)
+            row.label(text="Pie Menu Deadzone")
+            row.prop(self, "deadzone", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Slice Color")
+            row.prop(self, "slice_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Active Slice Color")
+            row.prop(self, "active_slice_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Font Color")
+            row.prop(self, "font_color", text="")
+            
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Active Font Color")
+            row.prop(self, "active_font_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Separator Color")
+            row.prop(self, "separator_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Spaced Slice Color")
+            row.prop(self, "spaced_slice_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Spaced Active Slice Color")
+            row.prop(self, "spaced_active_slice_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Spaced Font Color")
+            row.prop(self, "spaced_font_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Spaced Active Font Color")
+            row.prop(self, "spaced_active_font_color", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Spaced Separator Color")
+            row.prop(self, "spaced_separator_color", text="")
+
 
         # EDIT MODE
         header, body = layout.panel( "AllPie_Edit_Mode", default_closed=False,)

@@ -251,7 +251,7 @@ SHADING_MENU = [
         },
     },
     {
-        "slot": 1,
+        "slot": 4,
         "label": "Wireframe",
         "operator": "cop.cshading",
         "invoke": True,
@@ -278,7 +278,7 @@ SHADING_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 1,
         "label": "Material",
         "operator": "cop.cshading",
         "invoke": True,
@@ -354,6 +354,121 @@ TOOL_SELECT_MENU = [
     },
 ]
 
+VIEW_MENU = [
+    {
+        "slot": 0,
+        "label": "Top",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "TOP",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Front",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "FRONT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Right",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "RIGHT",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Bottom",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BOTTOM",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Left",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "LEFT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Back",
+        "operator": "view3d.view_axis",
+        "invoke": True,
+        "props": {
+            "type": "BACK",
+        },
+    },
+]
+
+MODE_MENU = [
+    {
+        "slot": 0,
+        "label": "Object Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "OBJECT",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Texture Paint\n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "TEXTURE_PAINT",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Edit Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "EDIT",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Sculpt Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "SCULPT",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Weight Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "WEIGHT_PAINT",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Vertex Paint \n Mode",
+        "operator": "object.mode_set",
+        "invoke": True,
+        "props": {
+            "mode": "VERTEX_PAINT",
+        },
+    },
+]
+
+# TODO - BUG: AFTER CHANGING KEYBIND, IT BREAKS HOVER FUNCTIONALITY
 MENUS = {
     "OBJECT.ADD": ADD_MENU,
     "OBJECT.APPLY_TRANSFORMS": APPLY_TRANSFORMS_MENU,
@@ -361,6 +476,8 @@ MENUS = {
     "OBJECT.SELECTION": SELECTION_MENU,
     "OBJECT.SHADING": SHADING_MENU,
     "OBJECT.TOOL_SELECT":TOOL_SELECT_MENU,
+    "OBJECT.VIEW":VIEW_MENU,
+    "OBJECT.MODE":MODE_MENU,
 }
 
 
@@ -368,7 +485,9 @@ SPACE_MENUS = {}
 
 
 OBJECT_HOTKEYS = [
+    ("TAB", "OBJECT.MODE", {"ctrl":True}),
     ("Q", "OBJECT.MODIFIER", {"shift":True}),
+    ("Q", "OBJECT.VIEW", {"ctrl":True}),
     ("W", "OBJECT.TOOL_SELECT", {}),
     ("A", "OBJECT.SELECTION", {}),
     ("A", "OBJECT.ADD", {"shift": True}),
