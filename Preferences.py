@@ -304,6 +304,8 @@ class AllPiePreferences(AddonPreferences):
 
     separator_color: FloatVectorProperty( name="Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.51, 0.50), min=0.0, max=1.0,)
     spaced_separator_color: FloatVectorProperty( name="Spaced Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.50), min=0.0, max=1.0,)
+    
+    mark_color: FloatVectorProperty( name="Mark Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
 
     def draw(self, context):
 
@@ -329,6 +331,11 @@ class AllPiePreferences(AddonPreferences):
             row.separator(factor=4)
             row.label(text="Pie Menu Deadzone")
             row.prop(self, "deadzone", text="")
+
+            row = layout.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Mark Color")
+            row.prop(self, "mark_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)

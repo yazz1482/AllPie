@@ -564,9 +564,8 @@ SHADING_MENU = [
 TOOL_SELECT_MENU = [
     {
         "slot": 4,
-        "label": "Set Pivot",
+        "label": "Reset Pivot",
         "operator": "sculpt.set_pivot_position",
-        "invoke": True,
         "props": {
             "mode": "ORIGIN",
         },
