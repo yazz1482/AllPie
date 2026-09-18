@@ -28,9 +28,9 @@ SPACE_MENUS = {
 
 # MODAL SETTINGS
 SLICES = 6
-INNER_RADIUS = 75
-OUTER_RADIUS = 185
-TEXT_RADIUS = 125
+INNER_RADIUS = 85
+OUTER_RADIUS = 180
+TEXT_RADIUS = 130
 SEGMENTS = 24
 
 # DEADZONE AND HOLDTIME
@@ -163,7 +163,7 @@ def build_geometry(self):
 
         i = item["slot"]
         name = item["label"]
-        angle = ( math.pi / 2 - i * math.tau / self.slices)
+        angle = ( start_angle - (i + 0.5) * slice_angle)
 
         x = ( self.cx + math.cos(angle) * TEXT_RADIUS)
         y = ( self.cy + math.sin(angle) * TEXT_RADIUS)
