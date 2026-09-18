@@ -926,6 +926,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 0,
         "label": "Brush\nStroke\nMenu",
         "operator": "wm.call_panel",
+        "invoke": True,
         "props": {
             "name": "VIEW3D_PT_tools_brush_stroke",
         },
@@ -934,6 +935,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 1,
         "label": "Brush\nSettings\nMenu",
         "operator": "wm.call_panel",
+        "invoke": True,
         "props": {
             "name": "VIEW3D_PT_tools_brush_settings_advanced",
         },
@@ -942,6 +944,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 5,
         "label": "Brush\nTexture\nMenu",
         "operator": "wm.call_panel",
+        "invoke": True,
         "props": {
             "name": "VIEW3D_PT_tools_brush_texture",
         },
@@ -950,6 +953,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 4,
         "label": "AutoMasking\nCavity",
         "operator": "cop.toggle_auto_masking",
+        "invoke": True,
         "props": {
             "ToggleAutoMaskingCavity": True,
         },
@@ -958,6 +962,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 2,
         "label": "AutoMasking\nTopology",
         "operator": "cop.toggle_auto_masking",
+        "invoke": True,
         "props": {
             "ToggleAutoMaskingTopology": True,
         },
@@ -966,6 +971,7 @@ BRUSH_SETTINGS_MENU = [
         "slot": 3,
         "label": "Toggle\nStabilize\nStroke",
         "operator": "cop.toggle_auto_masking",
+        "invoke": True,
         "props": {
             "ToggleStabalizeStrokeOnActiveBrush": True,
         },
