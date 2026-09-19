@@ -25,11 +25,17 @@ SPACE_MENUS = {
     **ObjectModePies.SPACE_MENUS,
 }
 
+MENU_NAMES = {
+    **EditModePies.MENU_NAMES,
+    **ObjectModePies.MENU_NAMES,
+    **SculptModePies.MENU_NAMES,
+}
+
 
 # MODAL SETTINGS
 SLICES = 6
-INNER_RADIUS = 85
-OUTER_RADIUS = 180
+INNER_RADIUS = 75
+OUTER_RADIUS = 185
 TEXT_RADIUS = 130
 SEGMENTS = 24
 
@@ -40,7 +46,8 @@ HOLD_TIME = 0.150
 # FONT SIZE AND SEPARATOR WIDTH
 FONT_ID = 0
 FONT_SIZE = 15
-OUTLINE_WIDTH = 3.5
+MENU_NAME_FONT_SIZE = 15
+OUTLINE_WIDTH = 3
 
 # COLORS
 SLICE_COLOR = (0.08, 0.08, 0.08, 0.90)
@@ -64,6 +71,7 @@ def set_menu(self, space, x, y):
 
     self.slices = SLICES
     self.active = -1
+    self.menu_name = MENU_NAMES.get(self.menu_id, "")
 
     build_geometry(self)
     update_active( self, x, y)
@@ -257,6 +265,13 @@ def draw_menu(self):
 
             blf.position( FONT_ID, x, y, 0)
             blf.draw( FONT_ID, line)
+
+    # DRAW MENU NAME
+    blf.size( FONT_ID, FONT_SIZE)
+    blf.color( FONT_ID, *(active_font_color))
+    menu_name_width, menu_name_height = blf.dimensions( FONT_ID, self.menu_name)
+    blf.position( FONT_ID, self.cx - menu_name_width / 2, self.cy + 20, 0)
+    blf.draw( FONT_ID, self.menu_name)
 
     gpu.state.blend_set( "NONE")
     gpu.state.depth_test_set( "LESS_EQUAL")

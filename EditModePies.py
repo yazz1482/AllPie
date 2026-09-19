@@ -55,6 +55,48 @@ SELECTION_MENU = [
     },
 ]
 
+SELECTION_SPACE_MENU = [
+    {
+        "slot": 2,
+        "label": "Loop Inner\nRegion",
+        "operator": "mesh.loop_to_region",
+        "invoke": True,
+    },
+    {
+        "slot": 5,
+        "label": "Select Sharp\n Edges",
+        "operator": "mesh.edges_select_sharp",
+        "invoke": True,
+    },
+    {
+        "slot": 3,
+        "label": "Select Mirror",
+        "operator": "mesh.select_mirror",
+        "invoke": True,
+        "props": {
+            "extend": True,
+            },
+    },
+    {
+        "slot": 4,
+        "label": "Checker \n Deselect",
+        "operator": "mesh.select_nth",
+        "invoke": True,
+    },
+    {
+        "slot": 0,
+        "label": "Select \nSimilar",
+        "operator": "mesh.select_similar",
+        "invoke": True,
+    },
+    {
+        "slot": 1,
+        "label": "Select \nLinked",
+        "operator": "mesh.select_linked_pick",
+        "invoke": True,
+    },
+]
+
 DELETE_MENU = [
     {
         "slot": 0,
@@ -103,6 +145,51 @@ DELETE_MENU = [
     },
 ]
 
+
+DELETE_SPACE_MENU = [
+    {
+        "slot": 0,
+        "label": "Edge & Face",
+        "operator": "mesh.delete",
+        "invoke": True,
+        "props": {
+            "type": "EDGE_FACE",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Delete Loose",
+        "operator": "mesh.delete_loose",
+        "invoke": True,
+    },
+    {
+        "slot": 2,
+        "label": "Make Planer\nFaces",
+        "operator": "mesh.face_make_planer",
+        "invoke": True,
+    },
+    {
+        "slot": 3,
+        "label": "Only Face",
+        "operator": "mesh.delete",
+        "invoke": True,
+        "props": {
+            "type": "ONLY_FACE",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Dengenerate \nDissolve",
+        "operator": "mesh.dissolve_degenerate",
+        "invoke": True,
+    },
+    {
+        "slot": 5,
+        "label": "Limited \nDissolve",
+        "operator": "mesh.dissolve_limited",
+        "invoke": True,
+    },
+]
 MERGE_MENU = [
     {
         "slot": 0,
@@ -166,8 +253,8 @@ VERTEX_MENU = [
     },
     {
         "slot": 1,
-        "label": "Knife Tool",
-        "operator": "mesh.knife_tool",
+        "label": "Vertex Slide",
+        "operator": "transform.vert_slide",
         "invoke": True,
     },
     {
@@ -204,7 +291,7 @@ VERTEX_MENU = [
 
 EDGE_MENU = [
     {
-        "slot": 1,
+        "slot": 4,
         "label": "Loop Cut",
         "operator": "mesh.loopcut_slide",
         "invoke": True,
@@ -225,9 +312,9 @@ EDGE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 0,
-        "label": "Grid Fill",
-        "operator": "mesh.fill_grid",
+        "slot": 1,
+        "label": "Edge Slide",
+        "operator": "transform.edge_slide",
         "invoke": True,
     },
     {
@@ -237,7 +324,7 @@ EDGE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 0,
         "label": "Fill",
         "operator": "mesh.edge_face_add",
         "invoke": True,
@@ -291,13 +378,13 @@ EDGE_SPACE_MENU = [
 
 FACE_MENU = [
     {
-        "slot": 0,
+        "slot": 5,
         "label": "Poke",
         "operator": "mesh.poke",
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 1,
         "label": "Extrude\nIndividual",
         "operator": "mesh.extrude_faces_move",
         "invoke": True,
@@ -309,15 +396,15 @@ FACE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 1,
+        "slot": 4,
         "label": "Inset",
         "operator": "mesh.inset",
         "invoke": True,
     },
     {
-        "slot": 5,
-        "label": "Flip Normals",
-        "operator": "mesh.flip_normals",
+        "slot": 0,
+        "label": "Grid Fill",
+        "operator": "mesh.fill_grid",
         "invoke": True,
     },
     {
@@ -331,12 +418,9 @@ FACE_MENU = [
 TOOL_SELECT_MENU = [
     {
         "slot": 4,
-        "label": "Cursor Tool",
-        "operator": "wm.tool_set_by_id",
+        "label": "Knife Tool",
+        "operator": "mesh.knife_tool",
         "invoke": True,
-        "props": {
-            "name": "builtin.cursor",
-        },
     },
     {
         "slot": 2,
@@ -670,10 +754,27 @@ MENUS = {
     "EDIT.MODE": MODE_MENU,
 }
 
+MENU_NAMES = {
+    "EDIT.SELECTION": "Selection",
+    "EDIT.DELETE": "Delete",
+    "EDIT.MERGE": "Merge",
+    "EDIT.VERTEX": "Vertex",
+    "EDIT.EDGE": "Edge",
+    "EDIT.FACE": "Face",
+    "EDIT.TOOL_SELECT": "Tool Select",
+    "EDIT.UV": "UV",
+    "EDIT.ORIGIN": "Origin",
+    "EDIT.SHADING": "Shading",
+    "EDIT.VIEW": "View",
+    "EDIT.MODE": "Mode",
+}
+
 SPACE_MENUS = {
     "EDIT.EDGE": EDGE_SPACE_MENU,
     "EDIT.VERTEX": MERGE_MENU,
-    "EDIT.FACE": UV_MENU
+    "EDIT.FACE": UV_MENU,
+    "EDIT.SELECTION": SELECTION_SPACE_MENU,
+    "EDIT.DELETE": DELETE_SPACE_MENU,
 }
 
 

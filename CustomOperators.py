@@ -498,6 +498,29 @@ class AllPie_OT_ToggleAutoMasking(Operator):
         return {"FINISHED"}
 
 
+class AllPie_OT_MaskFromFaceSet(Operator):
+    bl_idname = "cop.maskfrom_faceset"
+    bl_label = "Mask From Faceset"
+
+    def execute(self, context):
+        obj = context.object
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
+
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
+
+        bpy.ops.sculpt.face_set_change_visibility("INVOKE_DEFAULT")
+        bpy.ops.paint.mask_flood_fill(mode='VALUE', value=0)
+        bpy.ops.paint.mask_flood_fill(mode='INVERT')
+        bpy.ops.paint.hide_show_all(action='SHOW')
+        bpy.ops.paint.mask_flood_fill(mode='INVERT')
+
+        return{"FINISHED"}
+
+
 # Edit Mode Operators
 
 class AllPie_OT_OriginSet(Operator):
@@ -545,6 +568,46 @@ class AllPie_OT_OriginSet(Operator):
 
         return {"FINISHED"}
 
+
+class AllPie_OT_EditModeSwitch(Operator):
+    bl_idname = "cop.editmode_switch"
+    bl_label = "Edit Mode Switch"
+
+    action: EnumProperty(
+        name="Action",
+        items=[
+            ("VERTEX", "VERTEX", ""),
+            ("EDGE", "EDGE", ""),
+            ("FACE", "FACE", ""),
+        ],
+    )
+
+    def execute(self, context):
+        obj = context.object
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
+
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
+
+        if self.action == "VERTEX":
+            bpy.ops.object.mode_set(mode= "EDIT")
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+
+        elif self.action == "EDGE":
+            print("Edge Select Running")
+            bpy.ops.object.mode_set(mode= "EDIT")
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+
+        elif self.action == "FACE":
+            print("Face Select Running")
+            bpy.ops.object.mode_set(mode= "EDIT")
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+
+        return {"FINISHED"}
+
 classes = (
     AllPie_OT_Symmetry,
     AllPie_OT_Remesh,
@@ -554,8 +617,10 @@ classes = (
     AllPie_OT_ColorSelectorPopup,
     AllPie_OT_CustomQuadriFlow,
     AllPie_OT_Search_SculptBrushes,
+    AllPie_OT_MaskFromFaceSet,
     AllPie_OT_ToggleAutoMasking,
     AllPie_OT_OriginSet,
+    AllPie_OT_EditModeSwitch,
 )
 
 addon_keymaps = []

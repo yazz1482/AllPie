@@ -136,12 +136,12 @@ ESSENTIALS_BRUSH_MENU = [
     },
     {
         "slot": 5,
-        "label": "DRAW",
+        "label": "PINCH",
         "operator": "brush.asset_activate",
         "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
-            "relative_asset_identifier": Draw,
+            "relative_asset_identifier": Pinch,
         },
     },
     {
@@ -228,12 +228,12 @@ ESSENTIALS_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 2,
-        "label": "PINCH",
+        "label": "DRAW",
         "operator": "brush.asset_activate",
         "invoke": True,
         "props": {
             "asset_library_type": "ESSENTIALS",
-            "relative_asset_identifier": Pinch,
+            "relative_asset_identifier": Draw,
         },
     },
 ]
@@ -288,7 +288,7 @@ REMESH_MENU = [
 
 UTIL_BRUSH_MENU = [
     {
-        "slot": 1,
+        "slot": 2,
         "label": "Mask Lasso",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
@@ -297,7 +297,16 @@ UTIL_BRUSH_MENU = [
         },
     },
     {
-        "slot": 2,
+        "slot": 4,
+        "label": "Mask Line",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.line_mask",
+        },
+    },
+    {
+        "slot": 3,
         "label": "Mask Brush",
         "operator": "brush.asset_activate",
         "invoke": True,
@@ -307,7 +316,7 @@ UTIL_BRUSH_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 0,
         "label": "Faceset\nBrush",
         "operator": "brush.asset_activate",
         "invoke": True,
@@ -318,31 +327,36 @@ UTIL_BRUSH_MENU = [
     },
     {
         "slot": 5,
-        "label": "Faceset From \n Mask",
+        "label": "Faceset\nFrom Mask",
         "operator": "sculpt.face_sets_create",
         "invoke": True,
         "props": {
             "mode": "MASKED",
         },
     },
+    # {
+    #     "slot": 4,
+    #     "label": "Clear Mask",
+    #     "operator": "paint.mask_flood_fill",
+    #     "invoke": True,
+    #     "props": {
+    #         "mode": "VALUE",
+    #         "value": 0,
+    #     },
+    # },
+    # {
+    #     "slot": 3,
+    #     "label": "Invert Mask",
+    #     "operator": "paint.mask_flood_fill",
+    #     "invoke": True,
+    #     "props": {
+    #         "mode": "INVERT",
+    #     },
+    # },
     {
-        "slot": 0,
-        "label": "Clear Mask",
-        "operator": "paint.mask_flood_fill",
-        "invoke": True,
-        "props": {
-            "mode": "VALUE",
-            "value": 0,
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Invert Mask",
-        "operator": "paint.mask_flood_fill",
-        "invoke": True,
-        "props": {
-            "mode": "INVERT",
-        },
+        "slot": 1,
+        "label": "Mask From\nFaceset",
+        "operator": "cop.maskfrom_faceset",
     },
 
 ]
@@ -350,7 +364,7 @@ UTIL_BRUSH_MENU = [
 UTIL_BRUSH_SPACE_MENU = [
     {
         "slot": 0,
-        "label": "Mask From \nEdit Mode",
+        "label": "Faceset From\nEdit Mode",
         "operator": "sculpt.face_sets_create",
         "invoke": True,
         "props": {
@@ -359,7 +373,7 @@ UTIL_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 3,
-        "label": "Mask From \nEdit Mode",
+        "label": "Mask From\nEdit Mode",
         "operator": "mesh.selection_to_mask",
         "invoke": True,
     },
@@ -374,7 +388,7 @@ UTIL_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 4,
-        "label": "Mask Slice \nNew Obj",
+        "label": "Mask Slice\nNew Obj",
         "operator": "sculpt.paint_mask_slice",
         "invoke": True,
         "props": {
@@ -383,13 +397,13 @@ UTIL_BRUSH_SPACE_MENU = [
     },
     {
         "slot": 5,
-        "label": "FaceSet \nExtract",
+        "label": "FaceSet\nExtract",
         "operator": "sculpt.face_set_extract",
         "invoke": True,
     },
     {
         "slot": 1,
-        "label": "Mask \nExtract",
+        "label": "Mask\nExtract",
         "operator": "sculpt.paint_mask_extract",
         "invoke": True,
     },
@@ -398,7 +412,7 @@ UTIL_BRUSH_SPACE_MENU = [
 SYMMETRY_MENU = [
     {
         "slot": 0,
-        "label": "Symmetry \nMenu",
+        "label": "Symmetry\nMenu",
         "operator": "wm.call_panel",
         "invoke": True,
         "props": {
@@ -997,6 +1011,21 @@ SPACE_MENUS = {
     "SCULPT.ESSENTIALS_BRUSH": ESSENTIALS_BRUSH_SPACE_MENU,
     "SCULPT.UTIL_BRUSH": UTIL_BRUSH_SPACE_MENU,
     "SCULPT.PAINT_BRUSH": PAINT_BRUSH_SPACE_MENU,
+}
+
+MENU_NAMES = {
+    "SCULPT.ESSENTIALS_BRUSH": "Essentials Brushes",
+    "SCULPT.PAINT_BRUSH": "Paint Brushes",
+    "SCULPT.REMESH": "Remesh",
+    "SCULPT.UTIL_BRUSH": "Utility",
+    "SCULPT.SYMMETRY": "Symmetry",
+    "SCULPT.MULTIRES": "Multires",
+    "SCULPT.SHADING": "Shading",
+    "SCULPT.TOOL_SELECT": "Tool Select",
+    "SCULPT.VISIBILITY": "Visibility",
+    "SCULPT.VIEW": "View",
+    "SCULPT.MODE": "Mode",
+    "SCULPT.BRUSH_SETTINGS": "Brush Settings",
 }
 
 SCULPT_HOTKEYS = [

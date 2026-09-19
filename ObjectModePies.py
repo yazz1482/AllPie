@@ -480,6 +480,16 @@ MENUS = {
     "OBJECT.MODE":MODE_MENU,
 }
 
+MENU_NAMES = {
+    "OBJECT.ADD": "Add",
+    "OBJECT.APPLY_TRANSFORMS": "Apply Transforms",
+    "OBJECT.MODIFIER": "Add Modifier",
+    "OBJECT.SELECTION": "Selection",
+    "OBJECT.SHADING": "Shading",
+    "OBJECT.TOOL_SELECT": "Tool Select",
+    "OBJECT.VIEW": "View",
+    "OBJECT.MODE": "Mode",
+}
 
 SPACE_MENUS = {}
 
