@@ -290,11 +290,11 @@ class AllPiePreferences(AddonPreferences):
     hold_time: FloatProperty(default=0.125, min = 0.010,max=0.500, step=1)
     deadzone: IntProperty(default=25, min= 15,max=50, step=1)
 
-    slice_color: FloatVectorProperty( name="Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    active_slice_color: FloatVectorProperty( name="Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
-    #Spaced Slice Color
-    spaced_slice_color: FloatVectorProperty( name="Spaced Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    spaced_active_slice_color: FloatVectorProperty( name="Spaced Active Slice Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
+    slot_color: FloatVectorProperty( name="Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
+    active_slot_color: FloatVectorProperty( name="Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
+    #Spaced Slot Color
+    spaced_slot_color: FloatVectorProperty( name="Spaced Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
+    spaced_active_slot_color: FloatVectorProperty( name="Spaced Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
 
     font_color: FloatVectorProperty( name="Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
     active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.40, 1.00, 0.66, 1.0), min=0.0, max=1.0,)
@@ -302,8 +302,8 @@ class AllPiePreferences(AddonPreferences):
     spaced_font_color: FloatVectorProperty( name="Spaced Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
     spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.64, 0.52, 1.00, 1.0), min=0.0, max=1.0,)
 
-    separator_color: FloatVectorProperty( name="Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.51, 0.50), min=0.0, max=1.0,)
-    spaced_separator_color: FloatVectorProperty( name="Spaced Separator Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.50), min=0.0, max=1.0,)
+    outline_color: FloatVectorProperty( name="Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.51, 0.50), min=0.0, max=1.0,)
+    spaced_outline_color: FloatVectorProperty( name="Spaced Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.50), min=0.0, max=1.0,)
     
     mark_color: FloatVectorProperty( name="Mark Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
 
@@ -339,13 +339,13 @@ class AllPiePreferences(AddonPreferences):
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Slice Color")
-            row.prop(self, "slice_color", text="")
+            row.label(text="Slot Color")
+            row.prop(self, "slot_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Active Slice Color")
-            row.prop(self, "active_slice_color", text="")
+            row.label(text="Active Slot Color")
+            row.prop(self, "active_slot_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)
@@ -359,18 +359,18 @@ class AllPiePreferences(AddonPreferences):
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Separator Color")
-            row.prop(self, "separator_color", text="")
+            row.label(text="Outline Color")
+            row.prop(self, "outline_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Spaced Slice Color")
-            row.prop(self, "spaced_slice_color", text="")
+            row.label(text="Spaced Slot Color")
+            row.prop(self, "spaced_slot_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Spaced Active Slice Color")
-            row.prop(self, "spaced_active_slice_color", text="")
+            row.label(text="Spaced Active Slot Color")
+            row.prop(self, "spaced_active_slot_color", text="")
 
             row = layout.row(align=True)
             row.separator(factor=4)
@@ -384,8 +384,8 @@ class AllPiePreferences(AddonPreferences):
 
             row = layout.row(align=True)
             row.separator(factor=4)
-            row.label(text="Spaced Separator Color")
-            row.prop(self, "spaced_separator_color", text="")
+            row.label(text="Spaced Outline Color")
+            row.prop(self, "spaced_outline_color", text="")
 
 
         # EDIT MODE
