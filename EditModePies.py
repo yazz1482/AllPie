@@ -1,6 +1,77 @@
+from . import CommonMenus
+
 SELECTION_MENU = [
     {
+        "slot": 7,
+        "label": "Hide Selected",
+        "operator": "mesh.hide",
+        "invoke": True,
+        "props": {
+            "unselected": False,
+        },
+    },
+    {
+        "slot": 0,
+        "label": "UnHide All",
+        "operator": "mesh.reveal",
+        "invoke": True,
+    },
+    {
+        "slot": 1,
+        "label": "Solo Selected",
+        "operator": "mesh.hide",
+        "invoke": True,
+        "props": {
+            "unselected": True,
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Select All",
+        "operator": "mesh.select_all",
+        "invoke": True,
+        "props": {
+            "action": "SELECT",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Invert Selection",
+        "operator": "mesh.select_all",
+        "invoke": True,
+        "props": {
+            "action": "INVERT",
+        },
+    },
+    {
         "slot": 5,
+        "label": "Deselect All",
+        "operator": "mesh.select_all",
+        "invoke": True,
+        "props": {
+            "action": "DESELECT",
+        },
+    },
+    {
+        "slot": 6,
+        "label": "Loop Inner Region",
+        "operator": "mesh.loop_to_region",
+        "invoke": True,
+    },
+    {
+        "slot": 2,
+        "label": "Select Mirror",
+        "operator": "mesh.select_mirror",
+        "invoke": True,
+        "props": {
+            "extend": True,
+            },
+    },
+]
+
+SELECTION_SPACE_MENU = [
+    {
+        "slot": 7,
         "label": "Vert Select",
         "operator": "mesh.select_mode",
         "invoke": True,
@@ -28,70 +99,31 @@ SELECTION_MENU = [
     },
     {
         "slot": 2,
-        "label": "Select All",
-        "operator": "mesh.select_all",
-        "invoke": True,
-        "props": {
-            "action": "SELECT",
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Invert\n Selection",
-        "operator": "mesh.select_all",
-        "invoke": True,
-        "props": {
-            "action": "INVERT",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Deselect All",
-        "operator": "mesh.select_all",
-        "invoke": True,
-        "props": {
-            "action": "DESELECT",
-        },
-    },
-]
-
-SELECTION_SPACE_MENU = [
-    {
-        "slot": 2,
-        "label": "Loop Inner\nRegion",
-        "operator": "mesh.loop_to_region",
+        "label": "Select Non Manifold",
+        "operator": "mesh.select_non_manifold",
         "invoke": True,
     },
     {
-        "slot": 5,
-        "label": "Select Sharp\n Edges",
+        "slot": 6,
+        "label": "Select Sharp Edges",
         "operator": "mesh.edges_select_sharp",
         "invoke": True,
     },
     {
-        "slot": 3,
-        "label": "Select Mirror",
-        "operator": "mesh.select_mirror",
-        "invoke": True,
-        "props": {
-            "extend": True,
-            },
-    },
-    {
-        "slot": 4,
-        "label": "Checker \n Deselect",
+        "slot": 5,
+        "label": "Checker Deselect",
         "operator": "mesh.select_nth",
         "invoke": True,
     },
     {
-        "slot": 0,
-        "label": "Select \nSimilar",
+        "slot": 3,
+        "label": "Select Similar",
         "operator": "mesh.select_similar",
         "invoke": True,
     },
     {
-        "slot": 1,
-        "label": "Select \nLinked",
+        "slot": 4,
+        "label": "Select Linked",
         "operator": "mesh.select_linked_pick",
         "invoke": True,
     },
@@ -118,24 +150,42 @@ DELETE_MENU = [
     },
     {
         "slot": 2,
+        "label": "Only Face",
+        "operator": "mesh.delete",
+        "invoke": True,
+        "props": {
+            "type": "ONLY_FACE",
+        },
+    },
+    {
+        "slot": 3,
         "label": "Face Dissolve",
         "operator": "mesh.dissolve_faces",
         "invoke": True,
     },
     {
-        "slot": 3,
+        "slot": 4,
         "label": "Edge Dissolve",
         "operator": "mesh.dissolve_edges",
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 5,
         "label": "Vertices Dissolve",
         "operator": "mesh.dissolve_verts",
         "invoke": True,
     },
     {
-        "slot": 5,
+        "slot": 6,
+        "label": "Edge & Face",
+        "operator": "mesh.delete",
+        "invoke": True,
+        "props": {
+            "type": "EDGE_FACE",
+        },
+    },
+    {
+        "slot": 7,
         "label": "Vertices Delete",
         "operator": "mesh.delete",
         "invoke": True,
@@ -145,55 +195,10 @@ DELETE_MENU = [
     },
 ]
 
-
-DELETE_SPACE_MENU = [
-    {
-        "slot": 0,
-        "label": "Edge & Face",
-        "operator": "mesh.delete",
-        "invoke": True,
-        "props": {
-            "type": "EDGE_FACE",
-        },
-    },
-    {
-        "slot": 1,
-        "label": "Delete Loose",
-        "operator": "mesh.delete_loose",
-        "invoke": True,
-    },
-    {
-        "slot": 2,
-        "label": "Make Planer\nFaces",
-        "operator": "mesh.face_make_planer",
-        "invoke": True,
-    },
-    {
-        "slot": 3,
-        "label": "Only Face",
-        "operator": "mesh.delete",
-        "invoke": True,
-        "props": {
-            "type": "ONLY_FACE",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Dengenerate \nDissolve",
-        "operator": "mesh.dissolve_degenerate",
-        "invoke": True,
-    },
-    {
-        "slot": 5,
-        "label": "Limited \nDissolve",
-        "operator": "mesh.dissolve_limited",
-        "invoke": True,
-    },
-]
 MERGE_MENU = [
     {
         "slot": 0,
-        "label": "Separate\nSelection",
+        "label": "Separate Selection",
         "operator": "mesh.separate",
         "invoke": True,
         "props": {
@@ -202,12 +207,30 @@ MERGE_MENU = [
     },
     {
         "slot": 1,
-        "label": "Merge By\nDistance",
+        "label": "Separate Loose Geometry",
+        "operator": "mesh.separate",
+        "invoke": True,
+        "props": {
+            "type": "LOOSE",
+        },
+    },
+    {
+        "slot": 7,
+        "label": "Separate By Material",
+        "operator": "mesh.separate",
+        "invoke": True,
+        "props": {
+            "type": "MATERIAL",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Merge By Distance",
         "operator": "mesh.remove_doubles",
         "invoke": True,
     },
     {
-        "slot": 3,
+        "slot": 4,
         "label": "At Center",
         "operator": "mesh.merge",
         "invoke": True,
@@ -216,7 +239,7 @@ MERGE_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 5,
         "label": "At First",
         "operator": "mesh.merge",
         "invoke": True,
@@ -225,7 +248,7 @@ MERGE_MENU = [
         },
     },
     {
-        "slot": 5,
+        "slot": 6,
         "label": "At Cursor",
         "operator": "mesh.merge",
         "invoke": True,
@@ -234,7 +257,7 @@ MERGE_MENU = [
         },
     },
     {
-        "slot": 2,
+        "slot": 3,
         "label": "At Last",
         "operator": "mesh.merge",
         "invoke": True,
@@ -246,7 +269,7 @@ MERGE_MENU = [
 
 VERTEX_MENU = [
     {
-        "slot": 0,
+        "slot": 7,
         "label": "Rip Vertices",
         "operator": "mesh.rip_move",
         "invoke": True,
@@ -258,19 +281,31 @@ VERTEX_MENU = [
         "invoke": True,
     },
     {
-        "slot": 3,
-        "label": "Extrude\nVertices",
+        "slot": 0,
+        "label": "Extrude Vertices",
         "operator": "mesh.extrude_vertices_move",
         "invoke": True,
     },
     {
         "slot": 4,
-        "label": "Merge At\nCenter",
+        "label": "Merge At Center",
         "operator": "mesh.merge",
         "invoke": True,
         "props": {
             "type": "CENTER",
         },
+    },
+    {
+        "slot": 3,
+        "label": "Fill Face",
+        "operator": "mesh.edge_face_add",
+        "invoke": True,
+    },
+    {
+        "slot": 6,
+        "label": "Knife Tool",
+        "operator": "mesh.knife_tool",
+        "invoke": True,
     },
     {
         "slot": 5,
@@ -291,10 +326,19 @@ VERTEX_MENU = [
 
 EDGE_MENU = [
     {
-        "slot": 4,
+        "slot": 6,
         "label": "Loop Cut",
         "operator": "mesh.loopcut_slide",
         "invoke": True,
+    },
+    {
+        "slot": 7,
+        "label": "Split Edge",
+        "operator": "mesh.edge_split",
+        "invoke": True,
+        "props": {
+            "type": "EDGE",
+        },
     },
     {
         "slot": 2,
@@ -306,8 +350,8 @@ EDGE_MENU = [
         },
     },
     {
-        "slot": 3,
-        "label": "Extrude\nEdges",
+        "slot": 0,
+        "label": "Extrude Edges",
         "operator": "mesh.extrude_edges_move",
         "invoke": True,
     },
@@ -319,13 +363,19 @@ EDGE_MENU = [
     },
     {
         "slot": 5,
-        "label": "Bridge\nEdgeLoops",
+        "label": "Bridge EdgeLoops",
         "operator": "mesh.bridge_edge_loops",
         "invoke": True,
     },
     {
-        "slot": 0,
-        "label": "Fill",
+        "slot": 4,
+        "label": "Edge Crease",
+        "operator": "transform.edge_crease",
+        "invoke": True,
+    },
+    {
+        "slot": 3,
+        "label": "Fill Face",
         "operator": "mesh.edge_face_add",
         "invoke": True,
     },
@@ -339,7 +389,16 @@ EDGE_SPACE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 5,
+        "slot": 1,
+        "label": "Mark Sharp",
+        "operator": "mesh.set_sharpness_by_angle",
+        "invoke": True,
+        "props": {
+            "extend": True,
+            },
+    },
+    {
+        "slot": 7,
         "label": "Clear Sharp",
         "operator": "mesh.mark_sharp",
         "invoke": True,
@@ -354,7 +413,7 @@ EDGE_SPACE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 6,
         "label": "Clear Seam",
         "operator": "mesh.mark_seam",
         "invoke": True,
@@ -363,53 +422,83 @@ EDGE_SPACE_MENU = [
         },
     },
     {
-        "slot": 0,
-        "label": "Edge Bevel\nWeight",
+        "slot": 3,
+        "label": "Edge Bevel Weight",
         "operator": "transform.edge_bevelweight",
         "invoke": True,
     },
     {
-        "slot": 3,
+        "slot": 5,
+        "label": "Clear Bevel Weight",
+        "operator": "transform.edge_bevelweight",
+        "props": {
+            "value": -1,
+        },
+    },
+    {
+        "slot": 4,
         "label": "Edge Crease",
         "operator": "transform.edge_crease",
-        "invoke": True,
+        "props": {
+            "value": 1,
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Clear Edge Crease",
+        "operator": "transform.edge_crease",
+        "props": {
+            "value": -1,
+        },
     },
 ]
 
 FACE_MENU = [
     {
-        "slot": 5,
+        "slot": 6,
         "label": "Poke",
         "operator": "mesh.poke",
         "invoke": True,
     },
     {
-        "slot": 1,
-        "label": "Extrude\nIndividual",
-        "operator": "mesh.extrude_faces_move",
-        "invoke": True,
-    },
-    {
-        "slot": 3,
-        "label": "Extrude\nFaces",
+        "slot": 0,
+        "label": "Extrude Faces",
         "operator": "mesh.extrude_region_move",
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 2,
         "label": "Inset",
         "operator": "mesh.inset",
         "invoke": True,
     },
     {
-        "slot": 0,
+        "slot": 7,
+        "label": "Shade Face Smooth",
+        "operator": "mesh.faces_shade_smooth",
+        "invoke": True,
+    },
+    {
+        "slot": 1,
+        "label": "Shade Face Flat",
+        "operator": "mesh.faces_shade_flat",
+        "invoke": True,
+    },
+    {
+        "slot": 3,
+        "label": "Fill Face",
+        "operator": "mesh.edge_face_add",
+        "invoke": True,
+    },
+    {
+        "slot": 5,
         "label": "Grid Fill",
         "operator": "mesh.fill_grid",
         "invoke": True,
     },
     {
-        "slot": 2,
-        "label": "Extrude\nAlong Normals",
+        "slot": 4,
+        "label": "Extrude Along Normals",
         "operator": "mesh.extrude_region_shrink_fatten",
         "invoke": True,
     },
@@ -417,18 +506,39 @@ FACE_MENU = [
 
 TOOL_SELECT_MENU = [
     {
-        "slot": 4,
-        "label": "Knife Tool",
-        "operator": "mesh.knife_tool",
+        "slot": 6,
+        "label": "Smooth Tool",
+        "operator": "wm.tool_set_by_id",
         "invoke": True,
+        "props": {
+            "name": "builtin.smooth",
+        },
     },
     {
-        "slot": 2,
-        "label": "Lasso Select",
+        "slot": 3,
+        "label": "Lasso Select Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
         "props": {
             "name": "builtin.select_lasso",
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Circle Select Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.select_circle",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Cursor Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.cursor",
         },
     },
     {
@@ -441,7 +551,7 @@ TOOL_SELECT_MENU = [
         },
     },
     {
-        "slot": 3,
+        "slot": 4,
         "label": "Tweak Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
@@ -450,7 +560,7 @@ TOOL_SELECT_MENU = [
         },
     },
     {
-        "slot": 5,
+        "slot": 7,
         "label": "Move Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
@@ -471,13 +581,19 @@ TOOL_SELECT_MENU = [
 
 UV_MENU = [
     {
-        "slot": 0,
-        "label": "Follow\nActive Quads",
+        "slot": 1,
+        "label": "Follow Active Quads",
         "operator": "uv.follow_active_quads",
         "invoke": True,
     },
     {
-        "slot": 5,
+        "slot": 0,
+        "label": "UV Reset",
+        "operator": "uv.reset",
+        "invoke": True,
+    },
+    {
+        "slot": 7,
         "label": "Smart Project",
         "operator": "uv.smart_project",
         "invoke": True,
@@ -489,7 +605,7 @@ UV_MENU = [
         "invoke": True,
     },
     {
-        "slot": 4,
+        "slot": 6,
         "label": "Clear Seam",
         "operator": "mesh.mark_seam",
         "invoke": True,
@@ -498,8 +614,8 @@ UV_MENU = [
         },
     },
     {
-        "slot": 1,
-        "label": "Unwrap\nConformal",
+        "slot": 3,
+        "label": "Unwrap Conformal",
         "operator": "uv.unwrap",
         "invoke": True,
         "props": {
@@ -507,20 +623,29 @@ UV_MENU = [
         },
     },
     {
-        "slot": 3,
-        "label": "Unwrap\nMinimum\nStretch",
+        "slot": 4,
+        "label": "Unwrap Minimum Stretch",
         "operator": "uv.unwrap",
         "invoke": True,
         "props": {
             "method": "MINIMUM_STRETCH",
         },
     },
+    {
+        "slot": 5,
+        "label": "Unwrap Angle Based",
+        "operator": "uv.unwrap",
+        "invoke": True,
+        "props": {
+            "method": "ANGLE_BASED",
+        },
+    },
 ]
 
 ORIGIN_MENU = [
     {
-        "slot": 0,
-        "label": "Origin To\nGeometry",
+        "slot": 1,
+        "label": "Origin To Geometry",
         "operator": "cop.originset",
         "invoke": True,
         "props": {
@@ -528,14 +653,23 @@ ORIGIN_MENU = [
         },
     },
     {
-        "slot": 4,
-        "label": "Cursor To\nOrigin",
+        "slot": 7,
+        "label": "Cursor To Origin",
         "operator": "view3d.snap_cursor_to_center",
         "invoke": True,
     },
     {
         "slot": 5,
-        "label": "Selected To\nCursor",
+        "label": "Cursor Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.cursor",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Selected To Cursor",
         "operator": "view3d.snap_selected_to_cursor",
         "invoke": True,
         "props": {
@@ -543,8 +677,17 @@ ORIGIN_MENU = [
         },
     },
     {
-        "slot": 3,
-        "label": "Origin To\nSelected",
+        "slot": 4,
+        "label": "Geometry To Origin",
+        "operator": "cop.originset",
+        "invoke": True,
+        "props": {
+            "GeoToOrigin": True,
+        },
+    },
+    {
+        "slot": 2,
+        "label": "Origin To Selected",
         "operator": "cop.originset",
         "invoke": True,
         "props": {
@@ -552,192 +695,31 @@ ORIGIN_MENU = [
         },
     },
     {
-        "slot": 2,
-        "label": "Cursor To\nSelected",
+        "slot": 6,
+        "label": "Cursor To Selected",
         "invoke": True,
         "operator": "view3d.snap_cursor_to_selected",
     },
     {
-        "slot": 1,
-        "label": "Origin To\nCursor",
+        "slot": 3,
+        "label": "Origin To Cursor",
         "operator": "cop.originset",
         "invoke": True,
         "props": {
             "OriginToCursor": True,
         },
     },
-]
-
-SHADING_MENU = [
-    {
-        "slot": 0,
-        "label": "Shading\nMenu",
-        "operator": "wm.call_panel",
-        "invoke": True,
-        "props": {
-            "name": "VIEW3D_PT_shading",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Wireframe",
-        "operator": "cop.cshading",
-        "invoke": True,
-        "props": {
-            "SetShading": "WIREFRAME",
-        },
-    },
-    {
-        "slot": 2,
-        "label": "Solid",
-        "operator": "cop.cshading",
-        "invoke": True,
-        "props": {
-            "SetShading": "SOLID",
-        },
-    },
     {
         "slot": 3,
-        "label": "Switch\nLighting",
-        "operator": "cop.cshading",
+        "label": "Origin To Cursor",
+        "operator": "cop.originset",
         "invoke": True,
         "props": {
-            "SwitchLighting": True,
-        },
-    },
-    {
-        "slot": 1,
-        "label": "Material",
-        "operator": "cop.cshading",
-        "invoke": True,
-        "props": {
-            "SetShading": "MATERIAL",
-        },
-    },
-    {
-        "slot": 5,
-        "label": "Rendered",
-        "operator": "cop.cshading",
-        "invoke": True,
-        "props": {
-            "SetShading": "RENDERED",
+            "GeoToOrigin": True,
         },
     },
 ]
 
-VIEW_MENU = [
-    {
-        "slot": 0,
-        "label": "Top",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "TOP",
-        },
-    },
-    {
-        "slot": 1,
-        "label": "Front",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "FRONT",
-        },
-    },
-    {
-        "slot": 2,
-        "label": "Right",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "RIGHT",
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Bottom",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "BOTTOM",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Left",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "LEFT",
-        },
-    },
-    {
-        "slot": 5,
-        "label": "Back",
-        "operator": "view3d.view_axis",
-        "invoke": True,
-        "props": {
-            "type": "BACK",
-        },
-    },
-]
-
-MODE_MENU = [
-    {
-        "slot": 3,
-        "label": "Object Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "OBJECT",
-        },
-    },
-    {
-        "slot": 0,
-        "label": "Texture Paint\n Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "TEXTURE_PAINT",
-        },
-    },
-    {
-        "slot": 2,
-        "label": "Edit Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "EDIT",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Sculpt Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "SCULPT",
-        },
-    },
-    {
-        "slot": 1,
-        "label": "Weight Paint \n Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "WEIGHT_PAINT",
-        },
-    },
-    {
-        "slot": 5,
-        "label": "Vertex Paint \n Mode",
-        "operator": "object.mode_set",
-        "invoke": True,
-        "props": {
-            "mode": "VERTEX_PAINT",
-        },
-    },
-]
 
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
@@ -749,21 +731,24 @@ MENUS = {
     "EDIT.TOOL_SELECT": TOOL_SELECT_MENU,
     "EDIT.UV": UV_MENU,
     "EDIT.ORIGIN": ORIGIN_MENU,
-    "EDIT.SHADING": SHADING_MENU,
-    "EDIT.VIEW": VIEW_MENU,
-    "EDIT.MODE": MODE_MENU,
+
+    # Common Menus
+    "EDIT.SHADING": CommonMenus.SHADING_MENU,
+    "EDIT.VIEW": CommonMenus.VIEW_MENU,
+    "EDIT.MODE": CommonMenus.MODE_MENU,
 }
 
 MENU_NAMES = {
-    "EDIT.SELECTION": "Selection",
-    "EDIT.DELETE": "Delete",
-    "EDIT.MERGE": "Merge",
+    "EDIT.SELECTION": "Selection & Hide",
+    "EDIT.DELETE": "Deletion",
+    "EDIT.MERGE": "Merge & Separate",
     "EDIT.VERTEX": "Vertex",
     "EDIT.EDGE": "Edge",
     "EDIT.FACE": "Face",
     "EDIT.TOOL_SELECT": "Tool Select",
     "EDIT.UV": "UV",
     "EDIT.ORIGIN": "Origin",
+
     "EDIT.SHADING": "Shading",
     "EDIT.VIEW": "View",
     "EDIT.MODE": "Mode",
@@ -774,7 +759,6 @@ SPACE_MENUS = {
     "EDIT.VERTEX": MERGE_MENU,
     "EDIT.FACE": UV_MENU,
     "EDIT.SELECTION": SELECTION_SPACE_MENU,
-    "EDIT.DELETE": DELETE_SPACE_MENU,
 }
 
 
@@ -787,7 +771,7 @@ MESH_HOTKEYS = [
     ("W", "EDIT.TOOL_SELECT", {}),
     ("A", "EDIT.SELECTION", {}),
     ("X", "EDIT.DELETE", {}),
-    ("X", "EDIT.ORIGIN", {"alt": True}),
+    ("S", "EDIT.ORIGIN", {"shift": True}),
     ("M", "EDIT.MERGE", {}),
     ("U", "EDIT.UV", {}),
     ("Z", "EDIT.SHADING", {}),
