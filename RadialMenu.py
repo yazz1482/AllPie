@@ -5,30 +5,40 @@ import blf
 
 from gpu_extras.batch import batch_for_shader
 from bpy.props import StringProperty
+from . import Preferences
 from . import CustomOperators
 from . import EditModePies
 from . import SculptModePies
 from . import ObjectModePies
-from . import Preferences
-
+from . import TexturePaintPies
+from . import VertexPaintPies
+from . import WeightPaintPies
 
 # MENU REGISTRY
 MENUS = {
     **EditModePies.MENUS,
     **SculptModePies.MENUS,
     **ObjectModePies.MENUS,
+    **TexturePaintPies.MENUS,
+    **VertexPaintPies.MENUS,
+    **WeightPaintPies.MENUS,
 }
 
 SPACE_MENUS = {
     **EditModePies.SPACE_MENUS,
     **SculptModePies.SPACE_MENUS,
     **ObjectModePies.SPACE_MENUS,
+    **TexturePaintPies.SPACE_MENUS,
+    **VertexPaintPies.SPACE_MENUS,
+    **WeightPaintPies.SPACE_MENUS,
 }
 
 MENU_NAMES = {
     **EditModePies.MENU_NAMES,
     **ObjectModePies.MENU_NAMES,
     **SculptModePies.MENU_NAMES,
+    **TexturePaintPies.MENU_NAMES,
+    **WeightPaintPies.MENU_NAMES,
 }
 
 
@@ -482,6 +492,10 @@ def register():
         register_keymaps(kc, "Mesh")
         register_keymaps(kc, "Sculpt")
         register_keymaps(kc, "Object Mode")
+
+        register_keymaps(kc, "Image Paint")
+        register_keymaps(kc, "Vertex Paint")
+        register_keymaps(kc, "Weight Paint")
 
 
 def unregister():
