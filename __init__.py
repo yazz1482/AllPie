@@ -1,20 +1,25 @@
 import bpy
 import importlib
+from . import RadialMenu
 from . import Preferences
+from . import CustomOperators
+from . import CommonMenus
 from . import ObjectModePies
 from . import SculptModePies
 from . import EditModePies
-from . import CustomOperators
-from . import RadialMenu
+from . import TexturePaintPies
+from . import VertexPaintPies
 
 submodules = (
+RadialMenu,
 Preferences,
 CustomOperators,
+CommonMenus,
+ObjectModePies,
 SculptModePies,
 EditModePies,
-ObjectModePies,
-RadialMenu,
-
+TexturePaintPies,
+VertexPaintPies,
 )
 
 def register():
