@@ -1,11 +1,13 @@
 import bpy
-
 from bpy.types import AddonPreferences, PropertyGroup
 from bpy.props import ( FloatProperty, FloatVectorProperty, StringProperty, IntProperty, BoolProperty, CollectionProperty,)
 
 from . import EditModePies
 from . import SculptModePies
 from . import ObjectModePies
+from . import TexturePaintPies
+from . import VertexPaintPies
+from . import WeightPaintPies
 
 
 # KEYBIND DATA
@@ -58,6 +60,42 @@ def get_keybind_definitions():
         definitions.append((
             f"OBJECT_{index}",
             "Object Mode",
+            key,
+            "PRESS",
+            menu_id,
+            modifiers,
+        ))
+
+    for index, (key, menu_id, modifiers) in enumerate(
+        TexturePaintPies.TEXTUREPAINT_HOTKEYS
+    ):
+        definitions.append((
+            f"TEXTUREPAINT_{index}",
+            "Image Paint",
+            key,
+            "PRESS",
+            menu_id,
+            modifiers,
+        ))
+
+    for index, (key, menu_id, modifiers) in enumerate(
+        VertexPaintPies.VERTEXPAINT_HOTKEYS
+    ):
+        definitions.append((
+            f"VERTEXPAINT_{index}",
+            "Vertex Paint",
+            key,
+            "PRESS",
+            menu_id,
+            modifiers,
+        ))
+
+    for index, (key, menu_id, modifiers) in enumerate(
+        WeightPaintPies.WEIGHTPAINT_HOTKEYS
+    ):
+        definitions.append((
+            f"WEIGHTPAINT_{index}",
+            "Weight Paint",
             key,
             "PRESS",
             menu_id,
@@ -442,7 +480,7 @@ class AllPiePreferences(AddonPreferences):
                     menu_id,
                 )
         # OBJECT MODE
-        header, body = layout.panel( "AllPie_Objectt_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Object_Mode", default_closed=False,)
         header.label( text="Object Mode")
 
         if body:
@@ -467,7 +505,86 @@ class AllPiePreferences(AddonPreferences):
                     keymap_name,
                     menu_id,
                 )
+        # Texture Paint MODE
+        header, body = layout.panel( "AllPie_Texture_Paint_Mode", default_closed=False,)
+        header.label( text="Texture Paint")
 
+        if body:
+
+            for (
+                pref_id,
+                keymap_name,
+                default_key,
+                default_value,
+                menu_id,
+                modifiers,
+            ) in get_keybind_definitions():
+
+                if keymap_name != "Image Paint":
+                    continue
+
+                draw_keybind(
+                    body,
+                    kc,
+                    self,
+                    pref_id,
+                    keymap_name,
+                    menu_id,
+                )
+
+        # Vertex Paint MODE
+        header, body = layout.panel( "AllPie_Vertex_Paint_Mode", default_closed=False,)
+        header.label( text="Vertex Paint")
+
+        if body:
+
+            for (
+                pref_id,
+                keymap_name,
+                default_key,
+                default_value,
+                menu_id,
+                modifiers,
+            ) in get_keybind_definitions():
+
+                if keymap_name != "Vertex Paint":
+                    continue
+
+                draw_keybind(
+                    body,
+                    kc,
+                    self,
+                    pref_id,
+                    keymap_name,
+                    menu_id,
+                )
+
+        # Weight Paint MODE
+        header, body = layout.panel( "AllPie_Weight_Paint_Mode", default_closed=False,)
+        header.label( text="Weight Paint")
+
+        if body:
+
+            for (
+                pref_id,
+                keymap_name,
+                default_key,
+                default_value,
+                menu_id,
+                modifiers,
+            ) in get_keybind_definitions():
+
+                if keymap_name != "Weight Paint":
+                    continue
+
+                draw_keybind(
+                    body,
+                    kc,
+                    self,
+                    pref_id,
+                    keymap_name,
+                    menu_id,
+                )
 
 classes = (
     AllPieKeybind,
