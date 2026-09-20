@@ -121,25 +121,28 @@ class AllPie_OT_Shading(Operator):
             ("WIREFRAME", "WIREFRAME", ""),
             ("RENDERED", "RENDERED", ""),
             ("MATERIAL", "MATERIAL", ""),
+            ("STUDIO", "STUDIO", ""),
+            ("MATCAP", "MATCAP", ""),
+            ("FLAT", "FLAT", ""),
         ],
     )
-    SwitchLighting: BoolProperty(default=False)
+
+    SetLighting: EnumProperty(
+        name="SetLighting",
+        items=[
+            ("STUDIO", "STUDIO", ""),
+            ("MATCAP", "MATCAP", ""),
+            ("FLAT", "FLAT", ""),
+        ],
+    )
 
     def execute(self, context):
 
         bpy.context.space_data.shading.type = self.SetShading
-        current_lighting=bpy.context.space_data.shading.light
-
-        if self.SwitchLighting == True:
-            if current_lighting == "STUDIO":
-                bpy.context.space_data.shading.light = "MATCAP"
-            elif current_lighting == "MATCAP":
-                bpy.context.space_data.shading.light = "STUDIO"
-            else:
-                bpy.context.space_data.shading.light = "MATCAP"
-
+        bpy.context.space_data.shading.light = self.SetLighting
 
         return {"FINISHED"}
+
 
 class AllPie_OT_ToggleSilhoutte(Operator):
     bl_idname = "cop.togglesihoutte"
@@ -531,6 +534,7 @@ class AllPie_OT_OriginSet(Operator):
     OriginToGeo: BoolProperty(default=False)
     OriginToCursor: BoolProperty(default=False)
     OriginToSelected: BoolProperty(default=False)
+    GeoToOrigin: BoolProperty(default=False)
 
     def execute(self, context):
         obj = context.object
@@ -566,6 +570,12 @@ class AllPie_OT_OriginSet(Operator):
             bpy.ops.object.editmode_toggle()
             self.OriginToSelected = False
 
+        elif self.GeoToOrigin == True:
+            bpy.ops.object.editmode_toggle()
+            bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN', center='MEDIAN')
+            bpy.ops.object.editmode_toggle()
+            self.GeoToOrigin = False
+
         return {"FINISHED"}
 
 
@@ -573,7 +583,7 @@ class AllPie_OT_EditModeSwitch(Operator):
     bl_idname = "cop.editmode_switch"
     bl_label = "Edit Mode Switch"
 
-    action: EnumProperty(
+    Action: EnumProperty(
         name="Action",
         items=[
             ("VERTEX", "VERTEX", ""),
@@ -592,16 +602,16 @@ class AllPie_OT_EditModeSwitch(Operator):
             self.report({"WARNING"}, "Active object must be a mesh")
             return {"CANCELLED"}
 
-        if self.action == "VERTEX":
+        if self.Action == "VERTEX":
             bpy.ops.object.mode_set(mode= "EDIT")
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 
-        elif self.action == "EDGE":
+        elif self.Action == "EDGE":
             print("Edge Select Running")
             bpy.ops.object.mode_set(mode= "EDIT")
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
 
-        elif self.action == "FACE":
+        elif self.Action == "FACE":
             print("Face Select Running")
             bpy.ops.object.mode_set(mode= "EDIT")
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
