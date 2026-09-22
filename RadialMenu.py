@@ -46,6 +46,7 @@ MENU_NAMES = {
 SLICES = 8
 OUTER_RADIUS = 135
 MARK_RADIUS = 120
+MARK_POINT_RADIUS = 4
 
 MIN_BOX_WIDTH = 110
 MIN_BOX_HEIGHT = 35
@@ -107,6 +108,10 @@ def get_box_rect(self, angle, width, height):
 
 def set_menu(self, space, x, y):
     self.space = space
+
+    if self.menu_id == "SCULPT.ESSENTIALS_BRUSH":
+        MENUS[self.menu_id] = SculptModePies.ESSENTIALS_BRUSH_MENU
+        SPACE_MENUS[self.menu_id] = SculptModePies.ESSENTIALS_BRUSH_SPACE_MENU
 
     if space and self.menu_id in SPACE_MENUS:
         self.menu = SPACE_MENUS[self.menu_id]
@@ -223,6 +228,9 @@ def draw_mark(self):
     self.gesture_batch.draw(self.separator_shader)
     gpu.state.line_width_set(1.0)
 
+    if self.gesture_endpoint_batch is not None:
+        self.gesture_endpoint_batch.draw(self.separator_shader)
+
 
 def draw_boxes(self):
     self.shader.bind()
@@ -299,6 +307,7 @@ def draw(self):
 
 def update_gesture(self, x, y):
     self.gesture_batch = None
+    self.gesture_endpoint_batch = None
     dx = x - self.cx
     dy = y - self.cy
     distance = math.hypot(dx, dy)
@@ -315,6 +324,38 @@ def update_gesture(self, x, y):
         self.separator_shader,
         "LINES",
         {"pos": [(self.cx, self.cy), (x, y)]},
+    )
+
+    segments = 16
+    verts = [(x, y), (self.cx, self.cy)]
+    indices = []
+
+    for i in range(segments):
+        angle = math.tau * i / segments
+        verts.append((
+            x + math.cos(angle) * MARK_POINT_RADIUS,
+            y + math.sin(angle) * MARK_POINT_RADIUS,
+        ))
+
+    center_offset = 2 + segments
+
+    for i in range(segments):
+        next_i = (i + 1) % segments
+        indices.append((0, 2 + i, 2 + next_i))
+        indices.append((1, center_offset + i, center_offset + next_i))
+
+    for i in range(segments):
+        angle = math.tau * i / segments
+        verts.append((
+            self.cx + math.cos(angle) * MARK_POINT_RADIUS,
+            self.cy + math.sin(angle) * MARK_POINT_RADIUS,
+        ))
+
+    self.gesture_endpoint_batch = batch_for_shader(
+        self.separator_shader,
+        "TRIS",
+        {"pos": verts},
+        indices=indices,
     )
 
 
@@ -334,6 +375,7 @@ def finish(self, context):
     self.box_batches.clear()
     self.box_outline_batch = None
     self.gesture_batch = None
+    self.gesture_endpoint_batch = None
     context.area.tag_redraw()
 
 
@@ -418,6 +460,7 @@ class ModalRadialMenu(bpy.types.Operator):
         self.menu_visible = False
         self.finished = False
         self.gesture_batch = None
+        self.gesture_endpoint_batch = None
         self.opening_key = event.type
 
         prefs = Preferences.get_preferences()
