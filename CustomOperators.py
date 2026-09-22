@@ -1,4 +1,5 @@
 import bpy
+import bl_math
 from bpy.types import Operator
 from bpy.props import StringProperty
 from bpy.props import FloatProperty
@@ -16,7 +17,9 @@ class AllPie_OT_Symmetry(Operator):
             ("Toggle_X", "Toggle_X", ""),
             ("Toggle_Y", "Toggle_Y", ""),
             ("Toggle_Z", "Toggle_Z", ""),
-            ("Flip", "Flip", ""),
+            ("Flip_X", "Flip_X", ""),
+            ("Flip_Y", "Flip_Y", ""),
+            ("Flip_Z", "Flip_Z", ""),
         ],
     )
 
@@ -53,13 +56,26 @@ class AllPie_OT_Symmetry(Operator):
             else:
                 context.object.data.use_mirror_z = True
 
-        elif self.action == "Flip":
-            if "NEGATIVE"in symmetrydirection:
-                symmetrydirection = symmetrydirection.replace( "NEGATIVE", "POSITIVE")
-                context.scene.tool_settings.sculpt.symmetrize_direction = symmetrydirection
-            else:
-                symmetrydirection = symmetrydirection.replace( "POSITIVE", "NEGATIVE")
-                context.scene.tool_settings.sculpt.symmetrize_direction = symmetrydirection
+        elif self.action == "Flip_X":
+            if  symmetrydirection != "NEGATIVE_X":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_X"
+
+            elif symmetrydirection == "NEGATIVE_X":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_X"
+
+        elif self.action == "Flip_Y":
+            if  symmetrydirection != "NEGATIVE_Y":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Y"
+
+            elif symmetrydirection == "NEGATIVE_Y":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Y"
+
+        elif self.action == "Flip_Z":
+            if  symmetrydirection != "NEGATIVE_Z":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "NEGATIVE_Z"
+
+            elif symmetrydirection == "NEGATIVE_Z":
+                context.scene.tool_settings.sculpt.symmetrize_direction = "POSITIVE_Z"
 
         return {"FINISHED"}
 
@@ -166,7 +182,7 @@ class AllPie_OT_ToggleSilhoutte(Operator):
 
 class AllPie_OT_MultiRes(Operator):
     bl_idname = "cop.cmultirespie"
-    bl_label = "MultiRes Pie"
+    bl_label = "MultiRes Options"
     bl_options = {"REGISTER", "UNDO_GROUPED"}
 
     action: EnumProperty(
@@ -175,7 +191,9 @@ class AllPie_OT_MultiRes(Operator):
             ("MultiresSubdivide", "MultiresSubdivide", ""),
             ("IncreaseSculptLevel", "IncreaseSculptLevel", ""),
             ("DecreaseSculptLevel", "DecreaseSculptLevel", ""),
-            ("SculptLevelToViewport", "SculptLevelToViewport", ""),
+            ("IncreaseViewportLevel", "IncreaseViewportLevel", ""),
+            ("DecreaseViewportLevel", "DecreaseViewportLevel", ""),
+            ("SculptLevelToRender", "SculptLevelToRender", ""),
             ("DeleteHigher", "DeleteHigher", ""),
             ("ConformToBase", "ApplyToBase", ""),
         ],
@@ -210,12 +228,10 @@ class AllPie_OT_MultiRes(Operator):
             return {"CANCELLED"}
 
         current_sculpt_level = multires.sculpt_levels
+        current_viewport_level = multires.levels
 
         if self.action == "MultiresSubdivide":
-            bpy.ops.object.multires_subdivide(
-                modifier="Multires",
-                mode="CATMULL_CLARK",
-            )
+            bpy.ops.object.multires_subdivide( modifier="Multires", mode="CATMULL_CLARK",)
 
         elif self.action == "IncreaseSculptLevel":
             if current_sculpt_level < multires.total_levels:
@@ -225,19 +241,22 @@ class AllPie_OT_MultiRes(Operator):
             if current_sculpt_level > 0:
                 multires.sculpt_levels = current_sculpt_level - 1
 
-        elif self.action == "SculptLevelToViewport":
-            multires.levels = current_sculpt_level
+        elif self.action == "IncreaseViewportLevel":
+            if current_viewport_level < multires.total_levels:
+                multires.levels = current_viewport_level + 1
+
+        elif self.action == "DecreaseViewportLevel":
+            if current_viewport_level > 0:
+                multires.levels = current_viewport_level - 1
+
+        elif self.action == "SculptLevelToRender":
+            multires.render_levels = current_sculpt_level
 
         elif self.action == "DeleteHigher":
-            bpy.ops.object.multires_higher_levels_delete(
-                modifier="Multires"
-            )
+            bpy.ops.object.multires_higher_levels_delete( modifier="Multires")
 
         elif self.action == "ConformToBase":
-            bpy.ops.object.multires_base_apply(
-                modifier="Multires",
-                apply_heuristic=False,
-            )
+            bpy.ops.object.multires_base_apply( modifier="Multires", apply_heuristic=False,)
 
         return {"FINISHED"}
 
@@ -360,46 +379,45 @@ ESSENTIALS_BRUSH_ITEMS = [
     ("CREASE SHARP", "Crease Sharp", "Crease Sharp brush"),
     ("DRAW", "Draw", "Draw brush"),
     ("DRAW SHARP", "Draw Sharp", "Draw Sharp brush"),
-    ("INFLATE DEFLATE", "Inflate/Deflate", "Inflate/Deflate brush"),
+    ("INFLATE/DEFLATE", "Inflate/Deflate", "Inflate/Deflate brush"),
     ("LAYER", "Layer", "Layer brush"),
-    ("FILL DEEPEN", "Fill/Deepen", "Fill/Deepen brush"),
-    ("FLATTEN CONTRAST", "Flatten/Contrast", "Flatten/Contrast brush"),
+
+    ("FILL/DEEPEN", "Fill/Deepen", "Fill/Deepen brush"),
+    ("FLATTEN/CONTRAST", "Flatten/Contrast", "Flatten/Contrast brush"),
     ("PLATEAU", "Plateau", "Plateau brush"),
     ("SCRAPE MULTIPLANE", "Scrape Multiplane", "Scrape Multiplane brush"),
-    ("SCRAPE FILL", "Scrape/Fill", "Scrape/Fill brush"),
+    ("SCRAPE/FILL", "Scrape/Fill", "Scrape/Fill brush"),
     ("SMOOTH", "Smooth", "Smooth brush"),
     ("TRIM", "Trim", "Trim brush"),
-    ("BOUNDARY", "Boundary", "Boundary brush"),
-    ("ELASTIC GRAB", "Elastic Grab", "Elastic Grab brush"),
-    ("ELASTIC SNAKE HOOK", "Elastic Snake Hook", "Elastic Snake Hook brush"),
+
+    ("PINCH/MAGNIFY", "Pinch/Magnify", "Pinch/Magnify brush"),
     ("GRAB", "Grab", "Grab brush"),
     ("GRAB 2D", "Grab 2D", "Grab 2D brush"),
     ("GRAB SILHOUETTE", "Grab Silhouette", "Grab Silhouette brush"),
-    ("NUDGE", "Nudge", "Nudge brush"),
-    ("PINCH MAGNIFY", "Pinch/Magnify", "Pinch/Magnify brush"),
-    ("POSE", "Pose", "Pose brush"),
-    ("PULL", "Pull", "Pull brush"),
-    ("RELAX PINCH", "Relax Pinch", "Relax Pinch brush"),
-    ("RELAX SLIDE", "Relax Slide", "Relax Slide brush"),
+    ("ELASTIC GRAB", "Elastic Grab", "Elastic Grab brush"),
+    ("ELASTIC SNAKE HOOK", "Elastic Snake Hook", "Elastic Snake Hook brush"),
     ("SNAKE HOOK", "Snake Hook", "Snake Hook brush"),
     ("THUMB", "Thumb", "Thumb brush"),
+    ("POSE", "Pose", "Pose brush"),
+    ("NUDGE", "Nudge", "Nudge brush"),
+    ("PULL", "Pull", "Pull brush"),
     ("TWIST", "Twist", "Twist brush"),
+    ("RELAX SLIDE", "Relax Slide", "Relax Slide brush"),
+    ("RELAX PINCH", "Relax Pinch", "Relax Pinch brush"),
+    ("BOUNDARY", "Boundary", "Boundary brush"),
+
     ("DENSITY", "Density", "Density brush"),
-    ( "ERASE MULTIRES DISPLACEMENT",
-        "Erase Multires Displacement",
-        "Erase Multires Displacement brush",
-    ),
-    ("FACE SET PAINT", "Face Set Paint", "Face Set Paint brush"),
     ("MASK", "Mask", "Mask brush"),
-    (
-        "SMEAR MULTIRES DISPLACEMENT",
-        "Smear Multires Displacement",
-        "Smear Multires Displacement brush",
-    ),
+    ("FACE SET PAINT", "Face Set Paint", "Face Set Paint brush"),
+    ("ERASE MULTIRES DISPLACEMENT", "Erase Multires Displacement", "Erase Multires Displacement brush"),
+    ("SMEAR MULTIRES DISPLACEMENT", "Smear Multires Displacement", "Smear Multires Displacement brush"),
+    ("SCENE PROJECT", "Scene Project", "Scene Project brush"),
+
     ("AIRBRUSH", "Airbrush", "Airbrush"),
     ("BLEND HARD", "Blend Hard", "Blend Hard brush"),
     ("BLEND SOFT", "Blend Soft", "Blend Soft brush"),
     ("BLEND SQUARE", "Blend Square", "Blend Square brush"),
+    ("BLUR", "Blur", "Blur brush"),
     ("PAINT BLEND", "Paint Blend", "Paint Blend brush"),
     ("PAINT HARD", "Paint Hard", "Paint Hard brush"),
     ("PAINT HARD PRESSURE", "Paint Hard Pressure", "Paint Hard Pressure brush"),
@@ -408,18 +426,19 @@ ESSENTIALS_BRUSH_ITEMS = [
     ("PAINT SQUARE", "Paint Square", "Paint Square brush"),
     ("SHARPEN", "Sharpen", "Sharpen brush"),
     ("SMEAR", "Smear", "Smear brush"),
-    ("BEND BOUNDARY CLOTH", "Bend Boundary Cloth", "Bend Boundary Cloth brush"),
-    ("BEND TWIST CLOTH", "Bend/Twist Cloth", "Bend/Twist Cloth brush"),
+
     ("DRAG CLOTH", "Drag Cloth", "Drag Cloth brush"),
-    ("EXPAND CONTRACT CLOTH", "Expand/Contract Cloth", "Expand/Contract Cloth brush"),
+    ("PUSH CLOTH", "Push Cloth", "Push Cloth brush"),
     ("GRAB CLOTH", "Grab Cloth", "Grab Cloth brush"),
     ("GRAB PLANAR CLOTH", "Grab Planar Cloth", "Grab Planar Cloth brush"),
     ("GRAB RANDOM CLOTH", "Grab Random Cloth", "Grab Random Cloth brush"),
     ("INFLATE CLOTH", "Inflate Cloth", "Inflate Cloth brush"),
-    ("PINCH FOLDS CLOTH", "Pinch Folds Cloth", "Pinch Folds Cloth brush"),
+    ("EXPAND/CONTRACT CLOTH", "Expand/Contract Cloth", "Expand/Contract Cloth brush"),
     ("PINCH POINT CLOTH", "Pinch Point Cloth", "Pinch Point Cloth brush"),
-    ("PUSH CLOTH", "Push Cloth", "Push Cloth brush"),
-    ("STRETCH MOVE CLOTH", "Stretch/Move Cloth", "Stretch/Move Cloth brush"),
+    ("PINCH FOLDS CLOTH", "Pinch Folds Cloth", "Pinch Folds Cloth brush"),
+    ("BEND/TWIST CLOTH", "Bend/Twist Cloth", "Bend/Twist Cloth brush"),
+    ("STRETCH/MOVE CLOTH", "Stretch/Move Cloth", "Stretch/Move Cloth brush"),
+    ("BEND BOUNDARY CLOTH", "Bend Boundary Cloth", "Bend Boundary Cloth brush"),
     ("TWIST BOUNDARY CLOTH", "Twist Boundary Cloth", "Twist Boundary Cloth brush"),
 ]
 
@@ -441,10 +460,9 @@ class AllPie_OT_Search_SculptBrushes(Operator):
         return {"RUNNING_MODAL"}
 
     def execute(self, context):
+
         prefs = context.preferences.addons[__package__].preferences
-        temp_item = self.SearchBrush
-        temp_prop = self.PrefProperty
-        setattr(prefs, temp_prop, temp_item)
+        setattr(prefs, self.PrefProperty, self.SearchBrush)
 
         return {"FINISHED"}
 
@@ -454,6 +472,7 @@ class AllPie_OT_ToggleAutoMasking(Operator):
     bl_label = "ToggleAutoMasking Operator"
 
     ToggleAutoMaskingTopology: BoolProperty(default=False)
+    ToggleAutoMaskingFaceSet: BoolProperty(default=False)
     ToggleAutoMaskingCavity: BoolProperty(default=False)
     ToggleAutoMaskingCavityInverted: BoolProperty(default=False)
     ToggleStabalizeStrokeOnActiveBrush: BoolProperty(default=False)
@@ -469,6 +488,15 @@ class AllPie_OT_ToggleAutoMasking(Operator):
             else:
                 bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_topology = True
             self.ToggleAutoMaskingTopology = False
+
+        elif self.ToggleAutoMaskingFaceSet == True:
+            currentautomasking = ( bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_face_sets)
+
+            if currentautomasking == True:
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_face_sets = False
+            else:
+                bpy.context.scene.tool_settings.sculpt.mesh_automasking_settings.use_automasking_face_sets = True
+            self.ToggleAutoMaskingFaceSet = False
 
         elif self.ToggleAutoMaskingCavity == True:
             currentautomasking = (
@@ -607,16 +635,116 @@ class AllPie_OT_EditModeSwitch(Operator):
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 
         elif self.Action == "EDGE":
-            print("Edge Select Running")
             bpy.ops.object.mode_set(mode= "EDIT")
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
 
         elif self.Action == "FACE":
-            print("Face Select Running")
             bpy.ops.object.mode_set(mode= "EDIT")
             bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
 
         return {"FINISHED"}
+
+class AllPie_OT_SubD(Operator):
+    bl_idname = "cop.csubd"
+    bl_label = "SubD Options"
+    bl_options = {"REGISTER", "UNDO_GROUPED"}
+
+    action: EnumProperty(
+        name="Action",
+        items=[
+            ("IncreaseSubDLevel", "IncreaseSubDLevel", ""),
+            ("DecreaseSubDLevel", "DecreaseSubDLevel", ""),
+            ("IncreaseRenderLevel", "IncreaseRenderLevel", ""),
+            ("DecreaseRenderLevel", "DecreaseRenderLevel", ""),
+            ("ShowInEdit", "ShowInEdit", ""),
+            ("ShowInCage", "ShowInCage", ""),
+            ("ShowInViewport", "ShowInViewport", ""),
+            ("ShowInRender", "ShowInRender", ""),
+        ],
+    )
+
+# bpy.context.object.modifiers["Subdivision"].show_on_cage = False
+#
+# bpy.context.object.modifiers["Subdivision"].show_in_editmode = True
+#
+#
+# bpy.context.object.modifiers["Subdivision"].show_render = True
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.object
+
+        return ( obj is not None and obj.type == 'MESH' and "Subdivision" in obj.modifiers)
+
+    def execute(self, context):
+        obj = context.object
+
+        # Safety checks
+        if obj is None:
+            self.report({"WARNING"}, "No active object")
+            return {"CANCELLED"}
+
+        if obj.type != 'MESH':
+            self.report({"WARNING"}, "Active object must be a mesh")
+            return {"CANCELLED"}
+
+        subd = obj.modifiers.get("Subdivision")
+
+
+        if subd is None:
+            self.report({"WARNING"}, "Active object has no Multires modifier")
+            return {"CANCELLED"}
+
+        current_level = subd.levels
+        current_render_level = subd.render_levels
+
+        viewport_visible = subd.show_viewport
+        render_visible = subd.show_render
+        editmode_visible = subd.show_in_editmode
+        cage_visible = subd.show_on_cage
+
+        if self.action == "IncreaseSubDLevel":
+            if current_level >= subd.levels:
+                subd.levels = int(bl_math.clamp((current_level + 1), 0, 6))
+
+        elif self.action == "DecreaseSubDLevel":
+            if current_level > 0:
+                subd.levels = int(bl_math.clamp((current_level - 1), 0, 9))
+
+        elif self.action == "IncreaseRenderLevel":
+            if current_render_level >= subd.render_levels:
+                subd.render_levels = int(bl_math.clamp((current_render_level + 1), 0, 6))
+
+        elif self.action == "DecreaseRenderLevel":
+            if current_render_level > 0:
+                subd.render_levels = int(bl_math.clamp((current_render_level - 1), 0, 9))
+
+        elif self.action == "ShowInViewport":
+            if viewport_visible == True:
+                subd.show_viewport = False
+            else:
+                subd.show_viewport = True
+
+        elif self.action == "ShowInEdit":
+            if editmode_visible == True:
+                subd.show_in_editmode = False
+            else:
+                subd.show_in_editmode = True
+
+        elif self.action == "ShowInRender":
+            if render_visible == True:
+                subd.show_render = False
+            else:
+                subd.show_render = True
+
+        elif self.action == "ShowInCage":
+            if cage_visible == True:
+                subd.show_on_cage = False
+            else:
+                subd.show_on_cage = True
+
+        return {"FINISHED"}
+
 
 classes = (
     AllPie_OT_Symmetry,
@@ -631,6 +759,7 @@ classes = (
     AllPie_OT_ToggleAutoMasking,
     AllPie_OT_OriginSet,
     AllPie_OT_EditModeSwitch,
+    AllPie_OT_SubD,
 )
 
 addon_keymaps = []
