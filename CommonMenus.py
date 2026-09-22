@@ -1,6 +1,6 @@
 MODE_MENU = [
     {
-        "slot": 4,
+        "slot": 6,
         "label": "Object Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -9,7 +9,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 6,
+        "slot": 2,
         "label": "Texture Paint Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -45,7 +45,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 2,
+        "slot": 4,
         "label": "Sculpt Mode",
         "operator": "object.mode_set",
         "invoke": True,
