@@ -9,6 +9,42 @@ from . import TexturePaintPies
 from . import VertexPaintPies
 from . import WeightPaintPies
 
+def update_essential_brushes(self, context):
+
+    normal = (
+        "EssentialBrush_Slot1",
+        "EssentialBrush_Slot2",
+        "EssentialBrush_Slot3",
+        "EssentialBrush_Slot4",
+        "EssentialBrush_Slot5",
+        "EssentialBrush_Slot6",
+        "EssentialBrush_Slot7",
+        "EssentialBrush_Slot8"
+    )
+
+    spaced = (
+        "EssentialSpaceBrush_Slot1",
+        "EssentialSpaceBrush_Slot2",
+        "EssentialSpaceBrush_Slot3",
+        "EssentialSpaceBrush_Slot4",
+        "EssentialSpaceBrush_Slot5",
+        "EssentialSpaceBrush_Slot6",
+        "EssentialSpaceBrush_Slot7",
+    )
+
+    for slot, prop in enumerate(normal):
+        brush = getattr(self, prop)
+        item = next(item for item in SculptModePies.ESSENTIALS_BRUSH_MENU if item["slot"] == slot)
+        item["label"] = brush
+        item["props"]["relative_asset_identifier"] = ( SculptModePies.ESSENTIALS_PATH + brush)
+
+    for slot, prop in enumerate(spaced, start=1):
+        brush = getattr(self, prop)
+        item = next(item for item in SculptModePies.ESSENTIALS_BRUSH_SPACE_MENU if item["slot"] == slot)
+        item["label"] = brush
+        item["props"]["relative_asset_identifier"] = (
+            SculptModePies.ESSENTIALS_PATH + brush
+        )
 
 # KEYBIND DATA
 class AllPieKeybind(PropertyGroup):
@@ -345,7 +381,29 @@ class AllPiePreferences(AddonPreferences):
     
     mark_color: FloatVectorProperty( name="Mark Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
 
+# Brush Properties
+# ESSENTIAL BRUSHES
+    EssentialBrush_Slot1: StringProperty(default="DRAW", update=update_essential_brushes)
+    EssentialBrush_Slot2: StringProperty(default="DRAW SHARP", update=update_essential_brushes)
+    EssentialBrush_Slot3: StringProperty(default="CLAY STRIPS", update=update_essential_brushes)
+    EssentialBrush_Slot4: StringProperty(default="MASK", update=update_essential_brushes)
+    EssentialBrush_Slot5: StringProperty(default="SCRAPE/FILL", update=update_essential_brushes)
+    EssentialBrush_Slot6: StringProperty(default="INFLATE/DEFLATE", update=update_essential_brushes)
+    EssentialBrush_Slot7: StringProperty(default="GRAB", update=update_essential_brushes)
+    EssentialBrush_Slot8: StringProperty(default="PINCH/MAGNIFY", update=update_essential_brushes)
+
+# SPACE ESSENTIAL BRUSHES
+    EssentialSpaceBrush_Slot1: StringProperty(default="CREASE SHARP", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot2: StringProperty(default="CLAY", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot3: StringProperty(default="FACE SET PAINT", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot4: StringProperty(default="TRIM", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot5: StringProperty(default="ERASE MULTIRES DISPLACEMENT", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot6: StringProperty(default="SNAKE HOOK", update=update_essential_brushes)
+    EssentialSpaceBrush_Slot7: StringProperty(default="RELAX SLIDE", update=update_essential_brushes)
+
     def draw(self, context):
+
+        update_essential_brushes(self, context)
 
         kc = context.window_manager.keyconfigs.addon
 
@@ -425,9 +483,44 @@ class AllPiePreferences(AddonPreferences):
             row.label(text="Spaced Outline Color")
             row.prop(self, "spaced_outline_color", text="")
 
+        # ESSENTIAL SCULPT BRUSHES
+        header, body = layout.panel( "AllPie_Essential_Brushes", default_closed=True,)
+        header.label( text="Essential Sculpt Brushes Menu Settings")
+
+        if body:
+            row = body.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Essentials Brushes")
+
+            for slot in range(1, 9):
+                row = body.row(align=True)
+                row.separator(factor=4)
+                row.label(text=f"Slot {slot}", icon="BRUSH_DATA")
+                row.prop(self, f"EssentialBrush_Slot{slot}", text="")
+                row.operator("cop.searchsculptbrushes", text="Search").PrefProperty = f"EssentialBrush_Slot{slot}"
+
+            body.separator()
+
+            row = body.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Essential Spaced Brushes")
+
+            row = body.row(align=True)
+            row.separator(factor=4)
+            row.label(text="Slot 0", icon="ASSET_MANAGER")
+            row.label(text="Asset Shelf")
+            row.separator()
+
+            for slot in range(1, 8):
+                row = body.row(align=True)
+                row.separator(factor=4)
+                row.label(text=f"Slot {slot}", icon="BRUSH_DATA")
+                row.prop(self, f"EssentialSpaceBrush_Slot{slot}", text="")
+                row.operator("cop.searchsculptbrushes", text="Search").PrefProperty = f"EssentialSpaceBrush_Slot{slot}"
+
 
         # EDIT MODE
-        header, body = layout.panel( "AllPie_Edit_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Edit_Mode", default_closed=True,)
         header.label( text="Edit Mode")
 
         if body:
@@ -454,7 +547,7 @@ class AllPiePreferences(AddonPreferences):
                 )
 
         # SCULPT MODE
-        header, body = layout.panel( "AllPie_Sculpt_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Sculpt_Mode", default_closed=True,)
         header.label( text="Sculpt Mode")
 
         if body:
@@ -480,7 +573,7 @@ class AllPiePreferences(AddonPreferences):
                     menu_id,
                 )
         # OBJECT MODE
-        header, body = layout.panel( "AllPie_Object_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Object_Mode", default_closed=True,)
         header.label( text="Object Mode")
 
         if body:
@@ -506,7 +599,7 @@ class AllPiePreferences(AddonPreferences):
                     menu_id,
                 )
         # Texture Paint MODE
-        header, body = layout.panel( "AllPie_Texture_Paint_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Texture_Paint_Mode", default_closed=True,)
         header.label( text="Texture Paint")
 
         if body:
@@ -533,7 +626,7 @@ class AllPiePreferences(AddonPreferences):
                 )
 
         # Vertex Paint MODE
-        header, body = layout.panel( "AllPie_Vertex_Paint_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Vertex_Paint_Mode", default_closed=True,)
         header.label( text="Vertex Paint")
 
         if body:
@@ -560,7 +653,7 @@ class AllPiePreferences(AddonPreferences):
                 )
 
         # Weight Paint MODE
-        header, body = layout.panel( "AllPie_Weight_Paint_Mode", default_closed=False,)
+        header, body = layout.panel( "AllPie_Weight_Paint_Mode", default_closed=True,)
         header.label( text="Weight Paint")
 
         if body:
@@ -601,6 +694,7 @@ def register():
 
     if prefs is not None:
         initialize_keybinds(prefs)
+        update_essential_brushes(prefs, None)
 
 
 def unregister():

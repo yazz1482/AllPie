@@ -1,8 +1,8 @@
 import bpy
 import importlib
-from . import RadialMenu
 from . import Preferences
 from . import CustomOperators
+from . import RadialMenu
 from . import CommonMenus
 from . import ObjectModePies
 from . import SculptModePies
@@ -11,9 +11,9 @@ from . import TexturePaintPies
 from . import VertexPaintPies
 
 submodules = (
-RadialMenu,
 Preferences,
 CustomOperators,
+RadialMenu,
 CommonMenus,
 ObjectModePies,
 SculptModePies,
