@@ -720,6 +720,81 @@ ORIGIN_MENU = [
     },
 ]
 
+SUBD_MENU = [
+    {
+        "slot": 2,
+        "label": "Increase Subdivision",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "IncreaseSubDLevel",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Increase Render Level ",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "IncreaseRenderLevel",
+        },
+    },
+    {
+        "slot": 6,
+        "label": "Decrease Subdivision",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "DecreaseSubDLevel",
+        },
+    },
+    {
+        "slot": 7,
+        "label": "Decrease Render Level",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "DecreaseRenderLevel",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Show In Viewport",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInViewport",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Show In EditMode",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInEdit",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Show In Render",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInRender",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Show Cage",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInCage",
+        },
+    },
+]
+
 
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
@@ -731,6 +806,7 @@ MENUS = {
     "EDIT.TOOL_SELECT": TOOL_SELECT_MENU,
     "EDIT.UV": UV_MENU,
     "EDIT.ORIGIN": ORIGIN_MENU,
+    "EDIT.SUBD": SUBD_MENU,
 
     # Common Menus
     "EDIT.SHADING": CommonMenus.SHADING_MENU,
@@ -748,6 +824,7 @@ MENU_NAMES = {
     "EDIT.TOOL_SELECT": "Tool Select",
     "EDIT.UV": "UV",
     "EDIT.ORIGIN": "Origin",
+    "EDIT.SUBD": "Subdivision",
 
     "EDIT.SHADING": "Shading",
     "EDIT.VIEW": "View",
@@ -770,8 +847,9 @@ MESH_HOTKEYS = [
     ("Q", "EDIT.VIEW", {"ctrl": True}),
     ("W", "EDIT.TOOL_SELECT", {}),
     ("A", "EDIT.SELECTION", {}),
-    ("X", "EDIT.DELETE", {}),
     ("S", "EDIT.ORIGIN", {"shift": True}),
+    ("D", "EDIT.SUBD", {}),
+    ("X", "EDIT.DELETE", {}),
     ("M", "EDIT.MERGE", {}),
     ("U", "EDIT.UV", {}),
     ("Z", "EDIT.SHADING", {}),
