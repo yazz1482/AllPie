@@ -327,18 +327,16 @@ VERTEX_MENU = [
 EDGE_MENU = [
     {
         "slot": 6,
-        "label": "Loop Cut",
+        "label": "Loop Cut Slide",
         "operator": "mesh.loopcut_slide",
         "invoke": True,
     },
+
     {
-        "slot": 7,
-        "label": "Split Edge",
-        "operator": "mesh.edge_split",
+        "slot": 5,
+        "label": "Loop Cut",
+        "operator": "mesh.loopcut",
         "invoke": True,
-        "props": {
-            "type": "EDGE",
-        },
     },
     {
         "slot": 2,
@@ -346,8 +344,25 @@ EDGE_MENU = [
         "operator": "mesh.bevel",
         "invoke": True,
         "props": {
+            "offset": 0.5,
             "affect": "EDGES",
+            "segments": 1,
+            "profile": 0.5,
         },
+
+    },
+    {
+        "slot": 4,
+        "label": "Flat Bevel",
+        "operator": "mesh.bevel",
+        "invoke": True,
+        "props": {
+            "offset": 0.5,
+            "affect": "EDGES",
+            "segments": 2,
+            "profile": 1.0,
+        },
+
     },
     {
         "slot": 0,
@@ -362,15 +377,9 @@ EDGE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 5,
+        "slot": 7,
         "label": "Bridge EdgeLoops",
         "operator": "mesh.bridge_edge_loops",
-        "invoke": True,
-    },
-    {
-        "slot": 4,
-        "label": "Edge Crease",
-        "operator": "transform.edge_crease",
         "invoke": True,
     },
     {
@@ -380,6 +389,7 @@ EDGE_MENU = [
         "invoke": True,
     },
 ]
+
 
 EDGE_SPACE_MENU = [
     {
@@ -438,10 +448,9 @@ EDGE_SPACE_MENU = [
     {
         "slot": 4,
         "label": "Edge Crease",
-        "operator": "transform.edge_crease",
-        "props": {
-            "value": 1,
-        },
+        "operator": "cop.ccrease",
+        "invoke": True,
+        "props": { "factor": 0.0, },
     },
     {
         "slot": 0,
@@ -507,15 +516,15 @@ FACE_MENU = [
 TOOL_SELECT_MENU = [
     {
         "slot": 6,
-        "label": "Smooth Tool",
+        "label": "Box Select Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
         "props": {
-            "name": "builtin.smooth",
+            "name": "builtin.select_box",
         },
     },
     {
-        "slot": 3,
+        "slot": 2,
         "label": "Lasso Select Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
@@ -524,7 +533,7 @@ TOOL_SELECT_MENU = [
         },
     },
     {
-        "slot": 2,
+        "slot": 3,
         "label": "Circle Select Tool",
         "operator": "wm.tool_set_by_id",
         "invoke": True,
@@ -720,82 +729,6 @@ ORIGIN_MENU = [
     },
 ]
 
-SUBD_MENU = [
-    {
-        "slot": 2,
-        "label": "Increase Subdivision",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "IncreaseSubDLevel",
-        },
-    },
-    {
-        "slot": 1,
-        "label": "Increase Render Level ",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "IncreaseRenderLevel",
-        },
-    },
-    {
-        "slot": 6,
-        "label": "Decrease Subdivision",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "DecreaseSubDLevel",
-        },
-    },
-    {
-        "slot": 7,
-        "label": "Decrease Render Level",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "DecreaseRenderLevel",
-        },
-    },
-    {
-        "slot": 0,
-        "label": "Show In Viewport",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "ShowInViewport",
-        },
-    },
-    {
-        "slot": 4,
-        "label": "Show In EditMode",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "ShowInEdit",
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Show In Render",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "ShowInRender",
-        },
-    },
-    {
-        "slot": 5,
-        "label": "Show Cage",
-        "operator": "cop.csubd",
-        "invoke": True,
-        "props": {
-            "action": "ShowInCage",
-        },
-    },
-]
-
-
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
     "EDIT.DELETE": DELETE_MENU,
@@ -806,12 +739,12 @@ MENUS = {
     "EDIT.TOOL_SELECT": TOOL_SELECT_MENU,
     "EDIT.UV": UV_MENU,
     "EDIT.ORIGIN": ORIGIN_MENU,
-    "EDIT.SUBD": SUBD_MENU,
 
     # Common Menus
     "EDIT.SHADING": CommonMenus.SHADING_MENU,
     "EDIT.VIEW": CommonMenus.VIEW_MENU,
     "EDIT.MODE": CommonMenus.MODE_MENU,
+    "EDIT.SUBD": CommonMenus.SUBD_MENU,
 }
 
 MENU_NAMES = {

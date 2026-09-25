@@ -392,6 +392,7 @@ MENUS = {
     "OBJECT.SHADING": CommonMenus.SHADING_MENU,
     "OBJECT.VIEW": CommonMenus.VIEW_MENU,
     "OBJECT.MODE": CommonMenus.MODE_MENU,
+    "OBJECT.SUBD": CommonMenus.SUBD_MENU,
 }
 
 MENU_NAMES = {
@@ -404,6 +405,7 @@ MENU_NAMES = {
     "OBJECT.SHADING": "Shading",
     "OBJECT.VIEW": "View",
     "OBJECT.MODE": "Mode",
+    "OBJECT.SUBD": "Subdivision",
 }
 
 SPACE_MENUS = {}
@@ -417,5 +419,6 @@ OBJECT_HOTKEYS = [
     ("A", "OBJECT.SELECTION", {}),
     ("A", "OBJECT.ADD", {"shift": True}),
     ("A", "OBJECT.APPLY_TRANSFORMS", {"ctrl": True}),
+    ("D", "OBJECT.SUBD", {}),
     ("Z", "OBJECT.SHADING", {}),
 ]

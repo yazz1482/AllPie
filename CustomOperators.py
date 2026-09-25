@@ -746,6 +746,21 @@ class AllPie_OT_SubD(Operator):
         return {"FINISHED"}
 
 
+class AllPie_OT_Crease(Operator):
+    bl_idname = "cop.ccrease"
+    bl_label = "Crease Edge"
+    bl_options = {"REGISTER", "UNDO"}
+
+    factor: FloatProperty(name= "Factor",default= -0, min= -1, max= 1)
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_popup(self, event)
+
+    def execute(self, context):
+        bpy.ops.transform.edge_crease(value= self.factor, snap=False)
+        return {"FINISHED"}
+
+
 classes = (
     AllPie_OT_Symmetry,
     AllPie_OT_Remesh,
@@ -760,6 +775,7 @@ classes = (
     AllPie_OT_OriginSet,
     AllPie_OT_EditModeSwitch,
     AllPie_OT_SubD,
+    AllPie_OT_Crease,
 )
 
 addon_keymaps = []

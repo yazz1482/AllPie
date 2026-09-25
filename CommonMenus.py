@@ -9,7 +9,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 2,
+        "slot": 0,
         "label": "Texture Paint Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -18,7 +18,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 7,
+        "slot": 1,
         "label": "Edit Mode Vertex Select",
         "operator": "cop.editmode_switch",
         "invoke": True,
@@ -27,7 +27,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 0,
+        "slot": 2,
         "label": "Edit Mode Edge Select",
         "operator": "cop.editmode_switch",
         "invoke": True,
@@ -36,7 +36,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 1,
+        "slot": 3,
         "label": "Edit Mode Face Select",
         "operator": "cop.editmode_switch",
         "invoke": True,
@@ -54,7 +54,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 3,
+        "slot": 7,
         "label": "Weight Paint Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -213,6 +213,82 @@ SHADING_MENU = [
         "invoke": True,
         "props": {
             "SetShading": "RENDERED",
+        },
+    },
+]
+
+
+SUBD_MENU = [
+    {
+        "slot": 2,
+        "label": "Increase Subdivision",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "IncreaseSubDLevel",
+        },
+    },
+    {
+        "slot": 1,
+        "label": "Increase Render Level ",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "IncreaseRenderLevel",
+        },
+    },
+    {
+        "slot": 6,
+        "label": "Decrease Subdivision",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "DecreaseSubDLevel",
+        },
+    },
+    {
+        "slot": 7,
+        "label": "Decrease Render Level",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "DecreaseRenderLevel",
+        },
+    },
+    {
+        "slot": 0,
+        "label": "Show In Viewport",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInViewport",
+        },
+    },
+    {
+        "slot": 4,
+        "label": "Show In EditMode",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInEdit",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Show In Render",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInRender",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Show Cage",
+        "operator": "cop.csubd",
+        "invoke": True,
+        "props": {
+            "action": "ShowInCage",
         },
     },
 ]
