@@ -663,12 +663,6 @@ class AllPie_OT_SubD(Operator):
         ],
     )
 
-# bpy.context.object.modifiers["Subdivision"].show_on_cage = False
-#
-# bpy.context.object.modifiers["Subdivision"].show_in_editmode = True
-#
-#
-# bpy.context.object.modifiers["Subdivision"].show_render = True
 
     @classmethod
     def poll(cls, context):
