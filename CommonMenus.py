@@ -75,7 +75,7 @@ MODE_MENU = [
 
 VIEW_MENU = [
     {
-        "slot": 0,
+        "slot": 1,
         "label": "Top",
         "operator": "view3d.view_axis",
         "invoke": True,
@@ -84,7 +84,7 @@ VIEW_MENU = [
         },
     },
     {
-        "slot": 1,
+        "slot": 3,
         "label": "Front",
         "operator": "view3d.view_axis",
         "invoke": True,
@@ -102,7 +102,7 @@ VIEW_MENU = [
         },
     },
     {
-        "slot": 4,
+        "slot": 7,
         "label": "Bottom",
         "operator": "view3d.view_axis",
         "invoke": True,
@@ -120,7 +120,7 @@ VIEW_MENU = [
         },
     },
     {
-        "slot": 7,
+        "slot": 5,
         "label": "Back",
         "operator": "view3d.view_axis",
         "invoke": True,
@@ -129,13 +129,13 @@ VIEW_MENU = [
         },
     },
     {
-        "slot": 5,
-        "label": "View Camera",
-        "operator": "view3d.view_camera",
+        "slot": 0,
+        "label": "View Maximize",
+        "operator": "screen.screen_full_area",
         "invoke": True,
     },
     {
-        "slot": 3,
+        "slot": 4,
         "label": "View Selected",
         "operator": "view3d.view_selected",
         "invoke": True,
