@@ -38,6 +38,7 @@ MENU_NAMES = {
     **ObjectModePies.MENU_NAMES,
     **SculptModePies.MENU_NAMES,
     **TexturePaintPies.MENU_NAMES,
+    **VertexPaintPies.SPACE_MENUS,
     **WeightPaintPies.MENU_NAMES,
 }
 

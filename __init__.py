@@ -1,3 +1,4 @@
+import WeightPaintPies
 import bpy
 import importlib
 from . import Preferences
@@ -20,6 +21,7 @@ SculptModePies,
 EditModePies,
 TexturePaintPies,
 VertexPaintPies,
+WeightPaintPies,
 )
 
 def register():

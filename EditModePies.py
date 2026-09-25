@@ -399,15 +399,6 @@ EDGE_SPACE_MENU = [
         "invoke": True,
     },
     {
-        "slot": 1,
-        "label": "Mark Sharp",
-        "operator": "mesh.set_sharpness_by_angle",
-        "invoke": True,
-        "props": {
-            "extend": True,
-            },
-    },
-    {
         "slot": 7,
         "label": "Clear Sharp",
         "operator": "mesh.mark_sharp",
@@ -716,15 +707,6 @@ ORIGIN_MENU = [
         "invoke": True,
         "props": {
             "OriginToCursor": True,
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Origin To Cursor",
-        "operator": "cop.originset",
-        "invoke": True,
-        "props": {
-            "GeoToOrigin": True,
         },
     },
 ]
