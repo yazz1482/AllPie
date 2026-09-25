@@ -364,22 +364,22 @@ class AllPiePreferences(AddonPreferences):
     hold_time: FloatProperty(default=0.125, min = 0.010,max=0.500, step=1)
     deadzone: IntProperty(default=25, min= 15,max=50, step=1)
 
-    slot_color: FloatVectorProperty( name="Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    active_slot_color: FloatVectorProperty( name="Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
+    slot_color: FloatVectorProperty( name="Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 1.0), min=0.0, max=1.0,)
+    active_slot_color: FloatVectorProperty( name="Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.14, 0.14, 0.14, 1.00), min=0.0, max=1.0,)
     #Spaced Slot Color
-    spaced_slot_color: FloatVectorProperty( name="Spaced Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 0.8), min=0.0, max=1.0,)
-    spaced_active_slot_color: FloatVectorProperty( name="Spaced Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.25, 0.25, 0.25, 0.90), min=0.0, max=1.0,)
+    spaced_slot_color: FloatVectorProperty( name="Spaced Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.02, 0.02, 0.02, 1.0), min=0.0, max=1.0,)
+    spaced_active_slot_color: FloatVectorProperty( name="Spaced Active Slot Color", subtype="COLOR_GAMMA", size=4, default=(0.14, 0.14, 0.14, 1.00), min=0.0, max=1.0,)
 
-    font_color: FloatVectorProperty( name="Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
-    active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.40, 1.00, 0.66, 1.0), min=0.0, max=1.0,)
+    font_color: FloatVectorProperty( name="Font Color", subtype="COLOR_GAMMA", size=4, default=(1.00, 1.00, 1.00, 1.0), min=0.0, max=1.0,)
+    active_font_color: FloatVectorProperty( name="Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.75, 0.97, 1.0), min=0.0, max=1.0,)
     #Spaced Font Color
-    spaced_font_color: FloatVectorProperty( name="Spaced Font Color", subtype="COLOR_GAMMA", size=4, default=(0.90, 0.90, 0.90, 1.0), min=0.0, max=1.0,)
-    spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.64, 0.52, 1.00, 1.0), min=0.0, max=1.0,)
+    spaced_font_color: FloatVectorProperty( name="Spaced Font Color", subtype="COLOR_GAMMA", size=4, default=(1.00, 1.00, 1.00, 1.0), min=0.0, max=1.0,)
+    spaced_active_font_color: FloatVectorProperty( name="Spaced Active Font Color", subtype="COLOR_GAMMA", size=4, default=(0.82, 0.55, 0.33, 1.0), min=0.0, max=1.0,)
 
-    outline_color: FloatVectorProperty( name="Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.51, 0.50), min=0.0, max=1.0,)
-    spaced_outline_color: FloatVectorProperty( name="Spaced Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.45, 0.35, 0.75, 0.50), min=0.0, max=1.0,)
+    outline_color: FloatVectorProperty( name="Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 0.42, 0.70, 1.00), min=0.0, max=1.0,)
+    spaced_outline_color: FloatVectorProperty( name="Spaced Outline Color", subtype="COLOR_GAMMA", size=4, default=(0.82, 0.55, 0.33, 1.00), min=0.0, max=1.0,)
     
-    mark_color: FloatVectorProperty( name="Mark Color", subtype="COLOR_GAMMA", size=4, default=(0.18, 1.00, 0.52, 1.0), min=0.0, max=1.0,)
+    mark_color: FloatVectorProperty( name="Mark Color", subtype="COLOR_GAMMA", size=4, default=(1.00, 1.00, 1.00, 1.0), min=0.0, max=1.0,)
 
 # Brush Properties
 # ESSENTIAL BRUSHES
