@@ -1,4 +1,3 @@
-import WeightPaintPies
 import bpy
 import importlib
 from . import Preferences
@@ -10,6 +9,7 @@ from . import SculptModePies
 from . import EditModePies
 from . import TexturePaintPies
 from . import VertexPaintPies
+from . import WeightPaintPies
 
 submodules = (
 Preferences,
