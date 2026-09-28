@@ -3,26 +3,29 @@ from . import CommonMenus
 SELECTION_MENU = [
     {
         "slot": 7,
-        "label": "Hide Selected",
-        "operator": "mesh.hide",
+        "label": "Vert Select",
+        "operator": "mesh.select_mode",
         "invoke": True,
         "props": {
-            "unselected": False,
+            "type": "VERT",
         },
     },
     {
         "slot": 0,
-        "label": "UnHide All",
-        "operator": "mesh.reveal",
+        "label": "Edge Select",
+        "operator": "mesh.select_mode",
         "invoke": True,
+        "props": {
+            "type": "EDGE",
+        },
     },
     {
         "slot": 1,
-        "label": "Solo Selected",
-        "operator": "mesh.hide",
+        "label": "Face Select",
+        "operator": "mesh.select_mode",
         "invoke": True,
         "props": {
-            "unselected": True,
+            "type": "FACE",
         },
     },
     {
@@ -72,29 +75,26 @@ SELECTION_MENU = [
 SELECTION_SPACE_MENU = [
     {
         "slot": 7,
-        "label": "Vert Select",
-        "operator": "mesh.select_mode",
+        "label": "Hide Selected",
+        "operator": "mesh.hide",
         "invoke": True,
         "props": {
-            "type": "VERT",
+            "unselected": False,
         },
     },
     {
         "slot": 0,
-        "label": "Edge Select",
-        "operator": "mesh.select_mode",
+        "label": "UnHide All",
+        "operator": "mesh.reveal",
         "invoke": True,
-        "props": {
-            "type": "EDGE",
-        },
     },
     {
         "slot": 1,
-        "label": "Face Select",
-        "operator": "mesh.select_mode",
+        "label": "Solo Selected",
+        "operator": "mesh.hide",
         "invoke": True,
         "props": {
-            "type": "FACE",
+            "unselected": True,
         },
     },
     {
