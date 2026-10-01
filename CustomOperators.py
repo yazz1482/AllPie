@@ -607,43 +607,6 @@ class AllPie_OT_OriginSet(Operator):
         return {"FINISHED"}
 
 
-class AllPie_OT_EditModeSwitch(Operator):
-    bl_idname = "cop.editmode_switch"
-    bl_label = "Edit Mode Switch"
-
-    Action: EnumProperty(
-        name="Action",
-        items=[
-            ("VERTEX", "VERTEX", ""),
-            ("EDGE", "EDGE", ""),
-            ("FACE", "FACE", ""),
-        ],
-    )
-
-    def execute(self, context):
-        obj = context.object
-        if obj is None:
-            self.report({"WARNING"}, "No active object")
-            return {"CANCELLED"}
-
-        if obj.type != 'MESH':
-            self.report({"WARNING"}, "Active object must be a mesh")
-            return {"CANCELLED"}
-
-        if self.Action == "VERTEX":
-            bpy.ops.object.mode_set(mode= "EDIT")
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
-
-        elif self.Action == "EDGE":
-            bpy.ops.object.mode_set(mode= "EDIT")
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-
-        elif self.Action == "FACE":
-            bpy.ops.object.mode_set(mode= "EDIT")
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-
-        return {"FINISHED"}
-
 class AllPie_OT_SubD(Operator):
     bl_idname = "cop.csubd"
     bl_label = "SubD Options"
@@ -767,7 +730,6 @@ classes = (
     AllPie_OT_MaskFromFaceSet,
     AllPie_OT_ToggleAutoMasking,
     AllPie_OT_OriginSet,
-    AllPie_OT_EditModeSwitch,
     AllPie_OT_SubD,
     AllPie_OT_Crease,
 )
