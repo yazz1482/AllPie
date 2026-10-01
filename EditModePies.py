@@ -711,6 +711,67 @@ ORIGIN_MENU = [
     },
 ]
 
+RETOPO_MENU = [
+    {
+        "slot": 0,
+        "label": "Initialize Retopo",
+        "operator": "cop.init_retopo",
+        "invoke": True,
+    },
+    {
+        "slot": 4,
+        "label": "Add Surface",
+        "operator": "cop.add_surface",
+        "invoke": True,
+    },
+
+    {
+        "slot": 7,
+        "label": "Bridge EdgeLoops",
+        "operator": "mesh.bridge_edge_loops",
+        "invoke": True,
+    },
+    {
+        "slot": 6,
+        "label": "Toggle AutoMerge",
+        "operator": "cop.toggle_auto_merge",
+        "invoke": True,
+    },
+    {
+        "slot": 2,
+        "label": "Relax Slide",
+        "operator": "cop.sculpt_relax_slide",
+        "invoke": True,
+    },
+    {
+        "slot": 1,
+        "label": "Tweak Tool",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.select",
+        },
+    },
+    {
+        "slot": 3,
+        "label": "Anotation Draw",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.annotate",
+        },
+    },
+    {
+        "slot": 5,
+        "label": "Anotation Eraser",
+        "operator": "wm.tool_set_by_id",
+        "invoke": True,
+        "props": {
+            "name": "builtin.annotate_eraser",
+        },
+    },
+]
+
 MENUS = {
     "EDIT.SELECTION": SELECTION_MENU,
     "EDIT.DELETE": DELETE_MENU,
@@ -721,6 +782,7 @@ MENUS = {
     "EDIT.TOOL_SELECT": TOOL_SELECT_MENU,
     "EDIT.UV": UV_MENU,
     "EDIT.ORIGIN": ORIGIN_MENU,
+    "EDIT.RETOPO": RETOPO_MENU,
 
     # Common Menus
     "EDIT.SHADING": CommonMenus.SHADING_MENU,
@@ -740,10 +802,12 @@ MENU_NAMES = {
     "EDIT.UV": "UV",
     "EDIT.ORIGIN": "Origin",
     "EDIT.SUBD": "Subdivision",
+    "EDIT.RETOPO": "Retopology",
 
     "EDIT.SHADING": "Shading",
     "EDIT.VIEW": "View",
     "EDIT.MODE": "Mode",
+
 }
 
 SPACE_MENUS = {
@@ -768,4 +832,5 @@ MESH_HOTKEYS = [
     ("M", "EDIT.MERGE", {}),
     ("U", "EDIT.UV", {}),
     ("Z", "EDIT.SHADING", {}),
+    ("C", "EDIT.RETOPO", {}),
 ]

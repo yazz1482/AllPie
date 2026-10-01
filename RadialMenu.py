@@ -7,6 +7,7 @@ from gpu_extras.batch import batch_for_shader
 from bpy.props import StringProperty
 from . import Preferences
 from . import CustomOperators
+from . import retopologytools
 from . import EditModePies
 from . import SculptModePies
 from . import ObjectModePies

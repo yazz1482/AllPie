@@ -2,6 +2,7 @@ import bpy
 import importlib
 from . import Preferences
 from . import CustomOperators
+from . import retopologytools
 from . import RadialMenu
 from . import CommonMenus
 from . import ObjectModePies
@@ -22,6 +23,7 @@ EditModePies,
 TexturePaintPies,
 VertexPaintPies,
 WeightPaintPies,
+retopologytools,
 )
 
 def register():
@@ -30,12 +32,14 @@ def register():
             importlib.reload(mod)    
     Preferences.register()
     CustomOperators.register()
+    retopologytools.register()
     RadialMenu.register()
 
 def unregister():
 
     Preferences.unregister()
     CustomOperators.unregister()
+    retopologytools.unregister()
     RadialMenu.unregister()
 
 
