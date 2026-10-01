@@ -18,30 +18,12 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 1,
-        "label": "Edit Mode Vertex Select",
-        "operator": "cop.editmode_switch",
-        "invoke": True,
-        "props": {
-            "Action": "VERTEX",
-        },
-    },
-    {
         "slot": 2,
-        "label": "Edit Mode Edge Select",
-        "operator": "cop.editmode_switch",
+        "label": "Edit Mode",
+        "operator": "object.mode_set",
         "invoke": True,
         "props": {
-            "Action": "EDGE",
-        },
-    },
-    {
-        "slot": 3,
-        "label": "Edit Mode Face Select",
-        "operator": "cop.editmode_switch",
-        "invoke": True,
-        "props": {
-            "Action": "FACE",
+            "mode": "EDIT",
         },
     },
     {
@@ -54,7 +36,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 7,
+        "slot": 1,
         "label": "Weight Paint Mode",
         "operator": "object.mode_set",
         "invoke": True,
@@ -63,7 +45,7 @@ MODE_MENU = [
         },
     },
     {
-        "slot": 5,
+        "slot": 7,
         "label": "Vertex Paint Mode",
         "operator": "object.mode_set",
         "invoke": True,
