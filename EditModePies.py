@@ -737,10 +737,16 @@ RETOPO_MENU = [
         "operator": "cop.toggle_auto_merge",
         "invoke": True,
     },
+    # {
+    #     "slot": 2,
+    #     "label": "Relax Slide",
+    #     "operator": "cop.sculpt_relax_slide",
+    #     "invoke": True,
+    # },
     {
         "slot": 2,
-        "label": "Relax Slide",
-        "operator": "cop.sculpt_relax_slide",
+        "label": "Relax Topology",
+        "operator": "cop.relax_topology",
         "invoke": True,
     },
     {

@@ -2,8 +2,11 @@ from dataclasses import dataclass, field
 
 import bpy
 import bmesh
+import gpu
+from gpu_extras.presets import draw_circle_2d
+from bpy_extras import view3d_utils
 from mathutils import Vector
-from bpy.props import (CollectionProperty, FloatVectorProperty, IntProperty, PointerProperty, StringProperty,)
+from bpy.props import (CollectionProperty,FloatProperty, FloatVectorProperty, IntProperty, PointerProperty, StringProperty,)
 from bpy.types import ( Operator, PropertyGroup,)
 
 # Retopology mesh helper
@@ -501,6 +504,7 @@ class AllPie_OT_InitRetopo(Operator):
             mirror = obj.modifiers.new("Mirror", "MIRROR")
 
         mirror.use_clip = True
+        mirror.show_on_cage = True
 
         # Leave the user ready to draw retopology guides.
         bpy.ops.wm.tool_set_by_id(name="builtin.annotate")
@@ -516,14 +520,14 @@ class RetopoSettings(PropertyGroup):
     across_count: IntProperty(
         name="Across",
         description="Number of rows between neighboring guide strokes",
-        default=5,
+        default=3,
         min=1,
         max=200,
     )
     along_count: IntProperty(
         name="Along",
         description="Number of segments along each guide stroke",
-        default=8,
+        default=3,
         min=1,
         max=200,
     )
@@ -595,6 +599,695 @@ class AllPie_OT_ToggleAutoMerge(Operator):
         tool_settings.use_mesh_automerge = not tool_settings.use_mesh_automerge
         return {"FINISHED"}
 
+# ============================================================
+# Blender topology-relax algorithm, adapted for Edit Mode BMesh.
+#
+# Based on Blender's topology-relax step:
+#   - corners (<= 2 neighbors) are not modified
+#   - boundary vertices use boundary neighbors
+#   - neighbor positions are averaged
+#   - smoothed position is projected onto the vertex tangent plane
+#   - result is scaled by brush factor
+#   - Relax Slide alternate path performs 4 passes
+#
+# Intentionally omitted:
+#   - automasking
+#   - texture
+#   - face sets
+#   - symmetry
+#   - PBVH
+#   - sculpt masks
+#   - SculptSession-specific machinery
+# ============================================================
+
+
+def _relax_brush_falloff(distance, radius):
+    """Simple radial brush falloff."""
+    if radius <= EPSILON or distance >= radius:
+        return 0.0
+
+    x = max(0.0, 1.0 - distance / radius)
+    return x * x
+
+
+def _collect_relax_factors(context, mesh, bm, cursor, radius, strength):
+    if radius <= EPSILON or strength <= 0.0:
+        return {}
+
+    region = context.region
+    rv3d = context.space_data.region_3d
+
+    if region is None or rv3d is None:
+        return {}
+
+    world_matrix = mesh.matrix_world
+    factors = {}
+
+    for vert in bm.verts:
+        if not vert.is_valid:
+            continue
+
+        world_co = world_matrix @ vert.co
+
+        screen = view3d_utils.location_3d_to_region_2d( region, rv3d, world_co,)
+
+        if screen is None:
+            continue
+
+        distance = (screen - cursor).length
+
+        if distance >= radius:
+            continue
+
+        falloff = _relax_brush_falloff( distance, radius,)
+
+        factor = falloff * strength
+
+        if factor > 0.0:
+            factors[vert] = factor
+
+    return factors
+
+
+def _boundary_corner_normal( current_position, neighbors, positions,):
+    """
+    Compute the boundary normal used for a boundary vertex
+    with exactly two boundary neighbors.
+    """
+
+    normal = Vector((0.0, 0.0, 0.0))
+
+    for neighbor in neighbors:
+
+        direction = ( positions[neighbor] - current_position)
+
+        if direction.length <= EPSILON:
+            continue
+
+        normal += direction.normalized()
+
+    if normal.length <= EPSILON:
+        return None
+
+    return normal.normalized()
+
+
+def _relax_topology_pass( bm, factors,):
+    """
+    Perform one topology-relax pass.
+
+    Every vertex is evaluated from the same position snapshot
+    so updates do not propagate sequentially through the pass.
+    """
+
+    if not factors:
+        return 0
+
+    bm.normal_update()
+
+    # Snapshot all vertex positions before calculating
+    # any new positions.
+    positions = {
+        vert: vert.co.copy()
+        for vert in bm.verts
+        if vert.is_valid
+    }
+
+    new_positions = {}
+
+    for vert, factor in factors.items():
+
+        if not vert.is_valid:
+            continue
+
+        if factor <= 0.0:
+            continue
+
+        neighbors = [
+            edge.other_vert(vert)
+            for edge in vert.link_edges
+        ]
+
+        # Blender topology relax does not modify
+        # corner vertices.
+        if len(neighbors) <= 2:
+            continue
+
+        is_boundary = vert.is_boundary
+
+        if is_boundary:
+            # Boundary vertices only relax against
+            # neighboring boundary vertices.
+            neighbors = [
+                neighbor
+                for neighbor in neighbors
+                if neighbor.is_boundary
+            ]
+
+        if not neighbors:
+            continue
+
+        current_position = positions[vert]
+
+        # Average neighbor positions.
+        smooth_position = sum(
+            (
+                positions[neighbor]
+                for neighbor in neighbors
+                if neighbor in positions
+            ),
+            Vector((0.0, 0.0, 0.0)),
+        )
+
+        valid_neighbor_count = sum(
+            1
+            for neighbor in neighbors
+            if neighbor in positions
+        )
+
+        if valid_neighbor_count == 0:
+            continue
+
+        smooth_position /= valid_neighbor_count
+
+        # Determine the tangent-plane normal.
+        if is_boundary and len(neighbors) == 2:
+
+            normal = _boundary_corner_normal( current_position, neighbors, positions,)
+
+            if normal is None:
+                continue
+
+        else:
+
+            normal = vert.normal.copy()
+
+            if normal.length <= EPSILON:
+                continue
+
+            normal.normalize()
+
+        # Project the smoothing displacement onto
+        # the tangent plane of the current vertex.
+        delta = smooth_position - current_position
+
+        delta -= normal * delta.dot(normal)
+
+        new_positions[vert] = ( current_position + delta * min(1.0, factor))
+
+    # Apply all calculated positions only after
+    # the complete pass has been evaluated.
+    moved = 0
+
+    for vert, position in new_positions.items():
+
+        if ( position - vert.co).length_squared <= EPSILON * EPSILON:
+            continue
+
+        vert.co = position
+        moved += 1
+
+    return moved
+
+
+def _relax_brush_step( bm, factors,):
+    """
+    Blender Relax Slide's Shift/alternate behavior.
+
+    Blender performs four topology-relax passes
+    for each brush step.
+    """
+
+    moved = 0
+
+    for _ in range(4):
+        moved += _relax_topology_pass( bm, factors,)
+
+    return moved
+
+def _draw_relax_brush(operator):
+    if operator.cursor is None:
+        return
+
+    # Blender's radial brush-size control keeps the brush preview anchored
+    # at the position where F was pressed while the mouse is dragged.
+    if getattr(operator, "resize_active", False):
+        center = operator.resize_center
+    else:
+        center = operator.cursor
+
+    radius = operator.radius
+
+    gpu.state.blend_set("ALPHA")
+
+    # Outer brush radius.
+    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), radius, segments=64,)
+
+    # Center marker.
+    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), 2.0, segments=16,)
+
+    gpu.state.blend_set("NONE")
+
+class AllPie_OT_RelaxTopology(Operator):
+    bl_idname = "cop.relax_topology"
+    bl_label = "Relax Topology"
+    bl_description = "Relax retopology using Blender's topology-relax algorithm"
+    bl_options = {"REGISTER"}
+
+    radius: FloatProperty(
+        name="Radius",
+        description="Brush radius in screen pixels",
+        default=50.0,
+        min=5.0,
+        max=500.0,
+    )
+
+    strength: FloatProperty(
+        name="Strength",
+        description="Relax strength per brush dab",
+        default=0.35,
+        min=0.0,
+        max=1.0,
+    )
+
+    spacing: FloatProperty(
+        name="Spacing",
+        description="Distance between brush dabs as a fraction of radius",
+        default=0.15,
+        min=0.02,
+        max=0.5,
+    )
+
+    @classmethod
+    def poll(cls, context):
+        return (
+            context.area is not None
+            and context.area.type == "VIEW_3D"
+            and is_retopo_edit_context(context)
+        )
+
+    def _remove_draw_handler(self, context):
+        if getattr(self, "draw_handler", None) is not None:
+            bpy.types.SpaceView3D.draw_handler_remove( self.draw_handler, "WINDOW",)
+            self.draw_handler = None
+
+        if getattr(self, "modal_cursor_active", False):
+            try:
+                context.window.cursor_modal_restore()
+            except RuntimeError:
+                pass
+            self.modal_cursor_active = False
+
+        if context.area:
+            context.area.tag_redraw()
+
+    def _start_view_navigation(self, context, event):
+        """Start Blender's native View3D navigation operator."""
+        try:
+            if event.shift and event.ctrl:
+                result = bpy.ops.view3d.dolly( "INVOKE_DEFAULT", use_cursor_init=True,)
+            elif event.ctrl:
+                result = bpy.ops.view3d.zoom( "INVOKE_DEFAULT", use_cursor_init=True,)
+            elif event.shift:
+                result = bpy.ops.view3d.move( "INVOKE_DEFAULT", use_cursor_init=True,)
+            else:
+                result = bpy.ops.view3d.rotate( "INVOKE_DEFAULT", use_cursor_init=True,)
+        except RuntimeError:
+            return False
+
+        return "RUNNING_MODAL" in result
+
+    # ------------------------------------------------------------------
+    # Stroke
+    # ------------------------------------------------------------------
+
+    def invoke(self, context, event):
+        mesh = get_retopo_mesh(context)
+
+        if mesh is None:
+            self.report(
+                {"WARNING"},
+                "Specify the mesh for retopology",
+            )
+            return {"CANCELLED"}
+
+        self.mesh = mesh
+
+        self.stroke_active = False
+        self.stroke_changed = False
+        self.modal_cursor_active = False
+
+        # Blender-style F brush-size control state.
+        self.resize_active = False
+        self.resize_center = Vector(( event.mouse_region_x, event.mouse_region_y,))
+        self.resize_start_mouse = self.resize_center.copy()
+        self.resize_start_radius = self.radius
+
+        self.last_mouse = Vector(( event.mouse_region_x, event.mouse_region_y,))
+
+        self.cursor = self.last_mouse.copy()
+
+        self.last_pressure = 1.0
+        self.distance_since_dab = 0.0
+
+        self.stroke_backup = {}
+
+        self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
+                _draw_relax_brush,
+                (self,),
+                "WINDOW",
+                "POST_PIXEL",
+                )
+
+        context.window_manager.modal_handler_add(self)
+
+        # Override the active tool's cursor for the lifetime of this modal
+        # operator. The Annotation tool can otherwise restore its Pencil
+        # cursor whenever the mouse moves.
+        try:
+            context.window.cursor_modal_set("PAINT_BRUSH")
+            self.modal_cursor_active = True
+        except RuntimeError:
+            context.window.cursor_set("PAINT_BRUSH")
+
+        context.area.tag_redraw()
+
+        return {"RUNNING_MODAL"}
+
+    def _get_spacing_pixels(self):
+        return max( 2.0, self.radius * self.spacing,)
+
+    def _capture_stroke_backup(self):
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+
+        self.stroke_backup = {
+            vert: vert.co.copy()
+            for vert in bm.verts
+            if vert.is_valid
+        }
+
+    def _restore_stroke(self):
+        if not self.stroke_backup:
+            return
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+
+        for vert, position in self.stroke_backup.items():
+            if vert.is_valid:
+                vert.co = position
+
+        bm.normal_update()
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
+
+    # ------------------------------------------------------------------
+    # Dab
+    # ------------------------------------------------------------------
+
+    def _apply_dab(self, context, cursor, pressure):
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+
+        strength = ( self.strength * max(0.0, min(1.0, pressure)))
+
+        factors = _collect_relax_factors( context, self.mesh, bm, cursor, self.radius, strength,)
+
+        if not factors:
+            return False
+
+        moved = _relax_brush_step( bm, factors,)
+
+        if moved == 0:
+            return False
+
+        bm.normal_update()
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
+
+        return True
+
+    # ------------------------------------------------------------------
+    # Stroke begin/end
+    # ------------------------------------------------------------------
+
+    def _begin_stroke(self, context, event):
+        self.stroke_active = True
+
+        self.last_mouse = Vector(( event.mouse_region_x, event.mouse_region_y,))
+
+        self.last_pressure = ( getattr(event, "pressure", 1.0) or 1.0)
+
+        self.distance_since_dab = 0.0
+
+        self.stroke_changed = False
+        self._capture_stroke_backup()
+
+        # First dab happens immediately.
+        changed = self._apply_dab( context, self.last_mouse, self.last_pressure,)
+
+        if changed:
+            self.stroke_changed = True
+
+    def _end_stroke(self):
+        if self.stroke_changed:
+            bpy.ops.ed.undo_push( message="Relax Topology Stroke",)
+
+        self.stroke_active = False
+        self.distance_since_dab = 0.0
+        self.stroke_changed = False
+        self.stroke_backup.clear()
+
+    def _cancel_stroke(self):
+        self._restore_stroke()
+
+        self.stroke_active = False
+        self.distance_since_dab = 0.0
+        self.stroke_backup.clear()
+
+    # ------------------------------------------------------------------
+    # Stroke interpolation
+    # ------------------------------------------------------------------
+
+    def _process_mouse_segment( self, context, mouse_position, pressure,):
+        start = self.last_mouse
+        end = mouse_position
+
+        delta = end - start
+        segment_length = delta.length
+
+        if segment_length <= EPSILON:
+            self.last_mouse = end
+            self.last_pressure = pressure
+            return
+
+        direction = delta / segment_length
+
+        spacing = self._get_spacing_pixels()
+
+        remaining = segment_length
+        travelled = 0.0
+        current_position = start.copy()
+
+        start_pressure = self.last_pressure
+
+        while True:
+            distance_to_dab = (
+                spacing
+                - self.distance_since_dab
+            )
+
+            if remaining + EPSILON < distance_to_dab:
+                self.distance_since_dab += remaining
+                break
+
+            current_position += ( direction * distance_to_dab)
+
+            remaining -= distance_to_dab
+            travelled += distance_to_dab
+
+            t = travelled / segment_length
+
+            dab_pressure = ( start_pressure + (pressure - start_pressure) * t)
+
+            changed = self._apply_dab( context, current_position, dab_pressure,)
+
+            if changed:
+                self.stroke_changed = True
+
+            self.distance_since_dab = 0.0
+
+        self.last_mouse = end
+        self.last_pressure = pressure
+
+    # ------------------------------------------------------------------
+    # Brush size control (Blender F behavior)
+    # ------------------------------------------------------------------
+
+    def _begin_radius_resize(self, event):
+        self.resize_active = True
+        self.resize_center = Vector(( event.mouse_region_x, event.mouse_region_y,))
+        self.resize_start_mouse = self.resize_center.copy()
+        self.resize_start_radius = self.radius
+
+    def _update_radius_resize(self, event):
+        mouse_x = event.mouse_region_x
+        start_x = self.resize_start_mouse.x
+
+        # Blender's WM_OT_radial_control uses the horizontal mouse travel for
+        # pixel brush size: moving right increases size and moving left
+        # decreases it. The initial size is preserved at the starting point.
+        delta_x = mouse_x - start_x
+
+        self.radius = max( 5.0, min( 500.0, self.resize_start_radius + delta_x,),)
+
+    def _cancel_radius_resize(self):
+        self.radius = self.resize_start_radius
+        self.resize_active = False
+
+    def _confirm_radius_resize(self):
+        self.resize_active = False
+
+    # ------------------------------------------------------------------
+    # Modal
+    # ------------------------------------------------------------------
+
+    def modal(self, context, event):
+
+        # --------------------------------------------------------------
+        # Blender-style F brush radius control.
+        # --------------------------------------------------------------
+
+        if event.type == "F" and event.value == "PRESS" and not self.stroke_active:
+            self._begin_radius_resize(event)
+            context.area.tag_redraw()
+            return {"RUNNING_MODAL"}
+
+        if self.resize_active:
+            if event.type in {"MOUSEMOVE", "INBETWEEN_MOUSEMOVE"}:
+                self._update_radius_resize(event)
+                context.area.tag_redraw()
+                return {"RUNNING_MODAL"}
+
+            if event.type == "LEFTMOUSE" and event.value == "PRESS":
+                # LMB confirms the new brush radius, matching Blender's
+                # radial control interaction.
+                self._confirm_radius_resize()
+                context.area.tag_redraw()
+                return {"RUNNING_MODAL"}
+
+            if event.type in {"ESC", "RIGHTMOUSE"}:
+                self._cancel_radius_resize()
+                context.area.tag_redraw()
+                return {"RUNNING_MODAL"}
+
+            return {"RUNNING_MODAL"}
+
+        # --------------------------------------------------------------
+        # Cancel current stroke / operator
+        # --------------------------------------------------------------
+
+        if event.type == "ESC":
+            if self.stroke_active:
+                self._cancel_stroke()
+
+            self._remove_draw_handler(context)
+            context.window.cursor_set("DEFAULT")
+            context.area.tag_redraw()
+
+            return {"CANCELLED"}
+
+        if event.type == "RIGHTMOUSE":
+            if self.stroke_active:
+                self._cancel_stroke()
+                context.area.tag_redraw()
+                return {"RUNNING_MODAL"}
+
+            self._remove_draw_handler(context)
+
+            context.window.cursor_set("DEFAULT")
+            return {"CANCELLED"}
+
+        # --------------------------------------------------------------
+        # Viewport navigation
+        #
+        # Launch Blender's native navigation operator as a nested modal
+        # operation. We deliberately do not keep a local navigation state:
+        # the native operator owns the navigation gesture and returns control
+        # to this brush modal when it finishes. This is important because
+        # otherwise our brush would stop receiving MOUSEMOVE events after
+        # an Alt+LMB / emulated-MMB navigation gesture.
+        # --------------------------------------------------------------
+
+        if event.type == "MIDDLEMOUSE" and event.value == "PRESS":
+            self._start_view_navigation(context, event)
+            return {"RUNNING_MODAL"}
+
+        # Fallback for systems where Alt+LMB reaches this modal directly
+        # instead of being converted to MIDDLEMOUSE by Emulate 3 Button Mouse.
+        if ( event.type == "LEFTMOUSE" and event.alt and event.value == "PRESS"):
+            self._start_view_navigation(context, event)
+            return {"RUNNING_MODAL"}
+
+        # --------------------------------------------------------------
+        # Mouse movement
+        # --------------------------------------------------------------
+
+        if event.type in { "MOUSEMOVE", "INBETWEEN_MOUSEMOVE", }:
+
+            mouse_position = Vector(( event.mouse_region_x, event.mouse_region_y,))
+
+            self.cursor = mouse_position
+
+            pressure = ( getattr(event, "pressure", 1.0) or self.last_pressure)
+
+            if self.stroke_active:
+                self._process_mouse_segment( context, mouse_position, max(0.0, min(1.0, pressure)),)
+            else:
+                self.last_mouse = mouse_position
+                self.last_pressure = pressure
+
+            context.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        # --------------------------------------------------------------
+        # Stroke begin/end
+        # --------------------------------------------------------------
+
+        if event.type == "LEFTMOUSE":
+
+            if event.value == "PRESS":
+                self._begin_stroke( context, event,)
+
+                return {"RUNNING_MODAL"}
+
+            if event.value == "RELEASE":
+                self._end_stroke()
+
+                context.area.tag_redraw()
+
+                return {"RUNNING_MODAL"}
+
+        # --------------------------------------------------------------
+        # Radius
+        # --------------------------------------------------------------
+
+        if event.type == "WHEELUPMOUSE":
+            self.radius = min( 500.0, self.radius * 1.1,)
+
+            context.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        if event.type == "WHEELDOWNMOUSE":
+            self.radius = max( 5.0, self.radius / 1.1,)
+
+            context.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        return {"RUNNING_MODAL"}
+
+
 classes = (
     RetopoGuidePoint,
     RetopoGuideSplineState,
@@ -603,6 +1296,7 @@ classes = (
     AllPie_OT_AddSurface,
     AllPie_OT_SculptRelaxSlide,
     AllPie_OT_ToggleAutoMerge,
+    AllPie_OT_RelaxTopology,
 )
 
 def register():
