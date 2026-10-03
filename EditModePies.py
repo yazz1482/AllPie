@@ -719,6 +719,12 @@ RETOPO_MENU = [
         "invoke": True,
     },
     {
+        "slot": 4,
+        "label": "Dissolve Edges",
+        "operator": "cop.dissolve_edge",
+        "invoke": True,
+    },
+    {
         "slot": 6,
         "label": "Stitch Topology",
         "operator": "cop.stitch_topology",

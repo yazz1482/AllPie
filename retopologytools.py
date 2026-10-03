@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+import math
 import bpy
 import bmesh
 import gpu
@@ -82,12 +83,41 @@ def is_retopo_edit_context(context):
 def _retopo_switch_to_tweak(context):
     """Switch the 3D View back to Blender's default Tweak tool."""
     try:
-        bpy.ops.wm.tool_set_by_id(
-            name="builtin.select",
-            space_type="VIEW_3D",
-        )
+        bpy.ops.wm.tool_set_by_id( name="builtin.select", space_type="VIEW_3D",)
     except RuntimeError:
         pass
+
+
+def _retopo_is_view_navigation_event(event):
+    """Return True when Blender's native View3D navigation should handle the event."""
+    return ( event.type == "MIDDLEMOUSE" or ( event.type == "LEFTMOUSE" and event.alt))
+
+
+def _retopo_draw_2d_lines(positions, color, width=2.0):
+    """Draw 2D line segments using the standard retopo viewport style."""
+    if not positions:
+        return
+
+    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+    batch = batch_for_shader(shader, "LINES", {"pos": positions})
+
+    gpu.state.blend_set("ALPHA")
+
+    try:
+        gpu.state.line_width_set(width)
+    except Exception:
+        pass
+
+    shader.bind()
+    shader.uniform_float("color", color)
+    batch.draw(shader)
+
+    try:
+        gpu.state.line_width_set(1.0)
+    except Exception:
+        pass
+
+    gpu.state.blend_set("NONE")
 
 
 # Guide analysis
@@ -222,10 +252,7 @@ def generate_surface(guide_analysis, settings):
     along_count = max(1, int(settings.along_count))
     sample_count = along_count + 1
 
-    sampled_guides = [
-        sample_guide_spline(spline, sample_count)
-        for spline in guide_analysis.splines
-    ]
+    sampled_guides = [ sample_guide_spline(spline, sample_count) for spline in guide_analysis.splines ]
 
     rows = []
     for guide_index in range(len(sampled_guides) - 1):
@@ -251,8 +278,7 @@ def commit_surface(context, main_object, patch):
     bm = bmesh.from_edit_mesh(main_object.data)
     world_to_local = main_object.matrix_world.inverted()
 
-    new_vertices = [
-        bm.verts.new(world_to_local @ coordinate)
+    new_vertices = [ bm.verts.new(world_to_local @ coordinate)
         for coordinate in patch.vertices
     ]
 
@@ -408,19 +434,14 @@ def _retopo_strip_build_preview(context, screen_points, radius, along_count):
 
     distances = [0.0]
     for index in range(1, len(screen_points)):
-        distances.append(
-            distances[-1] + (screen_points[index] - screen_points[index - 1]).length
-        )
+        distances.append( distances[-1] + (screen_points[index] - screen_points[index - 1]).length)
 
     samples = []
     for sample_index in range(along_count + 1):
         distance = total_length * sample_index / along_count
         segment_index = 0
 
-        while (
-            segment_index < len(screen_points) - 2
-            and distance > distances[segment_index + 1]
-        ):
+        while ( segment_index < len(screen_points) - 2 and distance > distances[segment_index + 1]):
             segment_index += 1
 
         start = screen_points[segment_index]
@@ -478,18 +499,13 @@ def _retopo_strip_commit(context, mesh, vertices, faces):
     bm = bmesh.from_edit_mesh(mesh.data)
     world_to_local = mesh.matrix_world.inverted()
 
-    new_vertices = [
-        bm.verts.new(world_to_local @ coordinate)
-        for coordinate in vertices
-    ]
+    new_vertices = [ bm.verts.new(world_to_local @ coordinate) for coordinate in vertices ]
 
     new_faces = []
 
     for face_indices in faces:
         try:
-            new_faces.append(
-                bm.faces.new([new_vertices[index] for index in face_indices])
-            )
+            new_faces.append( bm.faces.new([new_vertices[index] for index in face_indices]))
         except ValueError:
             continue
 
@@ -538,34 +554,12 @@ def _draw_retopo_strip(operator):
     if not positions:
         return
 
-    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
-    batch = batch_for_shader(shader, "LINES", {"pos": positions})
-
-    gpu.state.blend_set("ALPHA")
-
-    try:
-        gpu.state.line_width_set(2.0)
-    except Exception:
-        pass
-
-    shader.bind()
-    shader.uniform_float("color", RETOPO_STRIP_COLOR)
-    batch.draw(shader)
-
-    try:
-        gpu.state.line_width_set(1.0)
-    except Exception:
-        pass
-
-    gpu.state.blend_set("NONE")
+    _retopo_draw_2d_lines(positions, RETOPO_STRIP_COLOR, width=2.0)
 
 
-def _draw_add_strips_brush(operator):
-    """Draw the strip preview and Blender-style brush radius indicator."""
-    _draw_retopo_strip(operator)
-
-    center = (
-        operator.resize_center
+def _retopo_draw_brush_cursor(operator):
+    """Draw the standard retopo brush radius and center marker."""
+    center = ( operator.resize_center
         if operator.resize_active
         else operator.cursor
     )
@@ -573,21 +567,16 @@ def _draw_add_strips_brush(operator):
 
     gpu.state.blend_set("ALPHA")
 
-    draw_circle_2d(
-        center,
-        (1.0, 1.0, 1.0, 0.9),
-        radius,
-        segments=64,
-    )
-
-    draw_circle_2d(
-        center,
-        (1.0, 1.0, 1.0, 0.9),
-        2.0,
-        segments=16,
-    )
+    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), radius, segments=64,)
+    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), 2.0, segments=16,)
 
     gpu.state.blend_set("NONE")
+
+
+def _draw_add_strips_brush(operator):
+    """Draw the strip preview and Blender-style brush radius indicator."""
+    _draw_retopo_strip(operator)
+    _retopo_draw_brush_cursor(operator)
 
 
 # Add strips operator
@@ -598,18 +587,12 @@ class AllPie_OT_AddStrips(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     radius: FloatProperty(
-        name="Radius",
-        description="Half-width of the strip in screen pixels",
-        default=RETOPO_STRIP_DEFAULT_RADIUS,
-        min=2.0,
-        max=200.0,
+        name="Radius", description="Half-width of the strip in screen pixels",
+        default=RETOPO_STRIP_DEFAULT_RADIUS, min=2.0, max=200.0,
     )
     along_count: IntProperty(
-        name="Along",
-        description="Number of quad segments along the strip",
-        default=6,
-        min=1,
-        max=200,
+        name="Along", description="Number of quad segments along the strip",
+        default=6, min=1, max=200,
     )
 
     @classmethod
@@ -622,12 +605,7 @@ class AllPie_OT_AddStrips(Operator):
         layout.prop(self, "along_count")
 
     def _preview(self, context):
-        result = _retopo_strip_build_preview(
-            context,
-            self.screen_points,
-            self.radius,
-            self.along_count,
-        )
+        result = _retopo_strip_build_preview( context, self.screen_points, self.radius, self.along_count,)
 
         if result is None:
             self.preview_vertices = []
@@ -667,12 +645,7 @@ class AllPie_OT_AddStrips(Operator):
             self.report({'WARNING'}, "Unable to generate a strip from the stroke")
             return {'CANCELLED'}
 
-        if not _retopo_strip_commit(
-            context,
-            mesh,
-            self.preview_vertices,
-            self.preview_faces,
-        ):
+        if not _retopo_strip_commit( context, mesh, self.preview_vertices, self.preview_faces,):
             self.report({'WARNING'}, "Generated strip is empty")
             return {'CANCELLED'}
 
@@ -712,11 +685,8 @@ class AllPie_OT_AddStrips(Operator):
         self.cursor = Vector((event.mouse_region_x, event.mouse_region_y))
         self.resize_center = self.cursor.copy()
         self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
-            _draw_add_strips_brush,
-            (self,),
-            "WINDOW",
-            "POST_PIXEL",
-        )
+            _draw_add_strips_brush, (self,), "WINDOW", "POST_PIXEL",
+            )
 
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
@@ -764,10 +734,7 @@ class AllPie_OT_AddStrips(Operator):
 
         # Viewport navigation. Pass these events through to Blender's
         # native View3D navigation, matching the other retopo brushes.
-        if event.type == 'MIDDLEMOUSE':
-            return {'PASS_THROUGH'}
-
-        if event.type == 'LEFTMOUSE' and event.alt:
+        if _retopo_is_view_navigation_event(event):
             return {'PASS_THROUGH'}
 
         # ESC exits the tool and returns to Tweak.
@@ -860,9 +827,7 @@ class AllPie_OT_AddStrips(Operator):
         self._cleanup(context)
 
 
-
 # ADD STROKE GUIDE TOOL
-
 def _draw_retopo_guides(operator):
     """Draw stored and current retopology guide strokes in screen space."""
     positions = []
@@ -881,21 +846,13 @@ def _draw_retopo_guides(operator):
         if len(stroke) < 2:
             continue
 
-        previous = view3d_utils.location_3d_to_region_2d(
-            region,
-            rv3d,
-            stroke[0],
-        )
+        previous = view3d_utils.location_3d_to_region_2d( region, rv3d, stroke[0],)
 
         if previous is None:
             continue
 
         for point in stroke[1:]:
-            current = view3d_utils.location_3d_to_region_2d(
-                region,
-                rv3d,
-                point,
-            )
+            current = view3d_utils.location_3d_to_region_2d( region, rv3d, point,)
 
             if current is None:
                 previous = None
@@ -905,40 +862,14 @@ def _draw_retopo_guides(operator):
                 previous = current
                 continue
 
-            positions.extend([
-                (previous.x, previous.y),
-                (current.x, current.y),
-            ])
+            positions.extend([ (previous.x, previous.y), (current.x, current.y), ])
 
             previous = current
 
     if not positions:
         return
 
-    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
-    batch = batch_for_shader(
-        shader,
-        "LINES",
-        {"pos": positions},
-    )
-
-    gpu.state.blend_set("ALPHA")
-
-    try:
-        gpu.state.line_width_set(2.0)
-    except Exception:
-        pass
-
-    shader.bind()
-    shader.uniform_float("color", RETOPO_STRIP_COLOR)
-    batch.draw(shader)
-
-    try:
-        gpu.state.line_width_set(1.0)
-    except Exception:
-        pass
-
-    gpu.state.blend_set("NONE")
+    _retopo_draw_2d_lines(positions, RETOPO_STRIP_COLOR, width=2.0)
 
 
 class AllPie_OT_AddStroke(Operator):
@@ -948,19 +879,13 @@ class AllPie_OT_AddStroke(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     across_count: IntProperty(
-        name="Across",
-        description="Number of rows between neighboring guide strokes",
-        default=3,
-        min=1,
-        max=200,
-    )
+        name="Across", description="Number of rows between neighboring guide strokes",
+        default=3, min=1, max=200,
+        )
     along_count: IntProperty(
-        name="Along",
-        description="Number of segments along each guide stroke",
-        default=3,
-        min=1,
-        max=200,
-    )
+        name="Along", description="Number of segments along each guide stroke",
+        default=3, min=1, max=200,
+        )
 
     @classmethod
     def poll(cls, context):
@@ -974,10 +899,7 @@ class AllPie_OT_AddStroke(Operator):
     def _cleanup(self, context):
         if getattr(self, "draw_handler", None) is not None:
             try:
-                bpy.types.SpaceView3D.draw_handler_remove(
-                    self.draw_handler,
-                    "WINDOW",
-                )
+                bpy.types.SpaceView3D.draw_handler_remove( self.draw_handler, "WINDOW",)
             except Exception:
                 pass
 
@@ -1003,10 +925,7 @@ class AllPie_OT_AddStroke(Operator):
             return
 
         for spline in guide.splines:
-            self.completed_strokes.append([
-                point.copy()
-                for point in spline.points
-            ])
+            self.completed_strokes.append([ point.copy() for point in spline.points ])
 
     def _store_guides(self, context):
         guide = RetopoGuide(source="ADD_STROKE")
@@ -1015,11 +934,7 @@ class AllPie_OT_AddStroke(Operator):
             if len(stroke) < 2:
                 continue
 
-            guide.splines.append(
-                RetopoGuideSpline(
-                    points=[point.copy() for point in stroke]
-                )
-            )
+            guide.splines.append( RetopoGuideSpline( points=[point.copy() for point in stroke]))
 
         store_guide_state(
             context.scene.retopo,
@@ -1030,36 +945,24 @@ class AllPie_OT_AddStroke(Operator):
         mesh = get_retopo_mesh(context)
 
         if mesh is None:
-            self.report(
-                {'WARNING'},
-                "Specify the mesh for retopology",
-            )
+            self.report( {'WARNING'}, "Specify the mesh for retopology",)
             return {'CANCELLED'}
 
         if not is_retopo_edit_context(context):
-            self.report(
-                {'WARNING'},
-                "Retopology must be initialized in Edit Mode",
-            )
+            self.report( {'WARNING'}, "Retopology must be initialized in Edit Mode",)
             return {'CANCELLED'}
 
         settings = context.scene.retopo
         guide = load_guide_state(settings)
 
         if guide is None:
-            self.report(
-                {'WARNING'},
-                "Draw a retopology guide",
-            )
+            self.report( {'WARNING'}, "Draw a retopology guide",)
             return {'CANCELLED'}
 
         guide_analysis = analyze_guide(guide)
 
         if len(guide_analysis.splines) < 2:
-            self.report(
-                {'WARNING'},
-                "At least two guide strokes are required",
-            )
+            self.report( {'WARNING'}, "At least two guide strokes are required",)
             return {'CANCELLED'}
 
         surface_settings = SurfaceGenerationSettings(
@@ -1067,27 +970,14 @@ class AllPie_OT_AddStroke(Operator):
             along_count=self.along_count,
         )
 
-        patch = generate_surface(
-            guide_analysis,
-            surface_settings,
-        )
+        patch = generate_surface( guide_analysis, surface_settings,)
 
         if patch is None:
-            self.report(
-                {'WARNING'},
-                "Unable to generate a surface from the guides",
-            )
+            self.report( {'WARNING'}, "Unable to generate a surface from the guides",)
             return {'CANCELLED'}
 
-        if not commit_surface(
-            context,
-            mesh,
-            patch,
-        ):
-            self.report(
-                {'WARNING'},
-                "Generated surface is empty",
-            )
+        if not commit_surface( context, mesh, patch,):
+            self.report( {'WARNING'}, "Generated surface is empty",)
             return {'CANCELLED'}
 
         settings.across_count = self.across_count
@@ -1101,10 +991,7 @@ class AllPie_OT_AddStroke(Operator):
 
     def _add_surface(self, context):
         if len(self.completed_strokes) < 2:
-            self.report(
-                {'WARNING'},
-                "At least two guide strokes are required",
-            )
+            self.report( {'WARNING'}, "At least two guide strokes are required",)
             return {'RUNNING_MODAL'}
 
         self._store_guides(context)
@@ -1121,19 +1008,13 @@ class AllPie_OT_AddStroke(Operator):
 
     def invoke(self, context, event):
         if not self.poll(context):
-            self.report(
-                {'WARNING'},
-                "Retopology must be initialized in Edit Mode",
-            )
+            self.report( {'WARNING'}, "Retopology must be initialized in Edit Mode",)
             return {'CANCELLED'}
 
         self.area = context.area
         self.region = context.region
         self.rv3d = context.space_data.region_3d
-        self.cursor = Vector((
-            event.mouse_region_x,
-            event.mouse_region_y,
-        ))
+        self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
 
         settings = context.scene.retopo
 
@@ -1148,10 +1029,7 @@ class AllPie_OT_AddStroke(Operator):
         self._load_existing_guides(settings)
 
         self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
-            _draw_retopo_guides,
-            (self,),
-            "WINDOW",
-            "POST_PIXEL",
+            _draw_retopo_guides, (self,), "WINDOW", "POST_PIXEL",
         )
 
         context.window_manager.modal_handler_add(self)
@@ -1167,21 +1045,13 @@ class AllPie_OT_AddStroke(Operator):
         # F builds a surface from the completed guide strokes.
         # The Add Stroke operator owns the surface generation so Blender
         # gets one normal undo/F9 operation instead of a nested operator.
-        if (
-            event.type == 'F'
-            and event.value == 'PRESS'
-            and not self.drawing
-        ):
+        if ( event.type == 'F' and event.value == 'PRESS' and not self.drawing):
             return self._add_surface(context)
 
         # Undo the most recently completed guide stroke.
         # Add Stroke keeps its own guide history so Ctrl+Z cannot undo
         # unrelated mesh edits while this modal tool is active.
-        if (
-            event.type == 'Z'
-            and event.value == 'PRESS'
-            and event.ctrl
-        ):
+        if ( event.type == 'Z' and event.value == 'PRESS' and event.ctrl):
             if self.drawing:
                 self._cancel_current_stroke()
                 context.area.tag_redraw()
@@ -1213,33 +1083,23 @@ class AllPie_OT_AddStroke(Operator):
             return {'CANCELLED'}
 
         # Viewport navigation.
-        if event.type == 'MIDDLEMOUSE':
-            return {'PASS_THROUGH'}
-
-        if event.type == 'LEFTMOUSE' and event.alt:
+        if _retopo_is_view_navigation_event(event):
             return {'PASS_THROUGH'}
 
         # Mouse movement.
         if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
-            point = Vector((
-                event.mouse_region_x,
-                event.mouse_region_y,
-            ))
+            point = Vector(( event.mouse_region_x, event.mouse_region_y,))
 
             self.cursor = point
 
             if self.drawing:
-                delta = (
-                    point - self.current_screen_points[-1]
+                delta = ( point - self.current_screen_points[-1]
                     if self.current_screen_points
                     else point
                 )
 
                 if delta.length >= RETOPO_GUIDE_MIN_POINT_DISTANCE:
-                    hit = _retopo_strip_ray_cast(
-                        context,
-                        point,
-                    )
+                    hit = _retopo_strip_ray_cast( context, point,)
 
                     if hit is not None:
                         self.current_screen_points.append(point)
@@ -1249,19 +1109,10 @@ class AllPie_OT_AddStroke(Operator):
             return {'RUNNING_MODAL'}
 
         # Start a new guide stroke.
-        if (
-            event.type == 'LEFTMOUSE'
-            and event.value == 'PRESS'
-        ):
-            point = Vector((
-                event.mouse_region_x,
-                event.mouse_region_y,
-            ))
+        if ( event.type == 'LEFTMOUSE' and event.value == 'PRESS'):
+            point = Vector(( event.mouse_region_x, event.mouse_region_y,))
 
-            hit = _retopo_strip_ray_cast(
-                context,
-                point,
-            )
+            hit = _retopo_strip_ray_cast( context, point,)
 
             if hit is None:
                 return {'RUNNING_MODAL'}
@@ -1274,20 +1125,14 @@ class AllPie_OT_AddStroke(Operator):
             return {'RUNNING_MODAL'}
 
         # Finish the current guide stroke.
-        if (
-            event.type == 'LEFTMOUSE'
-            and event.value == 'RELEASE'
-        ):
+        if ( event.type == 'LEFTMOUSE' and event.value == 'RELEASE'):
             if not self.drawing:
                 return {'RUNNING_MODAL'}
 
             self.drawing = False
 
             if len(self.current_world_points) >= 2:
-                self.completed_strokes.append([
-                    point.copy()
-                    for point in self.current_world_points
-                ])
+                self.completed_strokes.append([ point.copy() for point in self.current_world_points ])
                 self._store_guides(context)
 
             self.current_screen_points.clear()
@@ -1359,7 +1204,8 @@ class AllPie_OT_InitRetopo(Operator):
 
         # Shrinkwrap: create/configure it, but never assign its target.
         shrinkwrap = next(
-            (mod for mod in obj.modifiers if mod.type == "SHRINKWRAP"), None,
+            (mod for mod in obj.modifiers
+             if mod.type == "SHRINKWRAP"), None,
         )
 
         if shrinkwrap is None:
@@ -1371,7 +1217,8 @@ class AllPie_OT_InitRetopo(Operator):
 
         # Mirror
         mirror = next(
-            (mod for mod in obj.modifiers if mod.type == "MIRROR"),
+            (mod for mod in obj.modifiers
+             if mod.type == "MIRROR"),
             None,
         )
 
@@ -1392,41 +1239,25 @@ class AllPie_OT_InitRetopo(Operator):
 # Retopology properties
 class RetopoSettings(PropertyGroup):
     across_count: IntProperty(
-        name="Across",
-        description="Number of rows between neighboring guide strokes",
-        default=3,
-        min=1,
-        max=200,
-    )
+        name="Across", description="Number of rows between neighboring guide strokes",
+        default=3, min=1, max=200,
+        )
     along_count: IntProperty(
-        name="Along",
-        description="Number of segments along each guide stroke",
-        default=3,
-        min=1,
-        max=200,
+        name="Along", description="Number of segments along each guide stroke",
+        default=3, min=1, max=200,
     )
     strip_radius: FloatProperty(
-        name="Strip Radius",
-        description="Half-width of Add Strips in screen pixels",
-        default=RETOPO_STRIP_DEFAULT_RADIUS,
-        min=2.0,
-        max=200.0,
+        name="Strip Radius", description="Half-width of Add Strips in screen pixels",
+        default=RETOPO_STRIP_DEFAULT_RADIUS, min=2.0, max=200.0,
     )
     strip_along_count: IntProperty(
-        name="Strip Along",
-        description="Number of quad segments along Add Strips",
-        default=6,
-        min=1,
-        max=200,
+        name="Strip Along", description="Number of quad segments along Add Strips",
+        default=6, min=1, max=200,
     )
     strip_points: CollectionProperty(type=RetopoGuidePoint)
     guide_source: StringProperty(options={'HIDDEN'})
     guide_splines: CollectionProperty(type=RetopoGuideSplineState)
-    mesh: PointerProperty(
-        name="Retopo Mesh",
-        type=bpy.types.Object,
-        description="Mesh used for retopology",
-    )
+    mesh: PointerProperty( name="Retopo Mesh", type=bpy.types.Object, description="Retopology Mesh",)
 
 # ============================================================
 # Blender topology-relax algorithm, adapted for Edit Mode BMesh.
@@ -1437,7 +1268,6 @@ class RetopoSettings(PropertyGroup):
 #   - smoothed position is projected onto the vertex tangent plane
 #   - result is scaled by brush factor
 #   - Relax Slide alternate path performs 4 passes
-# ============================================================
 
 def _relax_brush_falloff(distance, radius):
     """Simple radial brush falloff."""
@@ -1523,8 +1353,7 @@ def _relax_topology_pass( bm, factors,):
 
     # Snapshot all vertex positions before calculating
     # any new positions.
-    positions = {
-        vert: vert.co.copy()
+    positions = { vert: vert.co.copy()
         for vert in bm.verts
         if vert.is_valid
     }
@@ -1560,8 +1389,7 @@ def _relax_topology_pass( bm, factors,):
         current_position = positions[vert]
 
         # Average neighbor positions.
-        smooth_position = sum(
-            (positions[neighbor] for neighbor in neighbors),
+        smooth_position = sum( (positions[neighbor] for neighbor in neighbors),
             Vector((0.0, 0.0, 0.0)),
         ) / len(neighbors)
 
@@ -1617,18 +1445,7 @@ def _relax_brush_step( bm, factors,):
     )
 
 def _draw_relax_brush(operator):
-    # Blender's radial brush-size control keeps the brush preview anchored
-    # at the position where F was pressed while the mouse is dragged.
-    center = operator.resize_center if operator.resize_active else operator.cursor
-    radius = operator.radius
-    gpu.state.blend_set("ALPHA")
-
-    # Outer brush radius.
-    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), radius, segments=64,)
-    # Center marker.
-    draw_circle_2d( center, (1.0, 1.0, 1.0, 0.9), 2.0, segments=16,)
-
-    gpu.state.blend_set("NONE")
+    _retopo_draw_brush_cursor(operator)
 
 class AllPie_OT_RelaxTopology(Operator):
     bl_idname = "cop.relax_topology"
@@ -1636,27 +1453,17 @@ class AllPie_OT_RelaxTopology(Operator):
     bl_description = "Relax retopology using Blender's topology-relax algorithm"
     bl_options = {"REGISTER"}
 
-    radius: FloatProperty( name="Radius",
-        description="Brush radius in screen pixels",
-        default=50.0,
-        min=5.0,
-        max=500.0,
+    radius: FloatProperty( name="Radius", description="Brush radius in screen pixels",
+        default=50.0, min=5.0, max=500.0,
     )
 
-    strength: FloatProperty(
-        name="Strength",
-        description="Relax strength per brush dab",
-        default=0.35,
-        min=0.0,
-        max=1.0,
+    strength: FloatProperty( name="Strength", description="Relax strength per brush dab",
+        default=0.35, min=0.0, max=1.0,
     )
 
     spacing: FloatProperty(
-        name="Spacing",
-        description="Distance between brush dabs as a fraction of radius",
-        default=0.15,
-        min=0.02,
-        max=0.5,
+        name="Spacing", description="Distance between brush dabs as a fraction of radius",
+        default=0.15, min=0.02, max=0.5,
     )
 
     @classmethod
@@ -1729,7 +1536,6 @@ class AllPie_OT_RelaxTopology(Operator):
         bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
 
     # Dab
-
     def _apply_dab(self, context, cursor, pressure):
         
         bm = bmesh.from_edit_mesh(self.mesh.data)
@@ -1750,7 +1556,6 @@ class AllPie_OT_RelaxTopology(Operator):
         return True
 
     # Stroke begin/end
-
     def _begin_stroke(self, context, event):
 
         self.stroke_active = True
@@ -1784,7 +1589,6 @@ class AllPie_OT_RelaxTopology(Operator):
         self.stroke_backup.clear()
 
     # Stroke interpolation
-
     def _process_mouse_segment( self, context, mouse_position, pressure,):
         start = self.last_mouse
         end = mouse_position
@@ -1906,10 +1710,7 @@ class AllPie_OT_RelaxTopology(Operator):
 
         # Viewport navigation. Pass these events through to Blender's
         # native View3D navigation, matching the other retopo brushes.
-        if event.type == 'MIDDLEMOUSE':
-            return {'PASS_THROUGH'}
-
-        if event.type == 'LEFTMOUSE' and event.alt:
+        if _retopo_is_view_navigation_event(event):
             return {'PASS_THROUGH'}
 
         # Mouse movement
@@ -1966,6 +1767,11 @@ class AllPie_OT_RelaxTopology(Operator):
 # STITCH
 STITCH_CURSOR_RADIUS = 10.0
 STITCH_MERGE_DISTANCE = 10.0  # screen-space pixels
+STITCH_TARGET_RADIUS = 4.0
+STITCH_EDGE_PICK_RADIUS = 10.0
+STITCH_CURSOR_COLOR = (0.15, 0.45, 1.0, 0.9)
+STITCH_TARGET_COLOR = (1.0, 0.1, 0.1, 1.0)
+STITCH_EDGE_HIGHLIGHT_WIDTH = 3.0
 
 
 def _stitch_find_target_vertex(operator, moving_vertex):
@@ -1973,11 +1779,7 @@ def _stitch_find_target_vertex(operator, moving_vertex):
 
     moving_world = operator.mesh.matrix_world @ moving_vertex.co
 
-    moving_screen = view3d_utils.location_3d_to_region_2d(
-        operator.region,
-        operator.rv3d,
-        moving_world,
-    )
+    moving_screen = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, moving_world,)
 
     if moving_screen is None:
         return None
@@ -1993,10 +1795,7 @@ def _stitch_find_target_vertex(operator, moving_vertex):
         world_position = operator.mesh.matrix_world @ vert.co
 
         screen_position = view3d_utils.location_3d_to_region_2d(
-            operator.region,
-            operator.rv3d,
-            world_position,
-        )
+            operator.region, operator.rv3d, world_position,)
 
         if screen_position is None:
             continue
@@ -2010,11 +1809,54 @@ def _stitch_find_target_vertex(operator, moving_vertex):
     return best_vertex
 
 
+def _stitch_draw_edge(operator, edge_index, color):
+    if edge_index is None:
+        return
+
+    if operator.region is None or operator.rv3d is None:
+        return
+
+    bm = bmesh.from_edit_mesh(operator.mesh.data)
+    bm.edges.ensure_lookup_table()
+
+    if edge_index < 0 or edge_index >= len(bm.edges):
+        return
+
+    edge = bm.edges[edge_index]
+
+    if not edge.is_valid:
+        return
+
+    world_matrix = operator.mesh.matrix_world
+
+    p0 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[0].co,)
+    p1 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[1].co,)
+
+    if p0 is None or p1 is None:
+        return
+
+    _retopo_draw_2d_lines(
+        [ (p0.x, p0.y), (p1.x, p1.y), ],
+        color,
+        width=STITCH_EDGE_HIGHLIGHT_WIDTH,
+    )
+
+
 def _draw_stitch_cursor(operator):
     if operator is None or operator.region is None:
         return
 
+    if operator.edge_mode:
+        if operator.first_edge is not None:
+            _stitch_draw_edge( operator, operator.first_edge, STITCH_TARGET_COLOR,)
+
+        if ( operator.hover_edge is not None and operator.hover_edge != operator.first_edge):
+            _stitch_draw_edge( operator, operator.hover_edge, STITCH_CURSOR_COLOR,)
+
+        return
+
     cursor = operator.cursor
+    target_screen = None
 
     # Follow the moving vertex while native transform is active.
     if operator.stroke_active and operator.mesh is not None:
@@ -2035,21 +1877,29 @@ def _draw_stitch_cursor(operator):
 
                 screen_position = (
                     view3d_utils.location_3d_to_region_2d(
-                        operator.region,
-                        operator.rv3d,
-                        world_position,
-                    )
+                        operator.region, operator.rv3d, world_position,)
                 )
 
                 if screen_position is not None:
                     cursor = screen_position
+
+                    # Preview the vertex that will be stitched when the transform ends.
+                    target_vertex = _stitch_find_target_vertex( operator, moving_vertex,)
+
+                    if target_vertex is not None:
+                        target_world_position = ( operator.mesh.matrix_world @ target_vertex.co)
+                        target_screen = view3d_utils.location_3d_to_region_2d(
+                            operator.region, operator.rv3d, target_world_position,)
 
         except Exception:
             pass
 
     gpu.state.blend_set("ALPHA")
 
-    draw_circle_2d( cursor, (1.0, 1.0, 1.0, 0.9), STITCH_CURSOR_RADIUS, segments=32,)
+    draw_circle_2d( cursor, STITCH_CURSOR_COLOR, STITCH_CURSOR_RADIUS, segments=32,)
+
+    if target_screen is not None:
+        draw_circle_2d( target_screen, STITCH_TARGET_COLOR, STITCH_TARGET_RADIUS, segments=16,)
 
     gpu.state.blend_set("NONE")
 
@@ -2058,7 +1908,7 @@ class AllPie_OT_StitchTopology(Operator):
 
     bl_idname = "cop.stitch_topology"
     bl_label = "Stitch Topology"
-    bl_description = "Move and stitch vertices"
+    bl_description = "Move and stitch vertices or stitch boundary edges"
     bl_options = {'REGISTER', 'UNDO'}
 
     def invoke(self, context, event):
@@ -2081,18 +1931,22 @@ class AllPie_OT_StitchTopology(Operator):
         self.stroke_active = False
         self.cancel_transform = False
         self.exit_to_tweak = False
+        self.edge_mode = False
+        self.first_edge = None
+        self.hover_edge = None
+
+        # Default Stitch mode works on vertices.
+        self._set_edge_mode(context, False)
 
         self.draw_handler = (
             bpy.types.SpaceView3D.draw_handler_add(
-                _draw_stitch_cursor,
-                (self,),
-                'WINDOW',
-                'POST_PIXEL',
-            )
-        )
+                _draw_stitch_cursor, (self,), 'WINDOW', 'POST_PIXEL',
+            ))
 
         context.window.cursor_set("PAINT_BRUSH")
         context.window_manager.modal_handler_add(self)
+
+        self._update_edge_hover(context)
 
         return {'RUNNING_MODAL'}
 
@@ -2112,6 +1966,8 @@ class AllPie_OT_StitchTopology(Operator):
         self._remove_draw_handler()
 
         self.stroke_active = False
+        self.first_edge = None
+        self.hover_edge = None
 
         try:
             context.window.cursor_set("DEFAULT")
@@ -2120,6 +1976,107 @@ class AllPie_OT_StitchTopology(Operator):
 
         if self.area is not None:
             self.area.tag_redraw()
+
+    def _set_edge_mode(self, context, edge_mode):
+        self.edge_mode = bool(edge_mode)
+        self.first_edge = None
+        self.hover_edge = None
+
+        if self.edge_mode:
+            context.scene.tool_settings.mesh_select_mode = (False, True, False)
+        else:
+            context.scene.tool_settings.mesh_select_mode = (True, False, False)
+
+        self._update_edge_hover(context)
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+    def _update_edge_hover(self, context):
+        if not self.edge_mode or self.stroke_active:
+            self.hover_edge = None
+            return
+
+        self.hover_edge = _retopo_pick_boundary_edge(
+            context, self.mesh, self.cursor, STITCH_EDGE_PICK_RADIUS,)
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+    def _select_edge(self, edge_index):
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+
+        if not _retopo_select_edge( bm, edge_index, boundary_only=True,):
+            return False
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+        return True
+
+    def _stitch_edges(self, first_edge_index, second_edge_index):
+        if first_edge_index is None or second_edge_index is None:
+            return False
+
+        if first_edge_index == second_edge_index:
+            return False
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        bm.edges.ensure_lookup_table()
+
+        if first_edge_index < 0 or first_edge_index >= len(bm.edges):
+            return False
+
+        if second_edge_index < 0 or second_edge_index >= len(bm.edges):
+            return False
+
+        target_edge = bm.edges[first_edge_index]
+        moving_edge = bm.edges[second_edge_index]
+
+        if not target_edge.is_valid or not moving_edge.is_valid:
+            return False
+
+        if not target_edge.is_boundary or not moving_edge.is_boundary:
+            return False
+
+        target_v0 = target_edge.verts[0]
+        target_v1 = target_edge.verts[1]
+        moving_v0 = moving_edge.verts[0]
+        moving_v1 = moving_edge.verts[1]
+
+        if len({target_v0, target_v1, moving_v0, moving_v1}) != 4:
+            return False
+
+        same_cost = ( (target_v0.co - moving_v0.co).length_squared
+            + (target_v1.co - moving_v1.co).length_squared)
+        cross_cost = ( (target_v0.co - moving_v1.co).length_squared
+            + (target_v1.co - moving_v0.co).length_squared)
+
+        if cross_cost < same_cost:
+            moving_v0, moving_v1 = moving_v1, moving_v0
+
+        bpy.ops.ed.undo_push( message="Before Stitch Edges")
+
+        try:
+            bmesh.ops.weld_verts(
+                bm,
+                targetmap={
+                    moving_v0: target_v0,
+                    moving_v1: target_v1,
+                },
+            )
+        except Exception:
+            return False
+
+        bm.normal_update()
+
+        if target_edge.is_valid:
+            _retopo_clear_selection(bm)
+            target_edge.select = True
+            target_edge.verts[0].select = True
+            target_edge.verts[1].select = True
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=True,)
+
+        return True
 
     def _begin_stroke(self, context, event):
 
@@ -2228,6 +2185,13 @@ class AllPie_OT_StitchTopology(Operator):
 
     def modal(self, context, event):
 
+        # Toggle Vertex Stitch / Edge Stitch mode.
+        if event.type == 'SPACE' and event.value == 'PRESS' and not self.stroke_active:
+
+            self._set_edge_mode(context, not self.edge_mode)
+
+            return {'RUNNING_MODAL'}
+
         # Native transform is running.
         if self.stroke_active:
 
@@ -2271,11 +2235,44 @@ class AllPie_OT_StitchTopology(Operator):
             return {'CANCELLED'}
 
         # View navigation.
-        if event.type == 'MIDDLEMOUSE':
+        if _retopo_is_view_navigation_event(event):
             return {'PASS_THROUGH'}
 
-        if event.type == 'LEFTMOUSE' and event.alt:
-            return {'PASS_THROUGH'}
+        # Edge Stitch mode.
+        if self.edge_mode:
+
+            if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
+                self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+                self._update_edge_hover(context)
+                return {'RUNNING_MODAL'}
+
+            if ( event.type == 'LEFTMOUSE' and event.value == 'PRESS'):
+
+                if self.hover_edge is None:
+                    return {'RUNNING_MODAL'}
+
+                clicked_edge = self.hover_edge
+
+                if self.first_edge is None:
+                    if self._select_edge(clicked_edge):
+                        self.first_edge = clicked_edge
+                        self.hover_edge = None
+                        context.area.tag_redraw()
+                    return {'RUNNING_MODAL'}
+
+                if self.first_edge == clicked_edge:
+                    return {'RUNNING_MODAL'}
+
+                if self._stitch_edges( self.first_edge, clicked_edge):
+                    self.first_edge = None
+                    self.hover_edge = None
+                    context.area.tag_redraw()
+                else:
+                    self.report( {'WARNING'}, "Unable to stitch these edges",)
+
+                return {'RUNNING_MODAL'}
+
+            return {'RUNNING_MODAL'}
 
         # Keep cursor updated.
         if event.type == 'MOUSEMOVE':
@@ -2300,13 +2297,16 @@ class AllPie_OT_StitchTopology(Operator):
 
 # FILL FACE TOOL
 FILL_EDGE_PICK_RADIUS = 10.0
-FILL_HOVER_COLOR = (1.0, 0.55, 0.05, 1.0)
-FILL_FIRST_EDGE_COLOR = (1.0, 0.85, 0.15, 1.0)
+RETOPO_DIRECT_SELECTION_COLOR = (0.15, 0.45, 1.0, 1.0)
+RETOPO_MULTI_SELECTION_COLOR = (1.0, 0.55, 0.05, 1.0)
+FILL_HOVER_COLOR = RETOPO_DIRECT_SELECTION_COLOR
+FILL_MULTI_HOVER_COLOR = RETOPO_MULTI_SELECTION_COLOR
+FILL_FIRST_EDGE_COLOR = RETOPO_DIRECT_SELECTION_COLOR
 FILL_EDGE_HIGHLIGHT_WIDTH = 3.0
 
 
 # SCREEN SPACE EDGE PICKING
-def _fill_point_segment_distance_squared(point, a, b):
+def _retopo_point_segment_distance_squared(point, a, b):
     delta = b - a
 
     length_squared = delta.length_squared
@@ -2323,14 +2323,8 @@ def _fill_point_segment_distance_squared(point, a, b):
     return (point - closest).length_squared
 
 
-def _fill_pick_edge_index(context, mesh, cursor):
-    """
-    Find the closest visible projected boundary edge.
-
-    Only the integer edge index leaves this function.
-    No BMEdge reference is stored across modal events.
-    """
-
+def _retopo_pick_edge(context, mesh, cursor, radius, boundary_only=False):
+    """Return the closest visible projected edge under the cursor."""
     region = context.region
     space = context.space_data
 
@@ -2344,32 +2338,24 @@ def _fill_pick_edge_index(context, mesh, cursor):
         return None
 
     bm = bmesh.from_edit_mesh(mesh.data)
-
     bm.edges.ensure_lookup_table()
     bm.edges.index_update()
 
     world_matrix = mesh.matrix_world
-
-    radius_squared = FILL_EDGE_PICK_RADIUS * FILL_EDGE_PICK_RADIUS
-
+    radius_squared = radius * radius
     best_edge_index = None
     best_distance_squared = radius_squared
 
     for edge in bm.edges:
-
         if not edge.is_valid:
             continue
-
         if edge.hide:
             continue
-
-        # Fill is intentionally restricted to boundary edges.
-        if not edge.is_boundary:
+        if boundary_only and not edge.is_boundary:
             continue
 
         v0 = edge.verts[0]
         v1 = edge.verts[1]
-
         if v0.hide or v1.hide:
             continue
 
@@ -2379,7 +2365,7 @@ def _fill_pick_edge_index(context, mesh, cursor):
         if p0 is None or p1 is None:
             continue
 
-        distance_squared = _fill_point_segment_distance_squared( cursor, p0, p1,)
+        distance_squared = _retopo_point_segment_distance_squared( cursor, p0, p1,)
 
         if distance_squared < best_distance_squared:
             best_distance_squared = distance_squared
@@ -2388,8 +2374,13 @@ def _fill_pick_edge_index(context, mesh, cursor):
     return best_edge_index
 
 
-# SELECTION HELPERS
-def _fill_clear_selection(bm):
+def _retopo_pick_boundary_edge(context, mesh, cursor, radius):
+    """Return the closest visible boundary edge under the cursor."""
+    return _retopo_pick_edge( context, mesh, cursor, radius, boundary_only=True,)
+
+
+# SHARED BMESH SELECTION HELPERS
+def _retopo_clear_selection(bm):
     for vert in bm.verts:
         if vert.is_valid:
             vert.select = False
@@ -2403,7 +2394,7 @@ def _fill_clear_selection(bm):
             face.select = False
 
 
-def _fill_select_edge(bm, edge_index):
+def _retopo_select_edge(bm, edge_index, boundary_only=False):
     bm.edges.ensure_lookup_table()
 
     if edge_index is None:
@@ -2417,21 +2408,106 @@ def _fill_select_edge(bm, edge_index):
     if not edge.is_valid:
         return False
 
-    _fill_clear_selection(bm)
+    if boundary_only and not edge.is_boundary:
+        return False
+
+    _retopo_clear_selection(bm)
 
     edge.select = True
-
     edge.verts[0].select = True
     edge.verts[1].select = True
 
     return True
 
 
-def _fill_select_face(bm, face):
+def _retopo_select_edge_path(bm, start_edge_index, end_edge_index, boundary_only=False):
+    bm.edges.ensure_lookup_table()
+
+    if start_edge_index is None or end_edge_index is None:
+        return False
+    if start_edge_index < 0 or start_edge_index >= len(bm.edges):
+        return False
+    if end_edge_index < 0 or end_edge_index >= len(bm.edges):
+        return False
+
+    start_edge = bm.edges[start_edge_index]
+    end_edge = bm.edges[end_edge_index]
+
+    if not start_edge.is_valid or not end_edge.is_valid:
+        return False
+    if boundary_only and (not start_edge.is_boundary or not end_edge.is_boundary):
+        return False
+
+    if start_edge == end_edge:
+        start_edge.select = True
+        start_edge.verts[0].select = True
+        start_edge.verts[1].select = True
+        return True
+
+    queue = [start_edge]
+    visited = {start_edge}
+    previous = {}
+    head = 0
+    found = False
+
+    while head < len(queue):
+        current = queue[head]
+        head += 1
+
+        for vert in current.verts:
+            for linked_edge in vert.link_edges:
+                if not linked_edge.is_valid:
+                    continue
+                if boundary_only and not linked_edge.is_boundary:
+                    continue
+                if linked_edge in visited:
+                    continue
+
+                visited.add(linked_edge)
+                previous[linked_edge] = current
+
+                if linked_edge == end_edge:
+                    found = True
+                    break
+
+                queue.append(linked_edge)
+
+            if found:
+                break
+
+        if found:
+            break
+
+    if end_edge not in visited:
+        return False
+
+    path = []
+    current = end_edge
+    while current != start_edge:
+        path.append(current)
+        current = previous.get(current)
+        if current is None:
+            return False
+
+    path.append(start_edge)
+
+    for edge in path:
+        edge.select = True
+        edge.verts[0].select = True
+        edge.verts[1].select = True
+
+    return True
+
+
+def _retopo_select_boundary_edge_path(bm, start_edge_index, end_edge_index):
+    return _retopo_select_edge_path( bm, start_edge_index, end_edge_index, boundary_only=True,)
+
+
+def _retopo_select_face(bm, face):
     if face is None or not face.is_valid:
         return
 
-    _fill_clear_selection(bm)
+    _retopo_clear_selection(bm)
 
     face.select = True
 
@@ -2443,6 +2519,54 @@ def _fill_select_face(bm, face):
 
 
 # EDGE HIGHLIGHT DRAWING
+def _retopo_draw_selected_edges(operator, color, width=3.0, exclude_edge=None):
+    if operator.region is None or operator.rv3d is None:
+        return
+
+    bm = bmesh.from_edit_mesh(operator.mesh.data)
+    bm.edges.ensure_lookup_table()
+    world_matrix = operator.mesh.matrix_world
+    positions = []
+
+    for edge in bm.edges:
+        if not edge.is_valid or not edge.select or edge == exclude_edge:
+            continue
+
+        p0 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[0].co,)
+        p1 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[1].co,)
+
+        if p0 is None or p1 is None:
+            continue
+
+        positions.extend([(p0.x, p0.y), (p1.x, p1.y)])
+
+    _retopo_draw_2d_lines( positions, color, width=width,)
+
+
+def _retopo_draw_selected_boundary_edges(operator, color, width=3.0, exclude_edge=None):
+    if operator.region is None or operator.rv3d is None:
+        return
+
+    bm = bmesh.from_edit_mesh(operator.mesh.data)
+    bm.edges.ensure_lookup_table()
+    world_matrix = operator.mesh.matrix_world
+    positions = []
+
+    for edge in bm.edges:
+        if not edge.is_valid or not edge.select or not edge.is_boundary or edge == exclude_edge:
+            continue
+
+        p0 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[0].co,)
+        p1 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[1].co,)
+
+        if p0 is None or p1 is None:
+            continue
+
+        positions.extend([(p0.x, p0.y), (p1.x, p1.y)])
+
+    _retopo_draw_2d_lines( positions, color, width=width,)
+
+
 def _fill_draw_edge(operator, edge_index, color):
     if edge_index is None:
         return
@@ -2475,36 +2599,23 @@ def _fill_draw_edge(operator, edge_index, color):
 
     positions = [ (p0.x, p0.y), (p1.x, p1.y), ]
 
-    shader = gpu.shader.from_builtin("UNIFORM_COLOR")
-
-    batch = batch_for_shader( shader, "LINES", { "pos": positions, },)
-
-    gpu.state.blend_set("ALPHA")
-
-    try:
-        gpu.state.line_width_set(FILL_EDGE_HIGHLIGHT_WIDTH)
-    except Exception:
-        pass
-
-    shader.bind()
-    shader.uniform_float("color", color)
-
-    batch.draw(shader)
-
-    try:
-        gpu.state.line_width_set(1.0)
-    except Exception:
-        pass
-
-    gpu.state.blend_set("NONE")
+    _retopo_draw_2d_lines(
+        positions,
+        color,
+        width=FILL_EDGE_HIGHLIGHT_WIDTH,
+    )
 
 
 def _draw_fill_edges(operator):
-    if operator.first_edge is not None:
+    if operator.multi_select:
+        _retopo_draw_selected_boundary_edges( operator, RETOPO_MULTI_SELECTION_COLOR, exclude_edge=operator.hover_edge,)
+
+    elif operator.first_edge is not None:
         _fill_draw_edge( operator, operator.first_edge, FILL_FIRST_EDGE_COLOR,)
 
-    if ( operator.hover_edge is not None and operator.hover_edge != operator.first_edge):
-        _fill_draw_edge( operator, operator.hover_edge, FILL_HOVER_COLOR,)
+    if operator.hover_edge is not None and operator.hover_edge != operator.first_edge:
+        hover_color = FILL_MULTI_HOVER_COLOR if operator.multi_select else FILL_HOVER_COLOR
+        _fill_draw_edge( operator, operator.hover_edge, hover_color,)
 
 
 # FACE CREATION
@@ -2589,7 +2700,7 @@ def _fill_create_face(operator, first_edge_index, second_edge_index):
 
     bm.normal_update()
 
-    _fill_select_face( bm, face,)
+    _retopo_select_face( bm, face)
 
     bmesh.update_edit_mesh( operator.mesh.data, loop_triangles=True, destructive=True,)
 
@@ -2645,6 +2756,8 @@ class AllPie_OT_FillFace(Operator):
 
         self.first_edge = None
         self.hover_edge = None
+        self.multi_select = False
+        self.last_selected_edge = None
 
         self.previous_select_mode = tuple(
             context.scene.tool_settings.mesh_select_mode
@@ -2685,12 +2798,8 @@ class AllPie_OT_FillFace(Operator):
 
         self.draw_handler = (
             bpy.types.SpaceView3D.draw_handler_add(
-                _draw_fill_edges,
-                (self,),
-                "WINDOW",
-                "POST_PIXEL",
-            )
-        )
+                _draw_fill_edges, (self,), "WINDOW", "POST_PIXEL",
+            ))
 
         try:
             context.window.cursor_set("PAINT_BRUSH")
@@ -2708,7 +2817,8 @@ class AllPie_OT_FillFace(Operator):
     # HOVER
     def _update_hover(self, context):
 
-        self.hover_edge = _fill_pick_edge_index( context, self.mesh, self.cursor,)
+        self.hover_edge = _retopo_pick_boundary_edge(
+            context, self.mesh, self.cursor, FILL_EDGE_PICK_RADIUS,)
 
         if self.area is not None:
             self.area.tag_redraw()
@@ -2720,12 +2830,143 @@ class AllPie_OT_FillFace(Operator):
             return False
 
         bm = bmesh.from_edit_mesh( self.mesh.data)
-        success = _fill_select_edge( bm, edge_index,)
+        success = _retopo_select_edge( bm, edge_index)
 
         if not success:
             return False
 
         bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+        return True
+
+    # TOGGLE EDGE SELECTION
+    def _toggle_edge_selection(self, edge_index):
+
+        bm = bmesh.from_edit_mesh( self.mesh.data)
+
+        bm.edges.ensure_lookup_table()
+
+        if edge_index is None:
+            return False
+
+        if edge_index < 0 or edge_index >= len(bm.edges):
+            return False
+
+        edge = bm.edges[edge_index]
+
+        if not edge.is_valid or not edge.is_boundary:
+            return False
+
+        edge.select = not edge.select
+
+        if edge.select:
+            edge.verts[0].select = True
+            edge.verts[1].select = True
+            self.last_selected_edge = edge_index
+
+        else:
+            for vert in edge.verts:
+                if not any( linked_edge.is_valid and linked_edge.select for linked_edge in vert.link_edges):
+                    vert.select = False
+
+            if self.last_selected_edge == edge_index:
+                self.last_selected_edge = None
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+        return True
+
+    # BRIDGE EDGE LOOPS
+    def _bridge_edge_loops(self, context):
+
+        bm = bmesh.from_edit_mesh( self.mesh.data)
+
+        bm.edges.ensure_lookup_table()
+
+        selected_edges = [
+            edge
+            for edge in bm.edges
+            if edge.is_valid and edge.select
+        ]
+
+        if len(selected_edges) < 2:
+            return False
+
+        if any(not edge.is_boundary for edge in selected_edges):
+            self.report( {"WARNING"}, "Bridge requires selected boundary edges",)
+            return False
+
+        selected_set = set(selected_edges)
+        components = 0
+        visited = set()
+
+        for edge in selected_edges:
+
+            if edge in visited:
+                continue
+
+            components += 1
+
+            stack = [edge]
+            visited.add(edge)
+
+            while stack:
+
+                current = stack.pop()
+
+                for vert in current.verts:
+
+                    for linked_edge in vert.link_edges:
+
+                        if linked_edge not in selected_set:
+                            continue
+
+                        if linked_edge in visited:
+                            continue
+
+                        visited.add(linked_edge)
+                        stack.append(linked_edge)
+
+        if components < 2:
+            self.report( {"WARNING"}, "Bridge requires two selected edge loops",)
+            return False
+
+        try:
+
+            with context.temp_override(
+                window=context.window,
+                screen=context.screen,
+                area=self.area,
+                region=self.region,
+                space_data=context.space_data,
+                active_object=self.mesh,
+                object=self.mesh,
+            ):
+
+                result = bpy.ops.mesh.bridge_edge_loops()
+
+        except RuntimeError as error:
+
+            self.report( {"WARNING"}, f"Bridge failed: {error}",)
+            return False
+
+        if "CANCELLED" in result:
+            return False
+
+        self.created_faces += 1
+
+        _retopo_clear_selection(bm)
+        self.last_selected_edge = None
+
+        try:
+            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
+        except Exception:
+            pass
+
+        self.hover_edge = None
+
+        if self.area is not None:
+            self.area.tag_redraw()
 
         return True
 
@@ -2769,7 +3010,7 @@ class AllPie_OT_FillFace(Operator):
         bm.edges.ensure_lookup_table()
         bm.faces.ensure_lookup_table()
 
-        _fill_clear_selection(bm)
+        _retopo_clear_selection(bm)
 
         for index in self.selection_before["verts"]:
 
@@ -2848,11 +3089,28 @@ class AllPie_OT_FillFace(Operator):
             return {"CANCELLED"}
 
         # VIEWPORT NAVIGATION
-        if event.type == "MIDDLEMOUSE":
-            return {"PASS_THROUGH"}
+        if _retopo_is_view_navigation_event(event):
+            return {'PASS_THROUGH'}
 
-        if event.type == "LEFTMOUSE" and event.alt:
-            return {"PASS_THROUGH"}
+        # TOGGLE FILL MODE
+        if event.type == "SPACE" and event.value == "PRESS":
+
+            self.multi_select = not self.multi_select
+            self.first_edge = None
+            self.hover_edge = None
+            self.last_selected_edge = None
+
+            if self.area is not None:
+                self.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        # BRIDGE EDGE LOOPS
+        if ( event.type == "F" and event.value == "PRESS" and self.multi_select):
+
+            self._bridge_edge_loops( context)
+
+            return {"RUNNING_MODAL"}
 
         # MOUSE MOVE
         if event.type in { "MOUSEMOVE", "INBETWEEN_MOUSEMOVE", }:
@@ -2870,6 +3128,30 @@ class AllPie_OT_FillFace(Operator):
                 return {"RUNNING_MODAL"}
 
             clicked_edge = self.hover_edge
+
+            if self.multi_select:
+
+                if event.ctrl:
+
+                    start_edge = self.last_selected_edge
+
+                    if start_edge is None:
+                        self._toggle_edge_selection( clicked_edge)
+                    else:
+                        bm = bmesh.from_edit_mesh( self.mesh.data)
+                        success = _retopo_select_boundary_edge_path( bm, start_edge, clicked_edge,)
+
+                        if success:
+                            self.last_selected_edge = clicked_edge
+                            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+                else:
+                    self._toggle_edge_selection( clicked_edge)
+
+                if self.area is not None:
+                    self.area.tag_redraw()
+
+                return {"RUNNING_MODAL"}
 
             # FIRST EDGE
             if self.first_edge is None:
@@ -2895,7 +3177,6 @@ class AllPie_OT_FillFace(Operator):
             if success:
 
                 # Face creation succeeded.
-                #
                 # Reset for another fill.
                 self.first_edge = None
                 self.hover_edge = None
@@ -2919,101 +3200,17 @@ class AllPie_OT_FillFace(Operator):
 
 # EXTRUDE EDGE TOOL
 EXTRUDE_EDGE_PICK_RADIUS = 10.0
-EXTRUDE_EDGE_HIGHLIGHT_COLOR = ( 1.0, 0.55, 0.05, 1.0,)
+EXTRUDE_EDGE_HIGHLIGHT_COLOR = RETOPO_DIRECT_SELECTION_COLOR
+EXTRUDE_EDGE_MULTI_SELECTION_COLOR = RETOPO_MULTI_SELECTION_COLOR
 EXTRUDE_EDGE_HIGHLIGHT_WIDTH = 3.0
 
 # SCREEN SPACE PICKING
-def _extrude_point_segment_distance_squared(point, a, b):
-    delta = b - a
-
-    length_squared = delta.length_squared
-
-    if length_squared <= 1e-12:
-        return (point - a).length_squared
-
-    t = (point - a).dot(delta) / length_squared
-    t = max(0.0, min(1.0, t))
-
-    closest = a + delta * t
-
-    return (point - closest).length_squared
-
-
-def _extrude_pick_edge_index(context, mesh, cursor):
-    """
-    Find the closest visible boundary edge under the cursor.
-
-    Only an integer edge index is returned.
-    """
-
-    region = context.region
-    space = context.space_data
-
-    rv3d = (
-        getattr(space, "region_3d", None)
-        if space is not None
-        else None
-    )
-
-    if region is None:
-        return None
-
-    if rv3d is None:
-        return None
-
-    bm = bmesh.from_edit_mesh(mesh.data)
-
-    bm.edges.ensure_lookup_table()
-    bm.edges.index_update()
-
-    world_matrix = mesh.matrix_world
-
-    radius_squared = ( EXTRUDE_EDGE_PICK_RADIUS * EXTRUDE_EDGE_PICK_RADIUS)
-
-    best_edge_index = None
-    best_distance_squared = radius_squared
-
-    for edge in bm.edges:
-
-        if not edge.is_valid:
-            continue
-
-        if edge.hide:
-            continue
-
-        # Retopo extrusion is intentionally restricted
-        # to boundary edges.
-        if not edge.is_boundary:
-            continue
-
-        v0 = edge.verts[0]
-        v1 = edge.verts[1]
-
-        if v0.hide or v1.hide:
-            continue
-
-        p0 = view3d_utils.location_3d_to_region_2d( region, rv3d, world_matrix @ v0.co,)
-        p1 = view3d_utils.location_3d_to_region_2d( region, rv3d, world_matrix @ v1.co,)
-
-        if p0 is None:
-            continue
-
-        if p1 is None:
-            continue
-
-        distance_squared = ( _extrude_point_segment_distance_squared( cursor, p0, p1,))
-
-        if distance_squared < best_distance_squared:
-
-            best_distance_squared = distance_squared
-            best_edge_index = edge.index
-
-    return best_edge_index
-
-
 # EDGE HIGHLIGHT
 def _draw_extrude_edge(operator):
     edge_index = operator.hover_edge
+
+    if operator.multi_select:
+        _retopo_draw_selected_boundary_edges( operator, EXTRUDE_EDGE_MULTI_SELECTION_COLOR, exclude_edge=edge_index,)
 
     if edge_index is None:
         return
@@ -3052,29 +3249,8 @@ def _draw_extrude_edge(operator):
 
     positions = [ (p0.x, p0.y), (p1.x, p1.y), ]
 
-    shader = gpu.shader.from_builtin( "UNIFORM_COLOR")
-
-    batch = batch_for_shader( shader, "LINES", { "pos": positions, },)
-
-    gpu.state.blend_set("ALPHA")
-
-    try:
-        gpu.state.line_width_set( EXTRUDE_EDGE_HIGHLIGHT_WIDTH)
-    except Exception:
-        pass
-
-    shader.bind()
-
-    shader.uniform_float( "color", EXTRUDE_EDGE_HIGHLIGHT_COLOR,)
-
-    batch.draw(shader)
-
-    try:
-        gpu.state.line_width_set(1.0)
-    except Exception:
-        pass
-
-    gpu.state.blend_set("NONE")
+    hover_color = EXTRUDE_EDGE_MULTI_SELECTION_COLOR if operator.multi_select else EXTRUDE_EDGE_HIGHLIGHT_COLOR
+    _retopo_draw_2d_lines( positions, hover_color, width=EXTRUDE_EDGE_HIGHLIGHT_WIDTH,)
 
 
 # EXTRUDE OPERATOR
@@ -3109,10 +3285,7 @@ class AllPie_OT_ExtrudeEdge(Operator):
 
         if mesh.mode != "EDIT":
 
-            self.report(
-                {"WARNING"},
-                "Retopology mesh must be in Edit Mode",
-            )
+            self.report( {"WARNING"}, "Retopology mesh must be in Edit Mode",)
 
             return {"CANCELLED"}
 
@@ -3129,6 +3302,8 @@ class AllPie_OT_ExtrudeEdge(Operator):
         self.extrude_active = False
         self.cancel_transform = False
         self.exit_to_tweak = False
+        self.multi_select = False
+        self.last_selected_edge = None
 
         self.previous_select_mode = tuple( context.scene.tool_settings.mesh_select_mode)
 
@@ -3138,12 +3313,8 @@ class AllPie_OT_ExtrudeEdge(Operator):
         # Draw hover edge.
         self.draw_handler = (
             bpy.types.SpaceView3D.draw_handler_add(
-                _draw_extrude_edge,
-                (self,),
-                "WINDOW",
-                "POST_PIXEL",
-            )
-        )
+                _draw_extrude_edge, (self,), "WINDOW", "POST_PIXEL",
+            ))
 
         try:
             context.window.cursor_set( "PAINT_BRUSH")
@@ -3168,56 +3339,54 @@ class AllPie_OT_ExtrudeEdge(Operator):
         if self.extrude_active:
             return
 
-        self.hover_edge = ( _extrude_pick_edge_index( context, self.mesh, self.cursor,))
+        self.hover_edge = _retopo_pick_boundary_edge(
+            context, self.mesh, self.cursor, EXTRUDE_EDGE_PICK_RADIUS,)
 
         if self.area is not None:
             self.area.tag_redraw()
 
     # SELECT EDGE
     def _select_edge(self, edge_index):
+        bm = bmesh.from_edit_mesh(self.mesh.data)
 
-        if edge_index is None:
+        if not _retopo_select_edge( bm, edge_index, boundary_only=True,):
             return False
 
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+        return True
+
+    # TOGGLE EDGE SELECTION
+    def _toggle_edge_selection(self, edge_index):
         bm = bmesh.from_edit_mesh( self.mesh.data)
 
         bm.edges.ensure_lookup_table()
 
-        if edge_index < 0:
+        if edge_index is None:
             return False
 
-        if edge_index >= len(bm.edges):
+        if edge_index < 0 or edge_index >= len(bm.edges):
             return False
 
         edge = bm.edges[edge_index]
 
-        if not edge.is_valid:
+        if not edge.is_valid or not edge.is_boundary:
             return False
 
-        if not edge.is_boundary:
-            return False
+        edge.select = not edge.select
 
-        # Clear selection.
-        for vert in bm.verts:
+        if edge.select:
+            edge.verts[0].select = True
+            edge.verts[1].select = True
+            self.last_selected_edge = edge_index
 
-            if vert.is_valid:
-                vert.select = False
+        else:
+            for vert in edge.verts:
+                if not any( linked_edge.is_valid and linked_edge.select for linked_edge in vert.link_edges):
+                    vert.select = False
 
-        for selected_edge in bm.edges:
-
-            if selected_edge.is_valid:
-                selected_edge.select = False
-
-        for face in bm.faces:
-
-            if face.is_valid:
-                face.select = False
-
-        # Select the source edge.
-        edge.select = True
-
-        edge.verts[0].select = True
-        edge.verts[1].select = True
+            if self.last_selected_edge == edge_index:
+                self.last_selected_edge = None
 
         bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
 
@@ -3227,31 +3396,29 @@ class AllPie_OT_ExtrudeEdge(Operator):
     def _begin_extrude(self, context):
 
         edge_index = self.hover_edge
-
-        if edge_index is None:
-            return False
-
-        # Make sure the selected edge is still valid.
         bm = bmesh.from_edit_mesh( self.mesh.data)
-
         bm.edges.ensure_lookup_table()
 
-        if edge_index < 0:
-            return False
+        if self.multi_select:
 
-        if edge_index >= len(bm.edges):
-            return False
+            if not any( edge.is_valid and edge.is_boundary and edge.select for edge in bm.edges):
+                return False
 
-        edge = bm.edges[edge_index]
+        else:
 
-        if not edge.is_valid:
-            return False
+            if edge_index is None:
+                return False
 
-        if not edge.is_boundary:
-            return False
+            if edge_index < 0 or edge_index >= len(bm.edges):
+                return False
 
-        if not self._select_edge(edge_index):
-            return False
+            edge = bm.edges[edge_index]
+
+            if not edge.is_valid or not edge.is_boundary:
+                return False
+
+            if not self._select_edge(edge_index):
+                return False
 
         self.cancel_transform = False
         self.exit_to_tweak = False
@@ -3297,10 +3464,7 @@ class AllPie_OT_ExtrudeEdge(Operator):
 
             for operator in context.window.modal_operators:
 
-                if operator.bl_idname in {
-                    "MESH_OT_EXTRUDE_EDGES_MOVE",
-                    "TRANSFORM_OT_TRANSLATE",
-                }:
+                if operator.bl_idname in { "MESH_OT_EXTRUDE_EDGES_MOVE", "TRANSFORM_OT_TRANSLATE", }:
                     return True
 
         except Exception:
@@ -3318,6 +3482,7 @@ class AllPie_OT_ExtrudeEdge(Operator):
             self.extrude_active = False
             self.cancel_transform = False
             self.hover_edge = None
+            self.last_selected_edge = None
 
             if self.area is not None:
                 self.area.tag_redraw()
@@ -3331,6 +3496,7 @@ class AllPie_OT_ExtrudeEdge(Operator):
 
         self.cancel_transform = False
         self.hover_edge = None
+        self.last_selected_edge = None
 
         # Refresh BMesh state.
         try:
@@ -3426,13 +3592,26 @@ class AllPie_OT_ExtrudeEdge(Operator):
             return {"CANCELLED"}
 
         # VIEWPORT NAVIGATION
-        if event.type == "MIDDLEMOUSE":
-
+        if _retopo_is_view_navigation_event(event):
             return {"PASS_THROUGH"}
 
-        if ( event.type == "LEFTMOUSE" and event.alt):
+        # TOGGLE EXTRUDE MODE
+        if event.type == "SPACE" and event.value == "PRESS":
 
-            return {"PASS_THROUGH"}
+            self.multi_select = not self.multi_select
+            self.last_selected_edge = None
+
+            if self.area is not None:
+                self.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        # MULTI SELECT EXTRUDE
+        if ( event.type == "F" and event.value == "PRESS" and self.multi_select):
+
+            self._begin_extrude( context)
+
+            return {"RUNNING_MODAL"}
 
         # MOUSE MOVE
         if event.type in { "MOUSEMOVE", "INBETWEEN_MOUSEMOVE", }:
@@ -3449,6 +3628,30 @@ class AllPie_OT_ExtrudeEdge(Operator):
             if self.hover_edge is None:
                 return {"RUNNING_MODAL"}
 
+            if self.multi_select:
+
+                if event.ctrl:
+
+                    start_edge = self.last_selected_edge
+
+                    if start_edge is None:
+                        self._toggle_edge_selection( self.hover_edge)
+                    else:
+                        bm = bmesh.from_edit_mesh( self.mesh.data)
+                        success = _retopo_select_boundary_edge_path( bm, start_edge, self.hover_edge,)
+
+                        if success:
+                            self.last_selected_edge = self.hover_edge
+                            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+                else:
+                    self._toggle_edge_selection( self.hover_edge)
+
+                if self.area is not None:
+                    self.area.tag_redraw()
+
+                return {"RUNNING_MODAL"}
+
             # Start extrusion.
             self._begin_extrude( context)
 
@@ -3462,6 +3665,431 @@ class AllPie_OT_ExtrudeEdge(Operator):
         self._cleanup(context)
 
 
+# DISSOLVE EDGE TOOL
+DISSOLVE_EDGE_PICK_RADIUS = 10.0
+DISSOLVE_EDGE_COLOR = (1.0, 0.1, 0.1, 1.0)
+DISSOLVE_EDGE_MULTI_SELECTION_COLOR = RETOPO_MULTI_SELECTION_COLOR
+DISSOLVE_EDGE_HIGHLIGHT_WIDTH = 3.0
+
+
+def _dissolve_get_mesh(operator):
+    mesh_name = getattr(operator, "mesh_name", None)
+    if not mesh_name:
+        return None
+
+    mesh = bpy.data.objects.get(mesh_name)
+    if mesh is not None:
+        operator.mesh = mesh
+
+    return mesh
+
+
+def _dissolve_view_key(operator):
+    mesh = _dissolve_get_mesh(operator)
+    if mesh is None or operator.region is None or operator.rv3d is None or mesh.mode != "EDIT":
+        return None
+
+    view_matrix = tuple(tuple(row) for row in operator.rv3d.view_matrix)
+    projection_matrix = tuple(tuple(row) for row in operator.rv3d.perspective_matrix)
+    world_matrix = tuple(tuple(row) for row in mesh.matrix_world)
+    return ( view_matrix, projection_matrix, world_matrix, operator.region.width, operator.region.height,)
+
+
+def _dissolve_build_pick_cache(operator):
+    mesh = _dissolve_get_mesh(operator)
+
+    if operator.region is None or operator.rv3d is None or mesh is None or mesh.mode != "EDIT":
+        operator.edge_pick_segments = {}
+        operator.edge_pick_view_key = None
+        return
+
+    bm = bmesh.from_edit_mesh(mesh.data)
+    bm.edges.ensure_lookup_table()
+    bm.edges.index_update()
+
+    world_matrix = mesh.matrix_world
+    segments = {}
+
+    for edge in bm.edges:
+        if not edge.is_valid or edge.hide:
+            continue
+
+        v0 = edge.verts[0]
+        v1 = edge.verts[1]
+
+        if v0.hide or v1.hide:
+            continue
+
+        p0 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ v0.co,)
+        p1 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ v1.co,)
+
+        if p0 is None or p1 is None:
+            continue
+
+        segments[edge.index] = ((p0.x, p0.y), (p1.x, p1.y))
+
+    operator.edge_pick_segments = segments
+    operator.edge_pick_view_key = _dissolve_view_key(operator)
+
+
+def _dissolve_point_segment_distance_squared(point, a, b):
+    px = point.x
+    py = point.y
+    ax, ay = a
+    bx, by = b
+    dx = bx - ax
+    dy = by - ay
+    length_squared = dx * dx + dy * dy
+
+    if length_squared <= 1e-12:
+        ddx = px - ax
+        ddy = py - ay
+        return ddx * ddx + ddy * ddy
+
+    t = ((px - ax) * dx + (py - ay) * dy) / length_squared
+    t = max(0.0, min(1.0, t))
+    closest_x = ax + dx * t
+    closest_y = ay + dy * t
+    ddx = px - closest_x
+    ddy = py - closest_y
+    return ddx * ddx + ddy * ddy
+
+
+def _dissolve_pick_edge(operator):
+    mesh = _dissolve_get_mesh(operator)
+    if mesh is None or mesh.mode != "EDIT":
+        return None
+
+    current_key = _dissolve_view_key(operator)
+    if current_key is None:
+        return None
+
+    if ( getattr(operator, "edge_pick_segments", None) is None
+        or getattr(operator, "edge_pick_view_key", None) != current_key):
+        _dissolve_build_pick_cache(operator)
+
+    best_edge_index = None
+    best_distance_squared = DISSOLVE_EDGE_PICK_RADIUS * DISSOLVE_EDGE_PICK_RADIUS
+    cursor = operator.cursor
+
+    for edge_index, segment in operator.edge_pick_segments.items():
+        distance_squared = _dissolve_point_segment_distance_squared( cursor, segment[0], segment[1],)
+
+        if distance_squared < best_distance_squared:
+            best_distance_squared = distance_squared
+            best_edge_index = edge_index
+
+    return best_edge_index
+
+
+def _dissolve_draw_selected_edges(operator):
+    mesh = _dissolve_get_mesh(operator)
+    if not operator.multi_select or mesh is None or mesh.mode != "EDIT":
+        return
+
+    _retopo_draw_selected_edges( operator, DISSOLVE_EDGE_MULTI_SELECTION_COLOR, width=DISSOLVE_EDGE_HIGHLIGHT_WIDTH, exclude_edge=operator.hover_edge,)
+
+
+def _draw_dissolve_edge(operator):
+    mesh = _dissolve_get_mesh(operator)
+    if mesh is None or mesh.mode != "EDIT":
+        return
+
+    if operator.multi_select:
+        _dissolve_draw_selected_edges(operator)
+
+    edge_index = operator.hover_edge
+    if edge_index is None or operator.region is None or operator.rv3d is None:
+        return
+
+    segment = None
+
+    if getattr(operator, "edge_pick_segments", None):
+        segment = operator.edge_pick_segments.get(edge_index)
+
+    if segment is None:
+        bm = bmesh.from_edit_mesh( operator.mesh.data)
+        bm.edges.ensure_lookup_table()
+
+        if edge_index < 0 or edge_index >= len(bm.edges):
+            return
+
+        edge = bm.edges[edge_index]
+
+        if not edge.is_valid:
+            return
+
+        world_matrix = operator.mesh.matrix_world
+        p0 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[0].co,)
+        p1 = view3d_utils.location_3d_to_region_2d( operator.region, operator.rv3d, world_matrix @ edge.verts[1].co,)
+
+        if p0 is None or p1 is None:
+            return
+
+        segment = ((p0.x, p0.y), (p1.x, p1.y))
+
+    hover_color = DISSOLVE_EDGE_MULTI_SELECTION_COLOR if operator.multi_select else DISSOLVE_EDGE_COLOR
+    _retopo_draw_2d_lines( [segment[0], segment[1]], hover_color, width=DISSOLVE_EDGE_HIGHLIGHT_WIDTH,)
+
+
+class AllPie_OT_DissolveEdge(Operator):
+
+    bl_idname = "cop.dissolve_edge"
+    bl_label = "Dissolve Edge"
+    bl_description = "Hover an edge and dissolve it"
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        return ( context.area is not None
+            and context.area.type == "VIEW_3D"
+            and is_retopo_edit_context(context)
+        )
+
+    def invoke(self, context, event):
+        mesh = get_retopo_mesh(context)
+
+        if mesh is None:
+            self.report( {"WARNING"}, "Specify the mesh for retopology",)
+            return {"CANCELLED"}
+
+        if mesh.mode != "EDIT":
+            self.report( {"WARNING"}, "Retopology mesh must be in Edit Mode",)
+            return {"CANCELLED"}
+
+        self.mesh = mesh
+        self.mesh_name = mesh.name
+        self.area = context.area
+        self.region = context.region
+        self.rv3d = context.space_data.region_3d
+        self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+        self.hover_edge = None
+        self.multi_select = False
+        self.last_selected_edge = None
+        self.edge_pick_segments = None
+        self.edge_pick_view_key = None
+        self.previous_select_mode = tuple( context.scene.tool_settings.mesh_select_mode)
+
+        bpy.ops.mesh.select_mode( type="EDGE")
+
+        self.draw_handler = (
+            bpy.types.SpaceView3D.draw_handler_add(
+                _draw_dissolve_edge, (self,), "WINDOW", "POST_PIXEL",
+            ))
+
+        try:
+            context.window.cursor_set( "PAINT_BRUSH")
+        except Exception:
+            pass
+
+        context.window_manager.modal_handler_add( self)
+        self._update_hover(context)
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+        return {"RUNNING_MODAL"}
+
+    def _update_hover(self, context):
+        self.hover_edge = _dissolve_pick_edge(self)
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+    def _toggle_edge_selection(self, edge_index):
+        bm = bmesh.from_edit_mesh( self.mesh.data)
+        bm.edges.ensure_lookup_table()
+
+        if edge_index is None or edge_index < 0 or edge_index >= len(bm.edges):
+            return False
+
+        edge = bm.edges[edge_index]
+        if not edge.is_valid:
+            return False
+
+        edge.select = not edge.select
+
+        if edge.select:
+            edge.verts[0].select = True
+            edge.verts[1].select = True
+            self.last_selected_edge = edge_index
+        else:
+            for vert in edge.verts:
+                if not any( linked_edge.is_valid and linked_edge.select for linked_edge in vert.link_edges):
+                    vert.select = False
+
+            if self.last_selected_edge == edge_index:
+                self.last_selected_edge = None
+
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+        return True
+
+    def _dissolve_edges(self, context, edge_indices):
+        bm = bmesh.from_edit_mesh( self.mesh.data)
+        bm.edges.ensure_lookup_table()
+
+        edges = []
+        seen = set()
+
+        for edge_index in edge_indices:
+            if edge_index in seen:
+                continue
+            seen.add(edge_index)
+
+            if edge_index < 0 or edge_index >= len(bm.edges):
+                continue
+
+            edge = bm.edges[edge_index]
+            if not edge.is_valid:
+                continue
+
+            edges.append(edge)
+
+        if not edges:
+            self.report( {"WARNING"}, "No valid edges selected for dissolve",)
+            return False
+
+        _retopo_clear_selection(bm)
+
+        for edge in edges:
+            if not edge.is_valid:
+                continue
+            edge.select = True
+            edge.verts[0].select = True
+            edge.verts[1].select = True
+
+        try:
+            bmesh.ops.dissolve_edges(
+                bm,
+                edges=edges,
+                use_verts=True,
+                use_face_split=False,
+                angle_threshold=180,
+                use_preserve_quads=True,
+            )
+        except Exception as error:
+            self.report( {"WARNING"}, f"Dissolve failed: {error}",)
+            return False
+
+        bm.normal_update()
+        _retopo_clear_selection(bm)
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
+
+        # Match Relax Topology undo handling: the topology is modified
+        # directly through BMesh, then the completed operation is pushed as
+        # one Edit Mode undo step.
+        bpy.ops.ed.undo_push( message="Dissolve Edge",)
+
+        self.last_selected_edge = None
+        self.hover_edge = None
+        self.edge_pick_segments = None
+        self.edge_pick_view_key = None
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+        return True
+
+    def modal(self, context, event):
+        # The mesh ID can be replaced by Undo/Redo, so always reacquire it by name.
+        mesh = _dissolve_get_mesh(self)
+        if mesh is None or mesh.mode != "EDIT":
+            self._cleanup(context)
+            return {"CANCELLED"}
+
+        self.mesh = mesh
+
+        if event.type == "ESC":
+            self._cleanup(context)
+            _retopo_switch_to_tweak(context)
+            return {"CANCELLED"}
+
+        if event.type == "RIGHTMOUSE":
+            self._cleanup(context)
+            return {"CANCELLED"}
+
+        if _retopo_is_view_navigation_event(event):
+            return {"PASS_THROUGH"}
+
+        if event.type == "SPACE" and event.value == "PRESS":
+            self.multi_select = not self.multi_select
+            self.last_selected_edge = None
+
+            if self.area is not None:
+                self.area.tag_redraw()
+
+            return {"RUNNING_MODAL"}
+
+        if event.type in {"MOUSEMOVE", "INBETWEEN_MOUSEMOVE"}:
+            self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+            self._update_hover(context)
+            return {"RUNNING_MODAL"}
+
+        if event.type == "F" and event.value == "PRESS" and self.multi_select:
+            bm = bmesh.from_edit_mesh( self.mesh.data)
+            selected_indices = [
+                edge.index
+                for edge in bm.edges
+                if edge.is_valid and edge.select
+            ]
+            self._dissolve_edges( context, selected_indices)
+            return {"RUNNING_MODAL"}
+
+        if event.type == "LEFTMOUSE" and event.value == "PRESS":
+            if self.hover_edge is None:
+                return {"RUNNING_MODAL"}
+
+            if self.multi_select:
+                if event.ctrl:
+                    start_edge = self.last_selected_edge
+
+                    if start_edge is None:
+                        self._toggle_edge_selection( self.hover_edge)
+                    else:
+                        bm = bmesh.from_edit_mesh( self.mesh.data)
+                        success = _retopo_select_edge_path( bm, start_edge, self.hover_edge,)
+
+                        if success:
+                            self.last_selected_edge = self.hover_edge
+                            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+                else:
+                    self._toggle_edge_selection( self.hover_edge)
+
+                if self.area is not None:
+                    self.area.tag_redraw()
+
+                return {"RUNNING_MODAL"}
+
+            self._dissolve_edges( context, [self.hover_edge])
+            return {"RUNNING_MODAL"}
+
+        return {"RUNNING_MODAL"}
+
+    def _cleanup(self, context):
+        if getattr( self, "draw_handler", None,) is not None:
+            try:
+                bpy.types.SpaceView3D.draw_handler_remove( self.draw_handler, "WINDOW",)
+            except Exception:
+                pass
+            self.draw_handler = None
+
+        try:
+            context.scene.tool_settings.mesh_select_mode = ( self.previous_select_mode)
+        except Exception:
+            pass
+
+        try:
+            context.window.cursor_set( "DEFAULT")
+        except Exception:
+            pass
+
+        if self.area is not None:
+            self.area.tag_redraw()
+
+    def cancel(self, context):
+        self._cleanup(context)
+
+
 classes = (
     RetopoGuidePoint,
     RetopoGuideSplineState,
@@ -3472,6 +4100,7 @@ classes = (
     AllPie_OT_StitchTopology,
     AllPie_OT_FillFace,
     AllPie_OT_ExtrudeEdge,
+    AllPie_OT_DissolveEdge,
     AllPie_OT_AddStroke,
 )
 
