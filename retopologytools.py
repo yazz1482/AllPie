@@ -584,7 +584,7 @@ class AllPie_OT_AddStrips(Operator):
     bl_idname = "cop.add_strips"
     bl_label = "Add Strips"
     bl_description = "Draw a stroke to create a snapped strip of quads"
-    bl_options = {"REGISTER", "UNDO"}
+    bl_options = {"REGISTER"}
 
     radius: FloatProperty(
         name="Radius", description="Half-width of the strip in screen pixels",
@@ -648,6 +648,8 @@ class AllPie_OT_AddStrips(Operator):
         if not _retopo_strip_commit( context, mesh, self.preview_vertices, self.preview_faces,):
             self.report({'WARNING'}, "Generated strip is empty")
             return {'CANCELLED'}
+
+        bpy.ops.ed.undo_push( message="Add Strips",)
 
         settings.strip_radius = self.radius
         settings.strip_along_count = self.along_count
@@ -876,7 +878,7 @@ class AllPie_OT_AddStroke(Operator):
     bl_idname = "cop.add_stroke"
     bl_label = "Add Stroke"
     bl_description = "Draw multiple retopology guide strokes"
-    bl_options = {"REGISTER", "UNDO"}
+    bl_options = {"REGISTER"}
 
     across_count: IntProperty(
         name="Across", description="Number of rows between neighboring guide strokes",
@@ -979,6 +981,8 @@ class AllPie_OT_AddStroke(Operator):
         if not commit_surface( context, mesh, patch,):
             self.report( {'WARNING'}, "Generated surface is empty",)
             return {'CANCELLED'}
+
+        bpy.ops.ed.undo_push( message="Add Stroke",)
 
         settings.across_count = self.across_count
         settings.along_count = self.along_count
@@ -1909,7 +1913,7 @@ class AllPie_OT_StitchTopology(Operator):
     bl_idname = "cop.stitch_topology"
     bl_label = "Stitch Topology"
     bl_description = "Move and stitch vertices or stitch boundary edges"
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_options = {'REGISTER'}
 
     def invoke(self, context, event):
 
@@ -1929,7 +1933,10 @@ class AllPie_OT_StitchTopology(Operator):
         self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
 
         self.stroke_active = False
-        self.cancel_transform = False
+        self.moving_vertex = None
+        self.move_initial_co = None
+        self.move_start_world = None
+        self.stroke_changed = False
         self.exit_to_tweak = False
         self.edge_mode = False
         self.first_edge = None
@@ -2053,8 +2060,6 @@ class AllPie_OT_StitchTopology(Operator):
         if cross_cost < same_cost:
             moving_v0, moving_v1 = moving_v1, moving_v0
 
-        bpy.ops.ed.undo_push( message="Before Stitch Edges")
-
         try:
             bmesh.ops.weld_verts(
                 bm,
@@ -2076,14 +2081,14 @@ class AllPie_OT_StitchTopology(Operator):
 
         bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=True,)
 
+        bpy.ops.ed.undo_push( message="Stitch Edges",)
+
         return True
 
     def _begin_stroke(self, context, event):
 
-        # Always force vertex selection mode.
         bpy.ops.mesh.select_mode(type="VERT")
 
-        # Select the vertex under the mouse.
         result = bpy.ops.view3d.select(
             location=( event.mouse_region_x, event.mouse_region_y,),
             extend=False,
@@ -2093,13 +2098,10 @@ class AllPie_OT_StitchTopology(Operator):
         if "CANCELLED" in result:
             return False
 
-        # Confirm a vertex was selected.
         bm = bmesh.from_edit_mesh(self.mesh.data)
-
         moving_vertex = None
 
         for vert in bm.verts:
-
             if vert.is_valid and vert.select:
                 moving_vertex = vert
                 break
@@ -2107,147 +2109,153 @@ class AllPie_OT_StitchTopology(Operator):
         if moving_vertex is None:
             return False
 
-        # Native Blender transform.
-        result = bpy.ops.transform.translate(
-            "INVOKE_DEFAULT",
-            release_confirm=True,
-            use_proportional_edit=False,
-        )
-
-        if "CANCELLED" in result:
-            return False
-
+        self.moving_vertex = moving_vertex
+        self.move_initial_co = moving_vertex.co.copy()
+        self.move_start_world = self.mesh.matrix_world @ moving_vertex.co
+        self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
         self.stroke_active = True
-        self.cancel_transform = False
+        self.stroke_changed = False
 
         return True
 
-    def _is_transform_running(self, context):
+    def _update_stroke(self):
+        if not self.stroke_active or self.moving_vertex is None:
+            return False
 
-        try:
+        if not self.moving_vertex.is_valid:
+            return False
 
-            for operator in context.window.modal_operators:
-
-                if operator.bl_idname == "TRANSFORM_OT_translate":
-                    return True
-
-        except Exception:
-            pass
-
-        return False
-
-    def _finish_stroke(self):
-
-        if self.cancel_transform:
-            self.stroke_active = False
-            return
-
-        bm = bmesh.from_edit_mesh(self.mesh.data)
-
-        moving_vertex = None
-
-        for vert in bm.verts:
-
-            if vert.is_valid and vert.select:
-                moving_vertex = vert
-                break
-
-        if moving_vertex is None:
-            self.stroke_active = False
-            return
-
-        # Find the nearest vertex to the moved vertex.
-        target_vertex = _stitch_find_target_vertex( self, moving_vertex,)
-
-        # Nothing close enough to stitch to.
-        if target_vertex is None:
-            self.stroke_active = False
-
-            if self.area is not None:
-                self.area.tag_redraw()
-
-            return
-
-        # Merge the moved vertex into the target vertex.
-        bmesh.ops.pointmerge(
-            bm,
-            verts=[moving_vertex],
-            merge_co=target_vertex.co.copy(),
-            vert_target=target_vertex,
+        world_position = view3d_utils.region_2d_to_location_3d(
+            self.region,
+            self.rv3d,
+            self.cursor,
+            self.move_start_world,
         )
 
-        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=True,)
+        local_position = self.mesh.matrix_world.inverted() @ world_position
+
+        if (local_position - self.moving_vertex.co).length_squared <= EPSILON * EPSILON:
+            return False
+
+        self.moving_vertex.co = local_position
+        self.stroke_changed = True
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        bm.normal_update()
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+        return True
+
+    def _cancel_stroke(self):
+        if self.stroke_active and self.moving_vertex is not None and self.moving_vertex.is_valid and self.move_initial_co is not None:
+            self.moving_vertex.co = self.move_initial_co
+            bm = bmesh.from_edit_mesh(self.mesh.data)
+            bm.normal_update()
+            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
 
         self.stroke_active = False
+        self.stroke_changed = False
+        self.moving_vertex = None
+        self.move_initial_co = None
+        self.move_start_world = None
+
+    def _finish_stroke(self):
+        if not self.stroke_active or self.moving_vertex is None:
+            return False
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        moving_vertex = self.moving_vertex if self.moving_vertex.is_valid else None
+        changed = self.stroke_changed
+        merged = False
+
+        if moving_vertex is not None:
+            target_vertex = _stitch_find_target_vertex( self, moving_vertex,)
+
+            if target_vertex is not None:
+                try:
+                    bmesh.ops.pointmerge(
+                        bm,
+                        verts=[moving_vertex],
+                        merge_co=target_vertex.co.copy(),
+                        vert_target=target_vertex,
+                    )
+                    merged = True
+                except Exception:
+                    pass
+
+        bm.normal_update()
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=True,)
+
+        if changed or merged:
+            bpy.ops.ed.undo_push( message="Stitch Vertex",)
+
+        self.stroke_active = False
+        self.stroke_changed = False
+        self.moving_vertex = None
+        self.move_initial_co = None
+        self.move_start_world = None
 
         if self.area is not None:
             self.area.tag_redraw()
 
+        return changed or merged
+
     def modal(self, context, event):
 
-        # Toggle Vertex Stitch / Edge Stitch mode.
         if event.type == 'SPACE' and event.value == 'PRESS' and not self.stroke_active:
-
             self._set_edge_mode(context, not self.edge_mode)
-
             return {'RUNNING_MODAL'}
 
-        # Native transform is running.
         if self.stroke_active:
-
-            # ESC cancels the native transform and exits Stitch.
             if event.type == 'ESC':
-                self.cancel_transform = True
-                self.exit_to_tweak = True
-
-            # RMB cancels the native transform but keeps Stitch active.
-            elif event.type == 'RIGHTMOUSE':
-                self.cancel_transform = True
-
-            if self._is_transform_running(context):
-                return {'PASS_THROUGH'}
-
-            should_exit = self.exit_to_tweak
-
-            # Transform has finished.
-            self._finish_stroke()
-
-            if should_exit:
+                self._cancel_stroke()
                 self._cleanup(context)
-                self.exit_to_tweak = False
                 _retopo_switch_to_tweak(context)
                 return {'CANCELLED'}
 
+            if event.type == 'RIGHTMOUSE':
+                self._cancel_stroke()
+                if self.area is not None:
+                    self.area.tag_redraw()
+                return {'RUNNING_MODAL'}
+
+            if _retopo_is_view_navigation_event(event):
+                return {'PASS_THROUGH'}
+
+            if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
+                self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+                self._update_stroke()
+
+                if self.area is not None:
+                    self.area.tag_redraw()
+
+                return {'RUNNING_MODAL'}
+
+            if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
+                self._finish_stroke()
+                return {'RUNNING_MODAL'}
+
             return {'RUNNING_MODAL'}
 
-        # Exit Stitch.
         if event.type == 'ESC':
-
             self._cleanup(context)
             _retopo_switch_to_tweak(context)
-
             return {'CANCELLED'}
 
         if event.type == 'RIGHTMOUSE':
-
             self._cleanup(context)
-
             return {'CANCELLED'}
 
-        # View navigation.
         if _retopo_is_view_navigation_event(event):
             return {'PASS_THROUGH'}
 
-        # Edge Stitch mode.
         if self.edge_mode:
-
             if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
                 self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
                 self._update_edge_hover(context)
                 return {'RUNNING_MODAL'}
 
-            if ( event.type == 'LEFTMOUSE' and event.value == 'PRESS'):
-
+            if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
                 if self.hover_edge is None:
                     return {'RUNNING_MODAL'}
 
@@ -2274,19 +2282,13 @@ class AllPie_OT_StitchTopology(Operator):
 
             return {'RUNNING_MODAL'}
 
-        # Keep cursor updated.
-        if event.type == 'MOUSEMOVE':
-
+        if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
             self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
-
             if self.area is not None:
                 self.area.tag_redraw()
 
-        # Start Stitch.
-        if ( event.type == 'LEFTMOUSE' and event.value == 'PRESS'):
-
+        if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
             self._begin_stroke( context, event,)
-
             return {'RUNNING_MODAL'}
 
         return {'RUNNING_MODAL'}
@@ -2933,24 +2935,18 @@ class AllPie_OT_FillFace(Operator):
 
         try:
 
-            with context.temp_override(
-                window=context.window,
-                screen=context.screen,
-                area=self.area,
-                region=self.region,
-                space_data=context.space_data,
-                active_object=self.mesh,
-                object=self.mesh,
-            ):
+            result = bmesh.ops.bridge_loops(
+                bm,
+                edges=selected_edges,
+            )
 
-                result = bpy.ops.mesh.bridge_edge_loops()
-
-        except RuntimeError as error:
+        except Exception as error:
 
             self.report( {"WARNING"}, f"Bridge failed: {error}",)
             return False
 
-        if "CANCELLED" in result:
+        if not result.get("faces"):
+            self.report( {"WARNING"}, "Bridge did not create any faces",)
             return False
 
         self.created_faces += 1
@@ -2958,10 +2954,12 @@ class AllPie_OT_FillFace(Operator):
         _retopo_clear_selection(bm)
         self.last_selected_edge = None
 
-        try:
-            bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
-        except Exception:
-            pass
+        bm.normal_update()
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=True, destructive=True,)
+
+        # Match Relax Topology: modify the Edit Mode BMesh first, then
+        # create one explicit undo boundary for the completed operation.
+        bpy.ops.ed.undo_push( message="Bridge Edge Loops",)
 
         self.hover_edge = None
 
@@ -2982,19 +2980,16 @@ class AllPie_OT_FillFace(Operator):
         if first_edge_index == second_edge_index:
             return False
 
-        # Push undo state BEFORE modifying topology.
-        bpy.ops.ed.undo_push( message="Before Fill Face")
-
         face = _fill_create_face( self, first_edge_index, second_edge_index,)
 
         if face is None:
-            # The mesh wasn't changed.
-            #
-            # The explicit undo boundary is harmless here and is preferable
-            # to trying to manipulate Blender's undo stack manually.
             return False
 
         self.created_faces += 1
+
+        # Match Relax Topology and Dissolve Edge: the BMesh has already been
+        # modified, so push exactly one undo boundary for the completed face.
+        bpy.ops.ed.undo_push( message="Fill Face",)
 
         return True
 
