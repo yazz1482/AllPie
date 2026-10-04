@@ -311,7 +311,113 @@ def commit_surface(context, main_object, patch):
                 bmesh.ops.reverse_faces(bm, faces=new_faces)
 
     bm.normal_update()
+    bm.verts.ensure_lookup_table()
+    new_vertex_indices = [vertex.index for vertex in new_vertices]
     bmesh.update_edit_mesh( main_object.data, loop_triangles=True, destructive=True,)
+    return True, new_vertex_indices
+
+
+def _add_stroke_bridge_reference_edges(context, mesh, reference_edge_indices, new_vertex_indices, patch):
+    """Bridge the generated strip to the originally selected boundary edge loop."""
+    if not reference_edge_indices:
+        return True
+
+    bm = bmesh.from_edit_mesh(mesh.data)
+    bm.edges.ensure_lookup_table()
+
+    reference_edges = []
+    for edge_index in reference_edge_indices:
+        if edge_index < 0 or edge_index >= len(bm.edges):
+            return False
+        edge = bm.edges[edge_index]
+        if not edge.is_valid:
+            return False
+        reference_edges.append(edge)
+
+    # The generated strip has two long boundary rows. Each row contains
+    # exactly the number of edges represented by the selected reference.
+    boundary_edge_count = len(reference_edges)
+    expected_columns = boundary_edge_count + 1
+
+    if expected_columns < 2 or len(new_vertex_indices) < expected_columns * 2:
+        return False
+
+    # Reacquire the current BMesh vertices by index. commit_surface already
+    # called update_edit_mesh(), so the old BMVert references are invalid.
+    bm.verts.ensure_lookup_table()
+
+    unique_vertex_rows = max(2, len(new_vertex_indices) // expected_columns)
+    if unique_vertex_rows * expected_columns != len(new_vertex_indices):
+        return False
+
+    candidate_edges = []
+    for row_index in (0, unique_vertex_rows - 1):
+        start = row_index * expected_columns
+        row_edges = []
+        for column_index in range(expected_columns - 1):
+            v0 = bm.verts[new_vertex_indices[start + column_index]]
+            v1 = bm.verts[new_vertex_indices[start + column_index + 1]]
+            edge = next((
+                linked_edge
+                for linked_edge in v0.link_edges
+                if linked_edge.is_valid and linked_edge.other_vert(v0) == v1
+            ), None)
+            if edge is None or not edge.is_valid:
+                row_edges = []
+                break
+            row_edges.append(edge)
+        if len(row_edges) == boundary_edge_count:
+            candidate_edges.append(row_edges)
+
+    if not candidate_edges:
+        return False
+
+    reference_center = sum((edge.verts[0].co + edge.verts[1].co for edge in reference_edges), Vector((0.0, 0.0, 0.0)))
+    reference_center /= max(1, boundary_edge_count * 2)
+
+    def row_score(edges):
+        center = sum((edge.verts[0].co + edge.verts[1].co for edge in edges), Vector((0.0, 0.0, 0.0)))
+        center /= max(1, len(edges) * 2)
+        return (center - reference_center).length_squared
+
+    generated_edges = min(candidate_edges, key=row_score)
+
+    for vert in bm.verts:
+        if vert.is_valid:
+            vert.select = False
+
+    for edge in bm.edges:
+        if edge.is_valid:
+            edge.select = False
+
+    for face in bm.faces:
+        if face.is_valid:
+            face.select = False
+
+    for edge in reference_edges:
+        edge.select = True
+        edge.verts[0].select = True
+        edge.verts[1].select = True
+
+    for edge in generated_edges:
+        edge.select = True
+        edge.verts[0].select = True
+        edge.verts[1].select = True
+
+    bmesh.update_edit_mesh(mesh.data, loop_triangles=False, destructive=False,)
+
+    previous_select_mode = context.scene.tool_settings.mesh_select_mode[:]
+    context.scene.tool_settings.mesh_select_mode = (False, True, False)
+
+    try:
+        bpy.ops.mesh.bridge_edge_loops()
+    except RuntimeError:
+        context.scene.tool_settings.mesh_select_mode = previous_select_mode
+        bmesh.update_edit_mesh(mesh.data, loop_triangles=False, destructive=False,)
+        return False
+
+    context.scene.tool_settings.mesh_select_mode = previous_select_mode
+    bmesh.update_edit_mesh(mesh.data, loop_triangles=True, destructive=True,)
     return True
 
 
@@ -982,9 +1088,16 @@ class AllPie_OT_AddStroke(Operator):
             self.report( {'WARNING'}, "Unable to generate a surface from the guides",)
             return {'CANCELLED'}
 
-        if not commit_surface( context, mesh, patch,):
+        commit_result = commit_surface( context, mesh, patch,)
+        if not commit_result:
             self.report( {'WARNING'}, "Generated surface is empty",)
             return {'CANCELLED'}
+
+        _, new_vertex_indices = commit_result
+
+        if self.reference_edge_indices:
+            if not _add_stroke_bridge_reference_edges( context, mesh, self.reference_edge_indices, new_vertex_indices, patch,):
+                self.report( {'WARNING'}, "Unable to bridge generated surface to the selected edges",)
 
         # Keep the guide data available for F9 regeneration, but make a new
         # Add Stroke session start empty instead of loading this surface.
@@ -1024,6 +1137,11 @@ class AllPie_OT_AddStroke(Operator):
         # Selected retopo edges are used only as a topology-density reference.
         # Selected edges define internal cuts; with no edge selection,
         # fall back to the default cut count.
+        self.reference_edge_indices = [
+            edge.index
+            for edge in bmesh.from_edit_mesh(context.edit_object.data).edges
+            if edge.is_valid and edge.select
+        ]
         self.cuts = self._get_reference_cuts(context.edit_object)
 
         self.current_screen_points = []
