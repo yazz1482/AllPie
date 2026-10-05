@@ -1,16 +1,15 @@
-from dataclasses import dataclass, field
-
-import math
 import bpy
+from bpy.types import ( Operator, PropertyGroup,)
+import math
+from mathutils import Vector
 import bmesh
 import gpu
 from gpu_extras.presets import draw_circle_2d
 from bpy_extras import view3d_utils
-from mathutils import Vector
-from bpy.props import (CollectionProperty,FloatProperty, FloatVectorProperty, IntProperty, PointerProperty, StringProperty,)
-from bpy.types import ( Operator, PropertyGroup,)
 from gpu_extras.batch import batch_for_shader
+from bpy.props import (CollectionProperty,FloatProperty, FloatVectorProperty, IntProperty, PointerProperty, StringProperty,)
 
+from dataclasses import dataclass, field
 # Retopology mesh helper
 def get_retopo_mesh(context):
     mesh = context.scene.retopo.mesh
@@ -682,7 +681,7 @@ class AllPie_OT_AddStrips(Operator):
     bl_idname = "cop.add_strips"
     bl_label = "Add Strips"
     bl_description = "Draw a stroke to create a snapped strip of quads"
-    bl_options = {"REGISTER"}
+    bl_options = {"REGISTER", "UNDO"}
 
     radius: FloatProperty(
         name="Radius", description="Half-width of the strip in screen pixels",
@@ -1078,9 +1077,7 @@ class AllPie_OT_AddStroke(Operator):
             self.report( {'WARNING'}, "At least two guide strokes are required",)
             return {'CANCELLED'}
 
-        surface_settings = SurfaceGenerationSettings(
-            along_count=self.cuts,
-        )
+        surface_settings = SurfaceGenerationSettings( along_count=self.cuts,)
 
         patch = generate_surface( guide_analysis, surface_settings,)
 
@@ -1270,6 +1267,456 @@ class AllPie_OT_AddStroke(Operator):
         self._cleanup(context)
 
 
+# Weld topology brush
+WELD_DEFAULT_RADIUS = 15.0
+WELD_MIN_RADIUS = 2.0
+WELD_MAX_RADIUS = 500.0
+WELD_CURSOR_RADIUS = 15.0
+WELD_TARGET_RADIUS = 4.0
+WELD_CURSOR_COLOR = (1.0, 1.0, 1.0, 0.9)
+WELD_TARGET_COLOR = (1.0, 0.1, 0.1, 1.0)
+
+
+def _weld_find_selected_vertex(bm):
+    """Return the selected moving vertex from the supplied live BMesh."""
+    for vert in bm.verts:
+        if vert.is_valid and vert.select:
+            return vert
+    return None
+
+
+def _weld_find_target_vertex_in_bmesh(operator, bm, moving_vertex):
+    """Return the closest other projected vertex inside the weld radius."""
+
+    if ( operator.region is None or operator.rv3d is None
+        or moving_vertex is None or not moving_vertex.is_valid):
+        return None
+
+    world_matrix = operator.mesh.matrix_world
+    moving_world = world_matrix @ moving_vertex.co
+    moving_screen = view3d_utils.location_3d_to_region_2d(
+        operator.region, operator.rv3d, moving_world,)
+
+    if moving_screen is None:
+        return None
+
+    best_vertex = None
+    best_distance_squared = operator.radius * operator.radius
+
+    for vert in bm.verts:
+        if not vert.is_valid or vert is moving_vertex:
+            continue
+
+        world_position = world_matrix @ vert.co
+        screen_position = view3d_utils.location_3d_to_region_2d(
+            operator.region, operator.rv3d, world_position,)
+
+        if screen_position is None:
+            continue
+
+        distance_squared = (screen_position - moving_screen).length_squared
+
+        if distance_squared < best_distance_squared:
+            best_distance_squared = distance_squared
+            best_vertex = vert
+
+    return best_vertex
+
+
+def _weld_get_cursor_and_target_screen(operator):
+    """Return only copied screen-space data; never return a BMVert reference."""
+    if not operator.stroke_active or operator.mesh is None:
+        return operator.cursor, None
+
+    try:
+        bm = bmesh.from_edit_mesh(operator.mesh.data)
+        moving_vertex = _weld_find_selected_vertex(bm)
+
+        if moving_vertex is None:
+            return operator.cursor, None
+
+        world_matrix = operator.mesh.matrix_world
+        moving_world = world_matrix @ moving_vertex.co
+        moving_screen = view3d_utils.location_3d_to_region_2d(
+            operator.region, operator.rv3d, moving_world,)
+
+        if moving_screen is None:
+            return operator.cursor, None
+
+        target_vertex = _weld_find_target_vertex_in_bmesh( operator, bm, moving_vertex,)
+
+        target_screen = None
+        if target_vertex is not None and target_vertex.is_valid:
+            target_world = world_matrix @ target_vertex.co
+            target_screen = view3d_utils.location_3d_to_region_2d(
+                operator.region, operator.rv3d, target_world,)
+
+        return moving_screen.copy(), target_screen.copy() if target_screen is not None else None
+    except (ReferenceError, RuntimeError):
+        return operator.cursor, None
+
+
+def _draw_weld_brush(operator):
+    if operator is None or operator.region is None:
+        return
+
+    cursor = operator.cursor
+    target_screen = None
+
+    if operator.stroke_active:
+        cursor, target_screen = _weld_get_cursor_and_target_screen(operator)
+
+    gpu.state.blend_set("ALPHA")
+
+    draw_circle_2d( cursor, WELD_CURSOR_COLOR, operator.radius, segments=64,)
+    draw_circle_2d( cursor, WELD_CURSOR_COLOR, 2.0, segments=16,)
+
+    if target_screen is not None:
+        draw_circle_2d( target_screen, WELD_TARGET_COLOR, WELD_TARGET_RADIUS, segments=16,)
+
+    gpu.state.blend_set("NONE")
+
+
+class AllPie_OT_WeldTopology(Operator):
+    bl_idname = "cop.weld_topology"
+    bl_label = "Weld Topology"
+    bl_description = "Move a retopology vertex and weld nearby vertices into it"
+    bl_options = {'REGISTER'}
+
+    radius: FloatProperty(
+        name="Radius", description="Weld radius in screen pixels",
+        default=WELD_DEFAULT_RADIUS, min=WELD_MIN_RADIUS, max=WELD_MAX_RADIUS,
+        )
+
+    @classmethod
+    def poll(cls, context):
+        return (
+            context.area is not None
+            and context.area.type == 'VIEW_3D'
+            and is_retopo_edit_context(context)
+        )
+
+    def _remove_draw_handler(self, context):
+        if getattr(self, "draw_handler", None) is not None:
+            try:
+                bpy.types.SpaceView3D.draw_handler_remove( self.draw_handler, "WINDOW",)
+
+            except Exception:
+                pass
+
+            self.draw_handler = None
+
+        if context.area is not None:
+            context.area.tag_redraw()
+
+    def _select_moving_vertex(self, context, event):
+        # Use Blender's normal View3D vertex picking.
+        # Stitch implementation. Return only copied data; never keep the
+        # BMVert returned by the selection operation across API calls.
+        bpy.ops.mesh.select_mode(type="VERT")
+
+        result = bpy.ops.view3d.select(
+            location=( event.mouse_region_x, event.mouse_region_y,), extend=False, deselect_all=True,)
+
+        if "CANCELLED" in result:
+            return None, None
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        moving_vertex = None
+
+        for vert in bm.verts:
+            if vert.is_valid and vert.select:
+                moving_vertex = vert
+                break
+
+        if moving_vertex is None:
+            return None, None
+
+        # Copy the starting position immediately while this BMesh reference is live.
+        initial_co = moving_vertex.co.copy()
+        return initial_co, self.mesh.matrix_world @ initial_co
+
+    def _begin_undo_checkpoint(self):
+        if self.undo_checkpoint:
+            return
+
+        bpy.ops.ed.undo_push(message="Weld Topology Stroke Start")
+        self.undo_checkpoint = True
+
+    def _update_moving_vertex(self):
+        if ( not self.stroke_active or self.cursor is None or self.move_start_world is None):
+            return False
+
+        world_position = view3d_utils.region_2d_to_location_3d(
+            self.region, self.rv3d, self.cursor, self.move_start_world,)
+
+        local_position = self.mesh.matrix_world.inverted() @ world_position
+
+        # The undo checkpoint can invalidate the current Edit Mode BMesh, so
+        # create it before acquiring any BMVert reference.
+        self._begin_undo_checkpoint()
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        moving_vertex = _weld_find_selected_vertex(bm)
+
+        if moving_vertex is None:
+            return False
+
+        if (local_position - moving_vertex.co).length_squared <= EPSILON * EPSILON:
+            return False
+
+        moving_vertex.co = local_position
+        self.stroke_changed = True
+
+        bm.normal_update()
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=False,)
+
+        return True
+
+    def _try_weld(self, context):
+        if not self.stroke_active:
+            return False
+
+        # The weld checkpoint can invalidate BMesh references as well, so do
+        # the checkpoint first, then acquire one live BMesh and keep all
+        # weld references inside this single operation.
+        self._begin_undo_checkpoint()
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        moving_vertex = _weld_find_selected_vertex(bm)
+
+        if moving_vertex is None:
+            return False
+
+        target_vertex = _weld_find_target_vertex_in_bmesh( self, bm, moving_vertex,)
+
+        if target_vertex is None:
+            return False
+
+        try:
+            bmesh.ops.weld_verts( bm, targetmap={ target_vertex: moving_vertex, },)
+
+            # Keep the surviving moving vertex selected so subsequent modal
+            # updates can reacquire it from the live BMesh.
+            if moving_vertex.is_valid:
+                moving_vertex.select = True
+        except (ReferenceError, RuntimeError):
+            return False
+
+        bm.normal_update()
+        bmesh.update_edit_mesh( self.mesh.data, loop_triangles=False, destructive=True,)
+
+        self.stroke_changed = True
+
+        if context.area is not None:
+            context.area.tag_redraw()
+
+        return True
+
+    def _cancel_stroke(self, context):
+        had_checkpoint = self.undo_checkpoint
+
+        self.stroke_active = False
+        self.move_start_world = None
+        self.stroke_changed = False
+        self.undo_checkpoint = False
+
+        if had_checkpoint:
+            try:
+                bpy.ops.ed.undo()
+            except RuntimeError:
+                pass
+
+        if context.area is not None:
+            context.area.tag_redraw()
+
+    def _finish_stroke(self, context):
+        if not self.stroke_active:
+            return
+
+        changed = self.stroke_changed
+
+        self.stroke_active = False
+        self.move_start_world = None
+        self.stroke_changed = False
+
+        if changed and self.undo_checkpoint:
+            bpy.ops.ed.undo_push(message="Weld Topology Stroke")
+
+        self.undo_checkpoint = False
+
+        if context.area is not None:
+            context.area.tag_redraw()
+
+    def _begin_stroke(self, context, event):
+        if self.stroke_active:
+            return False
+
+        initial_co, start_world = self._select_moving_vertex(context, event)
+
+        if initial_co is None or start_world is None:
+            return False
+
+        self.move_start_world = start_world
+        self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+        self.stroke_active = True
+        self.stroke_changed = False
+        self.undo_checkpoint = False
+
+        return True
+
+    def _begin_radius_resize(self, event):
+        self.resize_active = True
+        self.resize_center = Vector(( event.mouse_region_x, event.mouse_region_y,))
+        self.resize_start_radius = self.radius
+
+    def _update_radius_resize(self, event):
+        delta_x = event.mouse_region_x - self.resize_center.x
+
+        self.radius = max( WELD_MIN_RADIUS, min( WELD_MAX_RADIUS, self.resize_start_radius + delta_x,),)
+
+    def _cancel_radius_resize(self):
+        self.radius = self.resize_start_radius
+        self.resize_active = False
+
+    def invoke(self, context, event):
+        mesh = get_retopo_mesh(context)
+
+        if mesh is None:
+            self.report( {'WARNING'}, "Specify the mesh for retopology",)
+            return {'CANCELLED'}
+
+        if not self.poll(context):
+            self.report( {'WARNING'}, "Retopology must be initialized in Edit Mode",)
+            return {'CANCELLED'}
+
+        self.mesh = mesh
+        self.area = context.area
+        self.region = context.region
+        self.rv3d = context.space_data.region_3d
+
+        self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+
+        self.resize_center = self.cursor.copy()
+        self.resize_start_radius = self.radius
+        self.resize_active = False
+
+        self.stroke_active = False
+        self.move_start_world = None
+        self.stroke_changed = False
+        self.undo_checkpoint = False
+
+        self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
+            _draw_weld_brush, (self,), 'WINDOW', 'POST_PIXEL',)
+
+        context.window.cursor_set("PAINT_BRUSH")
+        context.window_manager.modal_handler_add(self)
+        context.area.tag_redraw()
+
+        return {'RUNNING_MODAL'}
+
+    def modal(self, context, event):
+        # Blender-style F brush radius control.
+        if event.type == 'F' and event.value == 'PRESS' and not self.stroke_active:
+            self._begin_radius_resize(event)
+            context.area.tag_redraw()
+            return {'RUNNING_MODAL'}
+
+        if self.resize_active:
+            if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
+                self._update_radius_resize(event)
+                context.area.tag_redraw()
+                return {'RUNNING_MODAL'}
+
+            if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
+                self.resize_active = False
+                context.area.tag_redraw()
+                return {'RUNNING_MODAL'}
+
+            if event.type == 'ESC':
+                self._cancel_radius_resize()
+                self._remove_draw_handler(context)
+                context.window.cursor_set("DEFAULT")
+                _retopo_switch_to_tweak(context)
+                return {'CANCELLED'}
+
+            if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
+                self._cancel_radius_resize()
+                context.area.tag_redraw()
+                return {'RUNNING_MODAL'}
+
+            return {'RUNNING_MODAL'}
+
+        # ESC always exits the Weld brush. If a stroke is active, the complete
+        # stroke is reverted first.
+        if event.type == 'ESC' and event.value == 'PRESS':
+            if self.stroke_active:
+                self._cancel_stroke(context)
+
+            self._remove_draw_handler(context)
+            context.window.cursor_set("DEFAULT")
+            _retopo_switch_to_tweak(context)
+            return {'CANCELLED'}
+
+        # RMB cancels only the current stroke. When idle it exits the brush.
+        if event.type == 'RIGHTMOUSE' and event.value == 'PRESS':
+            if self.stroke_active:
+                self._cancel_stroke(context)
+                return {'RUNNING_MODAL'}
+
+            self._remove_draw_handler(context)
+            context.window.cursor_set("DEFAULT")
+            _retopo_switch_to_tweak(context)
+            return {'CANCELLED'}
+
+        # Native viewport navigation.
+        if _retopo_is_view_navigation_event(event):
+            return {'PASS_THROUGH'}
+
+        if event.type in {'MOUSEMOVE', 'INBETWEEN_MOUSEMOVE'}:
+            self.cursor = Vector(( event.mouse_region_x, event.mouse_region_y,))
+
+            if self.stroke_active:
+                self._update_moving_vertex()
+                self._try_weld(context)
+
+            context.area.tag_redraw()
+            return {'RUNNING_MODAL'}
+
+        if event.type == 'LEFTMOUSE' and event.value == 'PRESS':
+            if self._begin_stroke(context, event):
+                context.area.tag_redraw()
+            return {'RUNNING_MODAL'}
+
+        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
+            if self.stroke_active:
+                self._finish_stroke(context)
+                return {'RUNNING_MODAL'}
+
+            return {'RUNNING_MODAL'}
+
+        if event.type == 'WHEELUPMOUSE' and event.value == 'PRESS':
+            if not self.stroke_active:
+                self.radius = min( WELD_MAX_RADIUS, self.radius * 1.1,)
+                context.area.tag_redraw()
+            return {'RUNNING_MODAL'}
+
+        if event.type == 'WHEELDOWNMOUSE' and event.value == 'PRESS':
+            if not self.stroke_active:
+                self.radius = max( WELD_MIN_RADIUS, self.radius / 1.1,)
+                context.area.tag_redraw()
+            return {'RUNNING_MODAL'}
+
+        return {'RUNNING_MODAL'}
+
+    def cancel(self, context):
+        if self.stroke_active:
+            self._cancel_stroke(context)
+
+        self._remove_draw_handler(context)
+        context.window.cursor_set("DEFAULT")
+
+
 # Init operator
 class AllPie_OT_InitRetopo(Operator):
     bl_idname = "cop.init_retopo"
@@ -1279,11 +1726,8 @@ class AllPie_OT_InitRetopo(Operator):
 
     @classmethod
     def poll(cls, context):
-        return is_retopo_edit_context(context) or (
-            context.mode == "EDIT_MESH"
-            and context.active_object is not None
-            and context.active_object.type == "MESH"
-        )
+        return is_retopo_edit_context(context) or ( context.mode == "EDIT_MESH"
+            and context.active_object is not None and context.active_object.type == "MESH")
 
     def execute(self, context):
         # Init Retopo is intentionally an Edit Mode entry point.
@@ -1382,7 +1826,7 @@ class RetopoSettings(PropertyGroup):
 #   - neighbor positions are averaged
 #   - smoothed position is projected onto the vertex tangent plane
 #   - result is scaled by brush factor
-#   - Relax Slide alternate path performs 4 passes
+#   - Relax Slide alternate path performs 3 passes in AllPie
 
 def _relax_brush_falloff(distance, radius):
     """Simple radial brush falloff."""
@@ -1393,42 +1837,93 @@ def _relax_brush_falloff(distance, radius):
     return x * x
 
 
-def _collect_relax_factors(context, mesh, bm, cursor, radius, strength):
-    if radius <= EPSILON or strength <= 0.0:
-        return {}
-
+def _relax_build_screen_grid(context, mesh, bm, reference_positions, cell_size):
+    """Build a uniform screen-space grid from stroke-reference positions."""
     region = context.region
     rv3d = context.space_data.region_3d
 
-    if region is None or rv3d is None:
-        return {}
+    if region is None or rv3d is None or cell_size <= EPSILON:
+        return {}, None
 
+    bm.verts.ensure_lookup_table()
     world_matrix = mesh.matrix_world
-    factors = {}
+    grid = {}
 
-    for vert in bm.verts:
+    for vert, reference_co in reference_positions.items():
         if not vert.is_valid:
             continue
 
-        world_co = world_matrix @ vert.co
-        screen = view3d_utils.location_3d_to_region_2d( region, rv3d, world_co,)
+        world_co = world_matrix @ reference_co
+        screen = view3d_utils.location_3d_to_region_2d(region, rv3d, world_co)
 
         if screen is None:
             continue
 
-        distance = (screen - cursor).length
+        cell_x = math.floor(screen.x / cell_size)
+        cell_y = math.floor(screen.y / cell_size)
+        cell = (cell_x, cell_y)
+        entry = (vert.index, screen.x, screen.y)
 
-        if distance >= radius:
-            continue
+        entries = grid.get(cell)
+        if entries is None:
+            grid[cell] = [entry]
+        else:
+            entries.append(entry)
 
-        falloff = _relax_brush_falloff( distance, radius,)
-        factor = falloff * strength
+    matrix = rv3d.perspective_matrix
+    signature = (
+        region.width,
+        region.height,
+        tuple(value for row in matrix for value in row),
+        tuple(value for row in world_matrix for value in row),
+    )
 
-        if factor > 0.0:
-            factors[vert] = factor
+    return grid, signature
+
+
+def _collect_relax_factors(bm, cursor, radius, strength, screen_grid, cell_size):
+    if radius <= EPSILON or strength <= 0.0 or not screen_grid:
+        return {}
+
+    bm.verts.ensure_lookup_table()
+    factors = {}
+    radius_squared = radius * radius
+
+    min_cell_x = math.floor((cursor.x - radius) / cell_size)
+    max_cell_x = math.floor((cursor.x + radius) / cell_size)
+    min_cell_y = math.floor((cursor.y - radius) / cell_size)
+    max_cell_y = math.floor((cursor.y + radius) / cell_size)
+
+    for cell_y in range(min_cell_y, max_cell_y + 1):
+        for cell_x in range(min_cell_x, max_cell_x + 1):
+            entries = screen_grid.get((cell_x, cell_y))
+            if not entries:
+                continue
+
+            for vert_index, screen_x, screen_y in entries:
+                if vert_index < 0 or vert_index >= len(bm.verts):
+                    continue
+
+                vert = bm.verts[vert_index]
+
+                if not vert.is_valid:
+                    continue
+
+                dx = screen_x - cursor.x
+                dy = screen_y - cursor.y
+                distance_squared = dx * dx + dy * dy
+
+                if distance_squared >= radius_squared:
+                    continue
+
+                distance = math.sqrt(distance_squared)
+                falloff = _relax_brush_falloff(distance, radius)
+                factor = falloff * strength
+
+                if factor > 0.0:
+                    factors[vert] = factor
 
     return factors
-
 
 def _boundary_corner_normal( current_position, neighbors, positions,):
     """
@@ -1453,65 +1948,118 @@ def _boundary_corner_normal( current_position, neighbors, positions,):
     return normal.normalized()
 
 
-def _relax_topology_pass( bm, factors,):
+def _relax_neighbors_bmesh(vert):
+    """
+    Collect topology neighbors the same way Blender's BMesh
+    topology-relax code does.
+    """
+
+    neighbors = []
+
+    for loop in vert.link_loops:
+
+        prev_vert = loop.link_loop_prev.vert
+        next_vert = loop.link_loop_next.vert
+
+        if prev_vert is not vert:
+            neighbors.append(prev_vert.index)
+
+        if next_vert is not vert:
+            neighbors.append(next_vert.index)
+
+    return tuple(neighbors)
+
+
+def _relax_neighbor_data(vert, bm, neighbor_cache):
+    """
+    Return cached Blender-style neighbor indices and boundary state.
+    """
+
+    data = neighbor_cache.get(vert.index)
+
+    if data is not None:
+        return data
+
+    bm.verts.ensure_lookup_table()
+    raw_neighbors = _relax_neighbors_bmesh(vert)
+    is_boundary = vert.is_boundary
+
+    if len(raw_neighbors) <= 2:
+        data = ((), is_boundary)
+    else:
+        if is_boundary:
+            raw_neighbors = tuple(
+                neighbor_index
+                for neighbor_index in raw_neighbors
+                if bm.verts[neighbor_index].is_boundary
+            )
+
+        data = (raw_neighbors, is_boundary)
+
+    neighbor_cache[vert.index] = data
+    return data
+
+def _relax_topology_pass(bm, factors, neighbor_cache):
     """
     Perform one topology-relax pass.
 
     Every vertex is evaluated from the same position snapshot
     so updates do not propagate sequentially through the pass.
+    Only the affected vertices and their one-ring neighbors are
+    copied because those are the only positions this solver reads.
     """
 
     if not factors:
         return 0
 
-    bm.normal_update()
+    bm.verts.ensure_lookup_table()
+    neighbor_data = {}
+    positions = {}
 
-    # Snapshot all vertex positions before calculating
-    # any new positions.
-    positions = { vert: vert.co.copy()
-        for vert in bm.verts
-        if vert.is_valid
-    }
+    for vert in factors:
+
+        neighbors, is_boundary = _relax_neighbor_data( vert, bm, neighbor_cache,)
+        neighbor_data[vert] = (neighbors, is_boundary)
+
+        if not vert.is_valid:
+            continue
+
+        positions[vert] = vert.co.copy()
+
+        for neighbor_index in neighbors:
+            neighbor = bm.verts[neighbor_index]
+            if neighbor.is_valid and neighbor not in positions:
+                positions[neighbor] = neighbor.co.copy()
 
     new_positions = {}
 
     for vert, factor in factors.items():
 
+        if not vert.is_valid:
+            continue
+
+        neighbor_indices, is_boundary = neighbor_data[vert]
+
+        if not neighbor_indices:
+            continue
+
         neighbors = [
-            edge.other_vert(vert)
-            for edge in vert.link_edges
+            bm.verts[neighbor_index]
+            for neighbor_index in neighbor_indices
         ]
 
-        # Blender topology relax does not modify
-        # corner vertices.
-        if len(neighbors) <= 2:
-            continue
-
-        is_boundary = vert.is_boundary
-
-        if is_boundary:
-            # Boundary vertices only relax against
-            # neighboring boundary vertices.
-            neighbors = [
-                neighbor
-                for neighbor in neighbors
-                if neighbor.is_boundary
-            ]
-
-        if not neighbors:
-            continue
-
         current_position = positions[vert]
+        smooth_position = Vector((0.0, 0.0, 0.0))
 
-        # Average neighbor positions.
-        smooth_position = sum( (positions[neighbor] for neighbor in neighbors),
-            Vector((0.0, 0.0, 0.0)),
-        ) / len(neighbors)
+        for neighbor in neighbors:
+            smooth_position += positions[neighbor]
 
-        # Determine the tangent-plane normal.
+        smooth_position /= len(neighbors)
+
         if is_boundary and len(neighbors) == 2:
 
-            normal = _boundary_corner_normal( current_position, neighbors, positions,)
+            normal_neighbors = neighbors
+            normal = _boundary_corner_normal( current_position, normal_neighbors, positions,)
 
             if normal is None:
                 continue
@@ -1525,19 +2073,15 @@ def _relax_topology_pass( bm, factors,):
 
             normal.normalize()
 
-        # Project the smoothing displacement onto
-        # the tangent plane of the current vertex.
         delta = smooth_position - current_position
         delta -= normal * delta.dot(normal)
         new_positions[vert] = ( current_position + delta * min(1.0, factor))
 
-    # Apply all calculated positions only after
-    # the complete pass has been evaluated.
     moved = 0
 
     for vert, position in new_positions.items():
 
-        if ( position - vert.co).length_squared <= EPSILON * EPSILON:
+        if (position - vert.co).length_squared <= EPSILON * EPSILON:
             continue
 
         vert.co = position
@@ -1545,18 +2089,14 @@ def _relax_topology_pass( bm, factors,):
 
     return moved
 
-
-def _relax_brush_step( bm, factors,):
+def _relax_brush_step(bm, factors, neighbor_cache):
     """
-    Blender Relax Slide's Shift/alternate behavior.
-
-    Blender performs four topology-relax passes
-    for each brush step.
+    Run the three topology-relax passes for one brush step.
     """
 
     return sum(
-        _relax_topology_pass(bm, factors)
-        for _ in range(4)
+        _relax_topology_pass(bm, factors, neighbor_cache)
+        for _ in range(3)
     )
 
 def _draw_relax_brush(operator):
@@ -1584,10 +2124,8 @@ class AllPie_OT_RelaxTopology(Operator):
     @classmethod
     def poll(cls, context):
         return (
-            context.area is not None
-            and context.area.type == "VIEW_3D"
-            and is_retopo_edit_context(context)
-        )
+            context.area is not None and context.area.type == "VIEW_3D"
+            and is_retopo_edit_context(context))
 
     def _remove_draw_handler(self, context):
         bpy.types.SpaceView3D.draw_handler_remove(self.draw_handler, "WINDOW")
@@ -1617,17 +2155,20 @@ class AllPie_OT_RelaxTopology(Operator):
         self.distance_since_dab = 0.0
 
         self.stroke_backup = {}
+        self.relax_neighbor_cache = {}
+        self.relax_screen_grid = {}
+        self.relax_screen_grid_signature = None
+        self.relax_screen_grid_cell_size = 0.0
 
         self.draw_handler = bpy.types.SpaceView3D.draw_handler_add(
-                _draw_relax_brush, (self,), "WINDOW", "POST_PIXEL",
-                )
+                _draw_relax_brush, (self,), "WINDOW", "POST_PIXEL",)
 
         context.window_manager.modal_handler_add(self)
         context.area.tag_redraw()
 
         return {"RUNNING_MODAL"}
 
-    def _capture_stroke_backup(self):
+    def _capture_stroke_backup(self, context):
         bm = bmesh.from_edit_mesh(self.mesh.data)
 
         self.stroke_backup = {
@@ -1635,6 +2176,39 @@ class AllPie_OT_RelaxTopology(Operator):
             for vert in bm.verts
             if vert.is_valid
         }
+        self.relax_neighbor_cache.clear()
+
+        # Build the brush-selection spatial index once for this stroke.
+        # The reference positions are fixed for the whole stroke, so the
+        # expensive 3D-to-2D projection does not need to happen every dab.
+        self.relax_screen_grid_cell_size = max(self.radius, 1.0)
+        ( self.relax_screen_grid, self.relax_screen_grid_signature,) = _relax_build_screen_grid(
+            context, self.mesh, bm, self.stroke_backup, self.relax_screen_grid_cell_size,)
+
+    def _ensure_relax_screen_grid(self, context):
+        region = context.region
+        rv3d = context.space_data.region_3d
+
+        if region is None or rv3d is None:
+            return
+
+        bm = bmesh.from_edit_mesh(self.mesh.data)
+        bm.verts.ensure_lookup_table()
+
+        matrix = rv3d.perspective_matrix
+        world_matrix = self.mesh.matrix_world
+        signature = ( 
+            region.width,
+            region.height,
+            tuple(value for row in matrix for value in row),
+            tuple(value for row in world_matrix for value in row),
+        )
+
+        if ( self.relax_screen_grid and self.relax_screen_grid_signature == signature):
+            return
+
+        ( self.relax_screen_grid, self.relax_screen_grid_signature,) = _relax_build_screen_grid(
+            context, self.mesh, bm, self.stroke_backup, self.relax_screen_grid_cell_size,)
 
     def _restore_stroke(self):
         if not self.stroke_backup:
@@ -1654,13 +2228,22 @@ class AllPie_OT_RelaxTopology(Operator):
     def _apply_dab(self, context, cursor, pressure):
         
         bm = bmesh.from_edit_mesh(self.mesh.data)
+
+        # Match Blender's topology-relax pass behavior: use one normal field
+        # for all three relaxation passes, then refresh normals after the dab.
+        bm.normal_update()
+
+        # Rebuild the screen-space grid only when viewport state has changed.
+        self._ensure_relax_screen_grid(context)
+
         strength = ( self.strength * max(0.0, min(1.0, pressure)))
-        factors = _collect_relax_factors( context, self.mesh, bm, cursor, self.radius, strength,)
+        factors = _collect_relax_factors( bm, cursor, self.radius, strength, 
+                    self.relax_screen_grid, self.relax_screen_grid_cell_size,)
 
         if not factors:
             return False
 
-        moved = _relax_brush_step( bm, factors,)
+        moved = _relax_brush_step( bm, factors, self.relax_neighbor_cache,)
 
         if moved == 0:
             return False
@@ -1680,7 +2263,7 @@ class AllPie_OT_RelaxTopology(Operator):
 
         self.distance_since_dab = 0.0
 
-        self._capture_stroke_backup()
+        self._capture_stroke_backup(context)
 
         # First dab happens immediately.
         self.stroke_changed = self._apply_dab( context, self.last_mouse, self.last_pressure,)
@@ -1693,6 +2276,10 @@ class AllPie_OT_RelaxTopology(Operator):
         self.distance_since_dab = 0.0
         self.stroke_changed = False
         self.stroke_backup.clear()
+        self.relax_neighbor_cache.clear()
+        self.relax_screen_grid.clear()
+        self.relax_screen_grid_signature = None
+        self.relax_screen_grid_cell_size = 0.0
 
     def _cancel_stroke(self):
 
@@ -1702,6 +2289,10 @@ class AllPie_OT_RelaxTopology(Operator):
         self.stroke_changed = False
         self.distance_since_dab = 0.0
         self.stroke_backup.clear()
+        self.relax_neighbor_cache.clear()
+        self.relax_screen_grid.clear()
+        self.relax_screen_grid_signature = None
+        self.relax_screen_grid_cell_size = 0.0
 
     # Stroke interpolation
     def _process_mouse_segment( self, context, mouse_position, pressure,):
@@ -1879,6 +2470,7 @@ class AllPie_OT_RelaxTopology(Operator):
         return {"RUNNING_MODAL"}
 
 
+# ============================================================
 classes = (
     RetopoGuidePoint,
     RetopoGuideSplineState,
@@ -1887,6 +2479,7 @@ classes = (
     AllPie_OT_AddStrips,
     AllPie_OT_RelaxTopology,
     AllPie_OT_AddStroke,
+    AllPie_OT_WeldTopology,
 )
 
 def register():

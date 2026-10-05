@@ -331,7 +331,6 @@ EDGE_MENU = [
         "operator": "mesh.loopcut_slide",
         "invoke": True,
     },
-
     {
         "slot": 5,
         "label": "Loop Cut",
@@ -718,12 +717,12 @@ RETOPO_MENU = [
         "operator": "cop.init_retopo",
         "invoke": True,
     },
-    # {
-    #     "slot": 6,
-    #     "label": "Stitch Topology Tool",
-    #     "operator": "cop.stitch_topology",
-    #     "invoke": True,
-    # },
+    {
+        "slot": 1,
+        "label": "Weld Topology Brush",
+        "operator": "cop.weld_topology",
+        "invoke": True,
+    },
     {
         "slot": 2,
         "label": "Relax Topology Brush",
@@ -731,15 +730,33 @@ RETOPO_MENU = [
         "invoke": True,
     },
     {
-        "slot": 7,
+        "slot": 3,
         "label": "Strips Tool",
         "operator": "cop.add_strips",
         "invoke": True,
     },
     {
-        "slot": 3,
-        "label": "Patch Tool",
+        "slot": 4,
+        "label": "Strokes Tool",
         "operator": "cop.add_stroke",
+        "invoke": True,
+    },
+    {
+        "slot": 5,
+        "label": "Loop Cut",
+        "operator": "mesh.loopcut",
+        "invoke": True,
+    },
+    {
+        "slot": 6,
+        "label": "Knife Tool",
+        "operator": "mesh.knife_tool",
+        "invoke": True,
+    },
+    {
+        "slot": 7,
+        "label": "Bridge EdgeLoops",
+        "operator": "mesh.bridge_edge_loops",
         "invoke": True,
     },
 ]
