@@ -1,6 +1,8 @@
 import bpy
 import importlib
+
 from . import Preferences
+from . import CurveTools
 from . import CustomOperators
 from . import retopologytools
 from . import RadialMenu
@@ -24,6 +26,7 @@ TexturePaintPies,
 VertexPaintPies,
 WeightPaintPies,
 retopologytools,
+CurveTools,
 )
 
 def register():
@@ -34,6 +37,7 @@ def register():
     CustomOperators.register()
     retopologytools.register()
     RadialMenu.register()
+    CurveTools.register()
 
 def unregister():
 
@@ -41,6 +45,7 @@ def unregister():
     CustomOperators.unregister()
     retopologytools.unregister()
     RadialMenu.unregister()
+    CurveTools.unregister()
 
 
 if __name__ == "__main__":
