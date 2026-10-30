@@ -195,7 +195,7 @@ class AllPie_OT_MultiRes(Operator):
             ("DecreaseViewportLevel", "DecreaseViewportLevel", ""),
             ("SculptLevelToRender", "SculptLevelToRender", ""),
             ("DeleteHigher", "DeleteHigher", ""),
-            ("ConformToBase", "ApplyToBase", ""),
+            ("ConformToBase", "ConformToBase", ""),
         ],
     )
 

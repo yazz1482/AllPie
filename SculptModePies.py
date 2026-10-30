@@ -323,7 +323,7 @@ MULTIRES_MENU = [
         "operator": "cop.cmultirespie",
         "invoke": True,
         "props": {
-            "action": "DeleteHigher",
+            "action": "ConformToBase",
         },
     },
     {
