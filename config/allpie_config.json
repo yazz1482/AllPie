@@ -1,0 +1,3840 @@
+{
+    "schema_version": 9,
+    "Menus": {
+        "OBJECT.ADD": {
+            "name": "Add Object",
+            "key": "A",
+            "keymodifiers": [
+                "SHIFT"
+            ],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "8": "ADD_PLANE",
+                "3": "ADD_CUBE",
+                "5": "SEARCH_ADD_MENU",
+                "1": "ADD_MENU",
+                "2": "ADD_CYLINDER",
+                "4": "ADD_UVSPHERE",
+                "6": "ADD_CONE",
+                "7": "ADD_GRID"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.APPLY_TRANSFORMS": {
+            "name": "Apply Transforms",
+            "key": "A",
+            "keymodifiers": [
+                "CTRL"
+            ],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "3": "ROTATION",
+                "5": "ALL_TRANSFORMS",
+                "6": "ROTATION_AND_SCALE",
+                "8": "LOCATION_AND_SCALE",
+                "7": "LOCATION_AND_ROTATION",
+                "1": "APPLY_TRANSFORMS_MENU",
+                "2": "LOCATION",
+                "4": "SCALE"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.MODIFIER": {
+            "name": "Add Modifier",
+            "key": "Q",
+            "keymodifiers": [
+                "SHIFT"
+            ],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "2": "SUBDIVISION",
+                "3": "MIRROR",
+                "5": "MODIFIER_SEARCH",
+                "8": "MULTIRES",
+                "4": "SOLIDIFY",
+                "6": "DISPLACE",
+                "7": "SHRINKWRAP",
+                "1": "ARRAY"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.SELECTION": {
+            "name": "Selection & Hide",
+            "key": "A",
+            "keymodifiers": [],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "6": "DESELECT_ALL",
+                "4": "SELECT_ALL",
+                "5": "INVERT_SELECTION",
+                "3": "RENAME_OBJECT",
+                "7": "MOVE_TO_COLLECTION",
+                "1": "UNHIDE_ALL",
+                "2": "SOLO_OBJECT",
+                "8": "HIDE_SELECTED"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.TOOL_SELECT": {
+            "name": "Tool Select",
+            "key": "W",
+            "keymodifiers": [],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "6": "CURSOR_TOOL",
+                "4": "LASSO_SELECT",
+                "1": "ROTATE_TOOL",
+                "5": "TWEAK_TOOL",
+                "8": "MOVE_TOOL",
+                "2": "SCALE_TOOL",
+                "3": "ADD_CUBE_TOOL",
+                "7": "ADD_CYLINDER_TOOL"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.SHADING": {
+            "name": "Shading",
+            "key": "Z",
+            "keymodifiers": [],
+            "keymap": "Common",
+            "enabled": true,
+            "slots": {
+                "1": "SHADING_MENU",
+                "7": "WIREFRAME",
+                "3": "SOLID",
+                "6": "STUDIO",
+                "5": "MATCAP",
+                "4": "FLAT",
+                "2": "MATERIAL",
+                "8": "RENDERED"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.VIEW": {
+            "name": "View",
+            "key": "Q",
+            "keymodifiers": [
+                "CTRL"
+            ],
+            "keymap": "Common",
+            "enabled": true,
+            "slots": {
+                "2": "TOP",
+                "4": "FRONT",
+                "3": "RIGHT",
+                "8": "BOTTOM",
+                "7": "LEFT",
+                "6": "BACK",
+                "1": "VIEW_MAXIMIZE",
+                "5": "VIEW_SELECTED"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.MODE": {
+            "name": "Mode",
+            "key": "TAB",
+            "keymodifiers": [
+                "CTRL"
+            ],
+            "keymap": "Common",
+            "enabled": true,
+            "slots": {
+                "7": "OBJECT_MODE",
+                "1": "TEXTURE_PAINT_MODE",
+                "3": "EDIT_MODE",
+                "5": "SCULPT_MODE",
+                "2": "WEIGHT_PAINT_MODE",
+                "8": "VERTEX_PAINT_MODE"
+            },
+            "spaced_slots": {}
+        },
+        "OBJECT.SUBD": {
+            "name": "Subdivision",
+            "key": "D",
+            "keymodifiers": [],
+            "keymap": "Object Mode",
+            "enabled": true,
+            "slots": {
+                "3": "INCREASE_SUBDIVISION",
+                "2": "INCREASE_RENDER_LEVEL",
+                "7": "DECREASE_SUBDIVISION",
+                "8": "DECREASE_RENDER_LEVEL",
+                "1": "SHOW_IN_VIEWPORT",
+                "5": "SHOW_IN_EDITMODE",
+                "4": "SHOW_IN_RENDER",
+                "6": "SHOW_CAGE"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.SELECTION": {
+            "name": "Selection & Hide",
+            "key": "A",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "8": "VERT_SELECT",
+                "1": "EDGE_SELECT",
+                "2": "FACE_SELECT",
+                "4": "SELECT_ALL_93DF52",
+                "5": "INVERT_SELECTION_29AC03",
+                "6": "DESELECT_ALL_CB73F0",
+                "7": "LOOP_INNER_REGION",
+                "3": "SELECT_MIRROR"
+            },
+            "spaced_slots": {
+                "8": "HIDE_SELECTED_76F040",
+                "1": "UNHIDE_ALL_396850",
+                "2": "SOLO_SELECTED",
+                "3": "SELECT_NON_MANIFOLD",
+                "7": "SELECT_SHARP_EDGES",
+                "6": "CHECKER_DESELECT",
+                "4": "SELECT_SIMILAR",
+                "5": "SELECT_LINKED"
+            }
+        },
+        "EDIT.DELETE": {
+            "name": "Deletion",
+            "key": "X",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "1": "EDGE_DELETE",
+                "2": "FACE_DELETE",
+                "3": "ONLY_FACE",
+                "4": "FACE_DISSOLVE",
+                "5": "EDGE_DISSOLVE",
+                "6": "VERTICES_DISSOLVE",
+                "7": "EDGE_AND_FACE",
+                "8": "VERTICES_DELETE"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.MERGE": {
+            "name": "Merge & Separate",
+            "key": "M",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "1": "SEPARATE_SELECTION",
+                "2": "SEPARATE_LOOSE_GEOMETRY",
+                "8": "SEPARATE_BY_MATERIAL",
+                "3": "MERGE_BY_DISTANCE",
+                "5": "AT_CENTER",
+                "6": "AT_FIRST",
+                "7": "AT_CURSOR",
+                "4": "AT_LAST"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.VERTEX": {
+            "name": "Vertex",
+            "key": "ONE",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "8": "RIP_VERTICES",
+                "2": "VERTEX_SLIDE",
+                "1": "EXTRUDE_VERTICES",
+                "5": "MERGE_AT_CENTER",
+                "4": "FILL_FACE",
+                "7": "KNIFE_TOOL",
+                "6": "JOIN_VERTICES",
+                "3": "VERTEX_BEVEL"
+            },
+            "spaced_slots": {
+                "1": "SEPARATE_SELECTION",
+                "2": "SEPARATE_LOOSE_GEOMETRY",
+                "8": "SEPARATE_BY_MATERIAL",
+                "3": "MERGE_BY_DISTANCE",
+                "5": "AT_CENTER",
+                "6": "AT_FIRST",
+                "7": "AT_CURSOR",
+                "4": "AT_LAST"
+            }
+        },
+        "EDIT.EDGE": {
+            "name": "Edge",
+            "key": "TWO",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "7": "LOOP_CUT_SLIDE",
+                "6": "LOOP_CUT",
+                "3": "EDGE_BEVEL",
+                "5": "FLAT_BEVEL",
+                "1": "EXTRUDE_EDGES",
+                "2": "EDGE_SLIDE",
+                "8": "BRIDGE_EDGELOOPS",
+                "4": "FILL_FACE"
+            },
+            "spaced_slots": {
+                "2": "MARK_SHARP",
+                "8": "CLEAR_SHARP",
+                "3": "MARK_SEAM",
+                "7": "CLEAR_SEAM",
+                "4": "EDGE_BEVEL_WEIGHT",
+                "6": "CLEAR_BEVEL_WEIGHT",
+                "5": "EDGE_CREASE",
+                "1": "CLEAR_EDGE_CREASE"
+            }
+        },
+        "EDIT.FACE": {
+            "name": "Face",
+            "key": "THREE",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "7": "POKE",
+                "1": "EXTRUDE_FACES",
+                "3": "INSET",
+                "8": "SHADE_FACE_SMOOTH",
+                "2": "SHADE_FACE_FLAT",
+                "4": "FILL_FACE",
+                "6": "GRID_FILL",
+                "5": "EXTRUDE_ALONG_NORMALS"
+            },
+            "spaced_slots": {
+                "2": "FOLLOW_ACTIVE_QUADS",
+                "1": "UV_RESET",
+                "8": "SMART_PROJECT",
+                "3": "MARK_SEAM",
+                "7": "CLEAR_SEAM",
+                "4": "UNWRAP_CONFORMAL",
+                "5": "UNWRAP_MINIMUM_STRETCH",
+                "6": "UNWRAP_ANGLE_BASED"
+            }
+        },
+        "EDIT.TOOL_SELECT": {
+            "name": "Tool Select",
+            "key": "W",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "7": "BOX_SELECT_TOOL",
+                "3": "LASSO_SELECT_TOOL",
+                "4": "CIRCLE_SELECT_TOOL",
+                "6": "CURSOR_TOOL",
+                "1": "ROTATE_TOOL",
+                "5": "TWEAK_TOOL",
+                "8": "MOVE_TOOL",
+                "2": "SCALE_TOOL"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.UV": {
+            "name": "UV",
+            "key": "U",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "2": "FOLLOW_ACTIVE_QUADS",
+                "1": "UV_RESET",
+                "8": "SMART_PROJECT",
+                "3": "MARK_SEAM",
+                "7": "CLEAR_SEAM",
+                "4": "UNWRAP_CONFORMAL",
+                "5": "UNWRAP_MINIMUM_STRETCH",
+                "6": "UNWRAP_ANGLE_BASED"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.ORIGIN": {
+            "name": "Origin",
+            "key": "S",
+            "keymodifiers": [
+                "SHIFT"
+            ],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "2": "ORIGIN_TO_GEOMETRY",
+                "8": "CURSOR_TO_ORIGIN",
+                "6": "CURSOR_TOOL",
+                "1": "SELECTED_TO_CURSOR",
+                "5": "GEOMETRY_TO_ORIGIN",
+                "3": "ORIGIN_TO_SELECTED",
+                "7": "CURSOR_TO_SELECTED",
+                "4": "ORIGIN_TO_CURSOR"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.RETOPO": {
+            "name": "Retopology",
+            "key": "C",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "1": "INITIALIZE_RETOPO",
+                "2": "WELD_TOPOLOGY_BRUSH",
+                "3": "RELAX_TOPOLOGY_BRUSH",
+                "4": "STRIPS_TOOL",
+                "5": "STROKES_TOOL",
+                "6": "LOOP_CUT",
+                "7": "KNIFE_TOOL",
+                "8": "BRIDGE_EDGELOOPS"
+            },
+            "spaced_slots": {}
+        },
+        "EDIT.SUBD": {
+            "name": "Subdivision",
+            "key": "D",
+            "keymodifiers": [],
+            "keymap": "Mesh",
+            "enabled": true,
+            "slots": {
+                "3": "INCREASE_SUBDIVISION",
+                "2": "INCREASE_RENDER_LEVEL",
+                "7": "DECREASE_SUBDIVISION",
+                "8": "DECREASE_RENDER_LEVEL",
+                "1": "SHOW_IN_VIEWPORT",
+                "5": "SHOW_IN_EDITMODE",
+                "4": "SHOW_IN_RENDER",
+                "6": "SHOW_CAGE"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.ESSENTIALS_BRUSH": {
+            "name": "Essentials Brushes",
+            "key": "ONE",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "2": "DRAW_SHARP",
+                "6": "INFLATE",
+                "8": "PINCH",
+                "7": "GRAB",
+                "5": "SCRAPE",
+                "3": "CLAY_STRIPS",
+                "1": "DRAW",
+                "4": "MASK"
+            },
+            "spaced_slots": {
+                "7": "SNAKE_HOOK",
+                "1": "ASSET_SHELF",
+                "6": "ERASE_MULTIRES_DISPLACEMENT",
+                "8": "RELAX_SLIDE",
+                "4": "FACE_SET_PAINT",
+                "5": "TRIM",
+                "3": "CLAY",
+                "2": "CREASE_SHARP"
+            },
+            "is_brush_menu": true
+        },
+        "SCULPT.PAINT_BRUSH": {
+            "name": "Paint Brushes",
+            "key": "TWO",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "1": "ASSET_SHELF",
+                "5": "AIRBRUSH",
+                "4": "PAINT_SQUARE",
+                "3": "PAINT_SOFT",
+                "7": "PAINT_HARD",
+                "6": "PAINT_BLEND",
+                "2": "PAINT_SOFT_PRESSURE",
+                "8": "PAINT_HARD_PRESSURE"
+            },
+            "spaced_slots": {},
+            "is_brush_menu": true
+        },
+        "SCULPT.BRUSH_SETTINGS": {
+            "name": "Brush Settings",
+            "key": "X",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "1": "BRUSH_STROKE_MENU",
+                "2": "BRUSH_SETTING_MENU",
+                "8": "BRUSH_TEXTURE_MENU",
+                "3": "AUTOMASKING_CAVITY",
+                "7": "AUTOMASKING_CAVITY_INVERTED",
+                "4": "AUTOMASKING_FACESET",
+                "6": "AUTOMASKING_TOPOLOGY",
+                "5": "TOGGLE_STABILIZE_STROKE"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.REMESH": {
+            "name": "Remesh",
+            "key": "R",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "2": "SET_VOXEL_SIZE",
+                "1": "REMESH_MENU",
+                "8": "QUADRIFLOW_REMESH",
+                "7": "INCREASE_VOXELSIZE_25",
+                "6": "INCREASE_VOXELSIZE_10",
+                "5": "REMESH",
+                "3": "DECREASE_VOXELSIZE_25",
+                "4": "DECREASE_VOXELSIZE_10"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.SYMMETRY": {
+            "name": "Symmetry",
+            "key": "S",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "1": "SYMMETRY_MENU",
+                "5": "SYMMETRIZE",
+                "4": "Z_SYMMETRY",
+                "3": "Y_SYMMETRY",
+                "2": "X_SYMMETRY",
+                "8": "FLIP_X",
+                "7": "FLIP_Y",
+                "6": "FLIP_Z"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.MULTIRES": {
+            "name": "Multires",
+            "key": "D",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "1": "DELETE_HIGHER",
+                "2": "APPLY_TO_BASE",
+                "3": "INCREASE_SCULPT_LEVEL",
+                "4": "INCREASE_VEIWPORT_LEVEL",
+                "5": "SUBDIVIDE",
+                "7": "DECREASE_SCULPT_LEVEL",
+                "6": "DECREASE_VIEWPORT_LEVEL",
+                "8": "SET_RENDER_LEVEL"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.TOOL_SELECT": {
+            "name": "Tool Select",
+            "key": "W",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "6": "RESET_PIVOT",
+                "5": "COLOR_PICKER",
+                "1": "ROTATE_TOOL",
+                "3": "MASK_LASSO",
+                "7": "MASK_LINE",
+                "4": "SET_PIVOT",
+                "8": "MOVE_TOOL",
+                "2": "SCALE_TOOL"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.VISIBILITY": {
+            "name": "Visibility",
+            "key": "E",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "3": "GROW_VISIBILITY",
+                "7": "SHRINK_VISIBILITY",
+                "4": "HIDE_LASSO",
+                "6": "HIDE_MASKED",
+                "2": "SOLO_FACESET",
+                "5": "INVERT_VISIBLE",
+                "1": "UNHIDE_ALL_84FA0F",
+                "8": "HIDE_FACESET"
+            },
+            "spaced_slots": {}
+        },
+        "SCULPT.MASK": {
+            "name": "Mask Menu",
+            "key": "A",
+            "keymodifiers": [],
+            "keymap": "Sculpt",
+            "enabled": true,
+            "slots": {
+                "7": "INVERT_MASK",
+                "3": "CLEAR_MASK",
+                "5": "SHARPEN_MASK",
+                "1": "SMOOTH_MASK",
+                "6": "DECREASE_CONTRAST",
+                "4": "INCREASE_CONTRAST",
+                "2": "GROW_MASK",
+                "8": "SHRINK_MASK"
+            },
+            "spaced_slots": {
+                "6": "CAVITY_MASK_INVERTED",
+                "4": "CAVITY_MASK",
+                "1": "FACESET_FROM_MASK",
+                "8": "MASK_FROM_EDIT_MODE",
+                "5": "MASK_FROM_FACESET",
+                "2": "MASK_EXTRACT",
+                "3": "MASK_SLICE",
+                "7": "MASK_SLICE_NEW_OBJ"
+            }
+        }
+    },
+    "Operators": {
+        "ADD_PLANE": {
+            "name": "Add Plane",
+            "operator_id": "mesh.primitive_plane_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add Plane",
+            "description": "Add a four-vertex plane at the 3D Cursor. Useful as a starting surface for modeling.",
+            "contexts": []
+        },
+        "ADD_CUBE": {
+            "name": "Add Cube",
+            "operator_id": "mesh.primitive_cube_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add Cube",
+            "description": "Add a cube mesh at the 3D Cursor.",
+            "contexts": []
+        },
+        "SEARCH_ADD_MENU": {
+            "name": "Search Add Menu",
+            "operator_id": "wm.search_single_menu",
+            "invoke": true,
+            "properties": {
+                "menu_idname": "VIEW3D_MT_add"
+            },
+            "search_name": "Search Add Menu",
+            "description": "Open Blender’s searchable Add menu so you can search for any available object or primitive.",
+            "contexts": []
+        },
+        "ADD_MENU": {
+            "name": "Add Menu",
+            "operator_id": "wm.call_menu",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_MT_add"
+            },
+            "search_name": "Open Add Menu",
+            "description": "Open Blender’s standard Add menu in the 3D Viewport.",
+            "contexts": []
+        },
+        "ADD_CYLINDER": {
+            "name": "Add Cylinder",
+            "operator_id": "mesh.primitive_cylinder_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add Cylinder",
+            "description": "Add a cylinder mesh at the 3D Cursor.",
+            "contexts": []
+        },
+        "ADD_UVSPHERE": {
+            "name": "Add UVSphere",
+            "operator_id": "mesh.primitive_uv_sphere_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add UV Sphere",
+            "description": "Add a UV sphere mesh at the 3D Cursor.",
+            "contexts": []
+        },
+        "ADD_CONE": {
+            "name": "Add Cone",
+            "operator_id": "mesh.primitive_cone_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add Cone",
+            "description": "Add a cone mesh at the 3D Cursor.",
+            "contexts": []
+        },
+        "ADD_GRID": {
+            "name": "Add Grid",
+            "operator_id": "mesh.primitive_grid_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Add Grid",
+            "description": "Add a subdivided grid mesh at the 3D Cursor.",
+            "contexts": []
+        },
+        "ROTATION": {
+            "name": "Rotation",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": false,
+                "rotation": true,
+                "scale": false
+            },
+            "search_name": "Apply Rotation",
+            "description": "Apply the active object’s rotation to its mesh data. The object keeps its current appearance but its rotation values are reset.",
+            "contexts": []
+        },
+        "ALL_TRANSFORMS": {
+            "name": "All Transforms",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": true,
+                "rotation": true,
+                "scale": true
+            },
+            "search_name": "Apply Location, Rotation and Scale",
+            "description": "Apply location, rotation and scale to the object’s data, resetting those transform values while preserving the visible result.",
+            "contexts": []
+        },
+        "ROTATION_AND_SCALE": {
+            "name": "Rotation & Scale",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": false,
+                "rotation": true,
+                "scale": true
+            },
+            "search_name": "Apply Rotation and Scale",
+            "description": "Apply rotation and scale to the object’s data while leaving its location unchanged.",
+            "contexts": []
+        },
+        "LOCATION_AND_SCALE": {
+            "name": "Location & Scale",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": true,
+                "rotation": false,
+                "scale": true
+            },
+            "search_name": "Apply Location and Scale",
+            "description": "Apply location and scale to the object’s data while leaving its rotation unchanged.",
+            "contexts": []
+        },
+        "LOCATION_AND_ROTATION": {
+            "name": "Location & Rotation",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": true,
+                "rotation": true,
+                "scale": false
+            },
+            "search_name": "Apply Location and Rotation",
+            "description": "Apply location and rotation to the object’s data while leaving its scale unchanged.",
+            "contexts": []
+        },
+        "APPLY_TRANSFORMS_MENU": {
+            "name": "  Apply Transforms Menu",
+            "operator_id": "wm.call_menu",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_MT_object_apply"
+            },
+            "search_name": "Apply Transforms Menu",
+            "description": "Open Blender’s Apply menu to choose which object transforms to apply.",
+            "contexts": []
+        },
+        "LOCATION": {
+            "name": "Location",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": true,
+                "rotation": false,
+                "scale": false
+            },
+            "search_name": "Apply Location",
+            "description": "Apply the object’s location to its data, resetting its location values while preserving its visible position.",
+            "contexts": []
+        },
+        "SCALE": {
+            "name": "Scale",
+            "operator_id": "object.transform_apply",
+            "invoke": true,
+            "properties": {
+                "location": false,
+                "rotation": false,
+                "scale": true
+            },
+            "search_name": "Apply Scale",
+            "description": "Apply the object’s scale to its data, resetting scale values while preserving its visible size.",
+            "contexts": []
+        },
+        "SUBDIVISION": {
+            "name": "SubDivision",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "SUBSURF"
+            },
+            "search_name": "Add Subdivision Surface Modifier",
+            "description": "Add a Subdivision Surface modifier to smooth and subdivide the object non-destructively.",
+            "contexts": []
+        },
+        "MIRROR": {
+            "name": "Mirror",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "MIRROR"
+            },
+            "search_name": "Add Mirror Modifier",
+            "description": "Add a Mirror modifier to create mirrored geometry across its configured axes.",
+            "contexts": []
+        },
+        "MODIFIER_SEARCH": {
+            "name": "Modifier Search",
+            "operator_id": "wm.search_single_menu",
+            "invoke": true,
+            "properties": {
+                "menu_idname": "OBJECT_MT_modifier_add"
+            },
+            "search_name": "Search Modifiers",
+            "description": "Open Blender’s searchable modifier list. Type a modifier name to find and add it.",
+            "contexts": []
+        },
+        "MULTIRES": {
+            "name": "Multires",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "MULTIRES"
+            },
+            "search_name": "Add Multiresolution Modifier",
+            "description": "Add a Multiresolution modifier, allowing the mesh to be subdivided and sculpted at multiple detail levels.",
+            "contexts": []
+        },
+        "SOLIDIFY": {
+            "name": "Solidify",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "SOLIDIFY"
+            },
+            "search_name": "Solidify",
+            "description": "Add a Solidify modifier to give a surface mesh thickness.",
+            "contexts": []
+        },
+        "DISPLACE": {
+            "name": "Displace",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "DISPLACE"
+            },
+            "search_name": "Displace",
+            "description": "Add a Displace modifier that offsets vertices using a texture.",
+            "contexts": []
+        },
+        "SHRINKWRAP": {
+            "name": "Shrinkwrap",
+            "operator_id": "object.modifier_add",
+            "invoke": true,
+            "properties": {
+                "type": "SHRINKWRAP"
+            },
+            "search_name": "Shrinkwrap",
+            "description": "Add a Shrinkwrap modifier that projects the mesh onto a target surface once a target is assigned.",
+            "contexts": []
+        },
+        "ARRAY": {
+            "name": "Array",
+            "operator_id": "object.modifier_add_node_group",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "asset_library_identifier": "",
+                "relative_asset_identifier": "nodes/geometry_nodes_essentials.blend/NodeTree/Array"
+            },
+            "search_name": "Add Geometry Nodes Array",
+            "description": "Add the Geometry Nodes Array asset, which repeats geometry in an array-like pattern.",
+            "contexts": []
+        },
+        "DESELECT_ALL": {
+            "name": "Deselect All",
+            "operator_id": "object.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "DESELECT"
+            },
+            "search_name": "Deselect All Objects",
+            "description": "Deselect every currently selected object.",
+            "contexts": []
+        },
+        "SELECT_ALL": {
+            "name": "Select All",
+            "operator_id": "object.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "SELECT"
+            },
+            "search_name": "Select All Objects",
+            "description": "Select every selectable object in the current view layer.",
+            "contexts": []
+        },
+        "INVERT_SELECTION": {
+            "name": "Invert Selection",
+            "operator_id": "object.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "INVERT"
+            },
+            "search_name": "Invert Object Selection",
+            "description": "Invert object selection: selected objects become deselected and unselected objects become selected.",
+            "contexts": []
+        },
+        "RENAME_OBJECT": {
+            "name": "Rename Object",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "TOPBAR_PT_name"
+            },
+            "search_name": "Rename Active Object",
+            "description": "Open the object name editing panel for the active object.",
+            "contexts": []
+        },
+        "MOVE_TO_COLLECTION": {
+            "name": "Move To Collection",
+            "operator_id": "wm.call_menu",
+            "invoke": true,
+            "properties": {
+                "name": "OBJECT_MT_move_to_collection"
+            },
+            "search_name": "Move Objects to Collection",
+            "description": "Open the collection menu to move selected objects into another collection.",
+            "contexts": []
+        },
+        "UNHIDE_ALL": {
+            "name": "Unhide All",
+            "operator_id": "object.hide_view_clear",
+            "invoke": true,
+            "properties": {
+                "select": false
+            },
+            "search_name": "Show Hidden Objects",
+            "description": "Make all hidden objects visible again without changing their selection state.",
+            "contexts": []
+        },
+        "SOLO_OBJECT": {
+            "name": "Solo Object",
+            "operator_id": "object.hide_view_set",
+            "invoke": true,
+            "properties": {
+                "unselected": true
+            },
+            "search_name": "Isolate Selected Objects",
+            "description": "Isolate selected objects by hiding unselected objects in the viewport.",
+            "contexts": []
+        },
+        "HIDE_SELECTED": {
+            "name": "Hide Selected",
+            "operator_id": "object.hide_view_set",
+            "invoke": true,
+            "properties": {
+                "unselected": false
+            },
+            "search_name": "Hide Selected Objects",
+            "description": "Hide selected objects in the viewport.",
+            "contexts": []
+        },
+        "CURSOR_TOOL": {
+            "name": "Cursor Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.cursor"
+            },
+            "search_name": "Cursor Tool",
+            "description": "Activate the 3D Cursor tool for placing or moving the 3D Cursor.",
+            "contexts": []
+        },
+        "LASSO_SELECT": {
+            "name": "Lasso Select",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.select_lasso"
+            },
+            "search_name": "Lasso Select",
+            "description": "Activate the freehand Lasso Select tool.",
+            "contexts": []
+        },
+        "ROTATE_TOOL": {
+            "name": "Rotate Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.rotate"
+            },
+            "search_name": "Rotate Tool",
+            "description": "Activate the Rotate transform tool.",
+            "contexts": []
+        },
+        "TWEAK_TOOL": {
+            "name": "Tweak Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.select"
+            },
+            "search_name": "Select Tool (Tweak)",
+            "description": "Activate the Select/Tweak tool for selecting and dragging elements.",
+            "contexts": []
+        },
+        "MOVE_TOOL": {
+            "name": "Move Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.move"
+            },
+            "search_name": "Move Tool",
+            "description": "Activate the Move transform tool.",
+            "contexts": []
+        },
+        "SCALE_TOOL": {
+            "name": "Scale Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.scale"
+            },
+            "search_name": "Scale Tool",
+            "description": "Activate the Scale transform tool.",
+            "contexts": []
+        },
+        "ADD_CUBE_TOOL": {
+            "name": "Add Cube Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.primitive_cube_add"
+            },
+            "search_name": "Add Cube Tool",
+            "description": "Activate the interactive Add Cube tool. Click and drag in the viewport to create a cube.",
+            "contexts": []
+        },
+        "ADD_CYLINDER_TOOL": {
+            "name": "Add Cylinder Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.primitive_cylinder_add"
+            },
+            "search_name": "Add Cylinder Tool",
+            "description": "Activate the interactive Add Cylinder tool. Click and drag in the viewport to create a cylinder.",
+            "contexts": []
+        },
+        "SHADING_MENU": {
+            "name": "Shading Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_shading"
+            },
+            "search_name": "Open Viewport Shading Settings",
+            "description": "Open the viewport shading popover for changing shading mode, lighting and display options.",
+            "contexts": []
+        },
+        "WIREFRAME": {
+            "name": "Wireframe",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetShading": "WIREFRAME"
+            },
+            "search_name": "Switch to Wireframe Shading",
+            "description": "Switch the viewport to Wireframe shading so mesh edges and vertices are visible through surfaces.",
+            "contexts": []
+        },
+        "SOLID": {
+            "name": "Solid",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetShading": "SOLID"
+            },
+            "search_name": "Switch to Solid Shading",
+            "description": "Switch the viewport to Solid shading for fast, untextured modeling display.",
+            "contexts": []
+        },
+        "STUDIO": {
+            "name": "Studio",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetLighting": "STUDIO"
+            },
+            "search_name": "Use Studio Lighting",
+            "description": "Set viewport lighting to Studio mode. Studio lighting uses Blender’s studio light environment.",
+            "contexts": []
+        },
+        "MATCAP": {
+            "name": "Matcap",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetLighting": "MATCAP"
+            },
+            "search_name": "Use Matcap Lighting",
+            "description": "Set viewport lighting to MatCap mode, using a material-capture sphere to shade the model.",
+            "contexts": []
+        },
+        "FLAT": {
+            "name": "Flat",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetLighting": "FLAT"
+            },
+            "search_name": "Use Flat Lighting",
+            "description": "Set viewport lighting to Flat mode, removing studio-light shading variation.",
+            "contexts": []
+        },
+        "MATERIAL": {
+            "name": "Material",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetShading": "MATERIAL"
+            },
+            "search_name": "Switch to Material Preview",
+            "description": "Switch the viewport to Material Preview so material shaders and lighting can be previewed.",
+            "contexts": []
+        },
+        "RENDERED": {
+            "name": "Rendered",
+            "operator_id": "cop.cshading",
+            "invoke": true,
+            "properties": {
+                "SetShading": "RENDERED"
+            },
+            "search_name": "Switch to Rendered View",
+            "description": "Switch the viewport to Rendered shading to preview the scene using the active render engine.",
+            "contexts": []
+        },
+        "TOP": {
+            "name": "Top",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "TOP"
+            },
+            "search_name": "Top",
+            "description": "Align the view to look straight down the world Z axis.",
+            "contexts": []
+        },
+        "FRONT": {
+            "name": "Front",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "FRONT"
+            },
+            "search_name": "Front",
+            "description": "Align the view to the front (looking along the world Y axis).",
+            "contexts": []
+        },
+        "RIGHT": {
+            "name": "Right",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "RIGHT"
+            },
+            "search_name": "Right",
+            "description": "Align the view to the right side of the scene.",
+            "contexts": []
+        },
+        "BOTTOM": {
+            "name": "Bottom",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "BOTTOM"
+            },
+            "search_name": "Bottom",
+            "description": "Align the view to look upward from below the scene.",
+            "contexts": []
+        },
+        "LEFT": {
+            "name": "Left",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "LEFT"
+            },
+            "search_name": "Left",
+            "description": "Align the view to the left side of the scene.",
+            "contexts": []
+        },
+        "BACK": {
+            "name": "Back",
+            "operator_id": "view3d.view_axis",
+            "invoke": true,
+            "properties": {
+                "type": "BACK"
+            },
+            "search_name": "Back",
+            "description": "Align the view to the back of the scene.",
+            "contexts": []
+        },
+        "VIEW_MAXIMIZE": {
+            "name": "View Maximize",
+            "operator_id": "screen.screen_full_area",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Toggle Full-Area View",
+            "description": "Toggle the current editor area between normal layout and full-area view.",
+            "contexts": []
+        },
+        "VIEW_SELECTED": {
+            "name": "View Selected",
+            "operator_id": "view3d.view_selected",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Frame Selected",
+            "description": "Frame the selected objects or mesh elements in the 3D Viewport.",
+            "contexts": []
+        },
+        "OBJECT_MODE": {
+            "name": "Object Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "OBJECT"
+            },
+            "search_name": "Object Mode",
+            "description": "Switch the active object to Object Mode.",
+            "contexts": []
+        },
+        "TEXTURE_PAINT_MODE": {
+            "name": "Texture Paint Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "TEXTURE_PAINT"
+            },
+            "search_name": "Texture Paint Mode",
+            "description": "Switch the active object to Texture Paint Mode.",
+            "contexts": []
+        },
+        "EDIT_MODE": {
+            "name": "Edit Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "EDIT"
+            },
+            "search_name": "Edit Mode",
+            "description": "Switch the active mesh object to Edit Mode.",
+            "contexts": []
+        },
+        "SCULPT_MODE": {
+            "name": "Sculpt Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "SCULPT"
+            },
+            "search_name": "Sculpt Mode",
+            "description": "Switch the active mesh object to Sculpt Mode.",
+            "contexts": []
+        },
+        "WEIGHT_PAINT_MODE": {
+            "name": "Weight Paint Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "WEIGHT_PAINT"
+            },
+            "search_name": "Weight Paint Mode",
+            "description": "Switch the active object to Weight Paint Mode.",
+            "contexts": []
+        },
+        "VERTEX_PAINT_MODE": {
+            "name": "Vertex Paint Mode",
+            "operator_id": "object.mode_set",
+            "invoke": true,
+            "properties": {
+                "mode": "VERTEX_PAINT"
+            },
+            "search_name": "Vertex Paint Mode",
+            "description": "Switch the active mesh object to Vertex Paint Mode.",
+            "contexts": []
+        },
+        "INCREASE_SUBDIVISION": {
+            "name": "Increase Subdivision",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseSubDLevel"
+            },
+            "search_name": "Increase Viewport Subdivision Level",
+            "description": "Increase the Subdivision Surface modifier’s viewport subdivision level by one.",
+            "contexts": []
+        },
+        "INCREASE_RENDER_LEVEL": {
+            "name": "Increase Render Level ",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseRenderLevel"
+            },
+            "search_name": "Increase Render Subdivision Level",
+            "description": "Increase the Subdivision Surface modifier’s render subdivision level by one.",
+            "contexts": []
+        },
+        "DECREASE_SUBDIVISION": {
+            "name": "Decrease Subdivision",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseSubDLevel"
+            },
+            "search_name": "Decrease Viewport Subdivision Level",
+            "description": "Decrease the Subdivision Surface modifier’s viewport subdivision level by one.",
+            "contexts": []
+        },
+        "DECREASE_RENDER_LEVEL": {
+            "name": "Decrease Render Level",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseRenderLevel"
+            },
+            "search_name": "Decrease Render Subdivision Level",
+            "description": "Decrease the Subdivision Surface modifier’s render subdivision level by one.",
+            "contexts": []
+        },
+        "SHOW_IN_VIEWPORT": {
+            "name": "Show In Viewport",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "ShowInViewport"
+            },
+            "search_name": "Toggle Subdivision in Viewport",
+            "description": "Toggle whether the Subdivision Surface modifier affects the 3D Viewport.",
+            "contexts": []
+        },
+        "SHOW_IN_EDITMODE": {
+            "name": "Show In EditMode",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "ShowInEdit"
+            },
+            "search_name": "Toggle Subdivision in Edit Mode",
+            "description": "Toggle whether the Subdivision Surface modifier is displayed in Edit Mode.",
+            "contexts": []
+        },
+        "SHOW_IN_RENDER": {
+            "name": "Show In Render",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "ShowInRender"
+            },
+            "search_name": "Toggle Subdivision in Render",
+            "description": "Toggle whether the Subdivision Surface modifier is evaluated during rendering.",
+            "contexts": []
+        },
+        "SHOW_CAGE": {
+            "name": "Show Cage",
+            "operator_id": "cop.csubd",
+            "invoke": true,
+            "properties": {
+                "action": "ShowInCage"
+            },
+            "search_name": "Toggle Subdivision Edit Cage",
+            "description": "Toggle display of the modifier edit cage so the editable cage follows the evaluated surface.",
+            "contexts": []
+        },
+        "VERT_SELECT": {
+            "name": "Vert Select",
+            "operator_id": "mesh.select_mode",
+            "invoke": true,
+            "properties": {
+                "type": "VERT"
+            },
+            "search_name": "Select Vertices",
+            "description": "Switch mesh selection to vertices only.",
+            "contexts": []
+        },
+        "EDGE_SELECT": {
+            "name": "Edge Select",
+            "operator_id": "mesh.select_mode",
+            "invoke": true,
+            "properties": {
+                "type": "EDGE"
+            },
+            "search_name": "Select Edges",
+            "description": "Switch mesh selection to edges only.",
+            "contexts": []
+        },
+        "FACE_SELECT": {
+            "name": "Face Select",
+            "operator_id": "mesh.select_mode",
+            "invoke": true,
+            "properties": {
+                "type": "FACE"
+            },
+            "search_name": "Select Faces",
+            "description": "Switch mesh selection to faces only.",
+            "contexts": []
+        },
+        "SELECT_ALL_93DF52": {
+            "name": "Select All",
+            "operator_id": "mesh.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "SELECT"
+            },
+            "search_name": "Select All Mesh Elements",
+            "description": "Select all vertices, edges and faces in the mesh.",
+            "contexts": []
+        },
+        "INVERT_SELECTION_29AC03": {
+            "name": "Invert Selection",
+            "operator_id": "mesh.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "INVERT"
+            },
+            "search_name": "Invert Mesh Selection",
+            "description": "Invert the current mesh-element selection.",
+            "contexts": []
+        },
+        "DESELECT_ALL_CB73F0": {
+            "name": "Deselect All",
+            "operator_id": "mesh.select_all",
+            "invoke": true,
+            "properties": {
+                "action": "DESELECT"
+            },
+            "search_name": "Deselect All Mesh Elements",
+            "description": "Deselect all selected vertices, edges and faces.",
+            "contexts": []
+        },
+        "LOOP_INNER_REGION": {
+            "name": "Loop Inner Region",
+            "operator_id": "mesh.loop_to_region",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Select Loop Interior Region",
+            "description": "Select the region enclosed by the current edge-loop selection.",
+            "contexts": []
+        },
+        "SELECT_MIRROR": {
+            "name": "Select Mirror",
+            "operator_id": "mesh.select_mirror",
+            "invoke": true,
+            "properties": {
+                "extend": true
+            },
+            "search_name": "Select Mirrored Geometry",
+            "description": "Select corresponding mirrored elements across the mesh symmetry plane, extending the current selection.",
+            "contexts": []
+        },
+        "HIDE_SELECTED_76F040": {
+            "name": "Hide Selected",
+            "operator_id": "mesh.hide",
+            "invoke": true,
+            "properties": {
+                "unselected": false
+            },
+            "search_name": "Hide Selected Mesh Elements",
+            "description": "Hide selected mesh elements in Edit Mode.",
+            "contexts": []
+        },
+        "UNHIDE_ALL_396850": {
+            "name": "UnHide All",
+            "operator_id": "mesh.reveal",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Reveal Hidden Mesh Geometry",
+            "description": "Reveal all hidden mesh elements in Edit Mode.",
+            "contexts": []
+        },
+        "SOLO_SELECTED": {
+            "name": "Solo Selected",
+            "operator_id": "mesh.hide",
+            "invoke": true,
+            "properties": {
+                "unselected": true
+            },
+            "search_name": "Hide Unselected Mesh Elements",
+            "description": "Hide unselected mesh elements, leaving the selected geometry visible.",
+            "contexts": []
+        },
+        "SELECT_NON_MANIFOLD": {
+            "name": "Select Non Manifold",
+            "operator_id": "mesh.select_non_manifold",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Select Non-Manifold Geometry",
+            "description": "Select non-manifold edges, such as boundary edges and edges shared by an invalid number of faces.",
+            "contexts": []
+        },
+        "SELECT_SHARP_EDGES": {
+            "name": "Select Sharp Edges",
+            "operator_id": "mesh.edges_select_sharp",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Select Sharp Edges",
+            "description": "Select edges whose angle between adjacent faces is considered sharp.",
+            "contexts": []
+        },
+        "CHECKER_DESELECT": {
+            "name": "Checker Deselect",
+            "operator_id": "mesh.select_nth",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Checker Deselect",
+            "description": "Apply checker deselection to the current selection, deselecting alternating elements according to the operator settings.",
+            "contexts": []
+        },
+        "SELECT_SIMILAR": {
+            "name": "Select Similar",
+            "operator_id": "mesh.select_similar",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Select Similar Elements",
+            "description": "Select mesh elements similar to the active selection, using Blender’s similarity criteria.",
+            "contexts": []
+        },
+        "SELECT_LINKED": {
+            "name": "Select Linked",
+            "operator_id": "mesh.select_linked_pick",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Select Linked Geometry Under Cursor",
+            "description": "Select connected geometry under the mouse cursor, expanding to its linked component.",
+            "contexts": []
+        },
+        "EDGE_DELETE": {
+            "name": "Edge Delete",
+            "operator_id": "mesh.delete",
+            "invoke": true,
+            "properties": {
+                "type": "EDGE"
+            },
+            "search_name": "Delete Edges",
+            "description": "Delete selected edges and the geometry connected to those edges according to Blender’s Edge delete operation.",
+            "contexts": []
+        },
+        "FACE_DELETE": {
+            "name": "Face Delete",
+            "operator_id": "mesh.delete",
+            "invoke": true,
+            "properties": {
+                "type": "FACE"
+            },
+            "search_name": "Delete Faces",
+            "description": "Delete selected faces. Boundary edges and vertices may remain, depending on surrounding topology.",
+            "contexts": []
+        },
+        "ONLY_FACE": {
+            "name": "Only Face",
+            "operator_id": "mesh.delete",
+            "invoke": true,
+            "properties": {
+                "type": "ONLY_FACE"
+            },
+            "search_name": "Delete Faces Only (Keep Edges)",
+            "description": "Delete selected faces only, preserving their surrounding edges and vertices.",
+            "contexts": []
+        },
+        "FACE_DISSOLVE": {
+            "name": "Face Dissolve",
+            "operator_id": "mesh.dissolve_faces",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Dissolve Faces",
+            "description": "Dissolve selected faces while preserving surrounding geometry where possible, removing the face boundaries.",
+            "contexts": []
+        },
+        "EDGE_DISSOLVE": {
+            "name": "Edge Dissolve",
+            "operator_id": "mesh.dissolve_edges",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Dissolve Edges",
+            "description": "Dissolve selected edges and merge adjacent faces where possible, preserving the surrounding surface.",
+            "contexts": []
+        },
+        "VERTICES_DISSOLVE": {
+            "name": "Vertices Dissolve",
+            "operator_id": "mesh.dissolve_verts",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Dissolve Vertices",
+            "description": "Dissolve selected vertices and their connected edges while preserving surrounding faces where possible.",
+            "contexts": []
+        },
+        "EDGE_AND_FACE": {
+            "name": "Edge & Face",
+            "operator_id": "mesh.delete",
+            "invoke": true,
+            "properties": {
+                "type": "EDGE_FACE"
+            },
+            "search_name": "Delete Edges and Faces",
+            "description": "Delete selected edges and faces together.",
+            "contexts": []
+        },
+        "VERTICES_DELETE": {
+            "name": "Vertices Delete",
+            "operator_id": "mesh.delete",
+            "invoke": true,
+            "properties": {
+                "type": "VERT"
+            },
+            "search_name": "Delete Vertices",
+            "description": "Delete selected vertices and the edges and faces connected to them.",
+            "contexts": []
+        },
+        "SEPARATE_SELECTION": {
+            "name": "Separate Selection",
+            "operator_id": "mesh.separate",
+            "invoke": true,
+            "properties": {
+                "type": "SELECTED"
+            },
+            "search_name": "Separate Selected Geometry",
+            "description": "Separate the selected geometry into a new object.",
+            "contexts": []
+        },
+        "SEPARATE_LOOSE_GEOMETRY": {
+            "name": "Separate Loose Geometry",
+            "operator_id": "mesh.separate",
+            "invoke": true,
+            "properties": {
+                "type": "LOOSE"
+            },
+            "search_name": "Separate Loose Parts",
+            "description": "Split disconnected loose parts into separate objects.",
+            "contexts": []
+        },
+        "SEPARATE_BY_MATERIAL": {
+            "name": "Separate By Material",
+            "operator_id": "mesh.separate",
+            "invoke": true,
+            "properties": {
+                "type": "MATERIAL"
+            },
+            "search_name": "Separate by Material",
+            "description": "Separate mesh geometry into objects according to its assigned material slots.",
+            "contexts": []
+        },
+        "MERGE_BY_DISTANCE": {
+            "name": "Merge By Distance",
+            "operator_id": "mesh.remove_doubles",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Merge Vertices by Distance",
+            "description": "Merge vertices that are closer than the configured distance, removing duplicate or overlapping vertices.",
+            "contexts": []
+        },
+        "AT_CENTER": {
+            "name": "At Center",
+            "operator_id": "mesh.merge",
+            "invoke": true,
+            "properties": {
+                "type": "CENTER"
+            },
+            "search_name": "Merge to Center",
+            "description": "Merge selected vertices at the center of their combined positions.",
+            "contexts": []
+        },
+        "AT_FIRST": {
+            "name": "At First",
+            "operator_id": "mesh.merge",
+            "invoke": true,
+            "properties": {
+                "type": "FIRST"
+            },
+            "search_name": "Merge at First Selected",
+            "description": "Merge selected vertices at the position of the first selected vertex.",
+            "contexts": []
+        },
+        "AT_CURSOR": {
+            "name": "At Cursor",
+            "operator_id": "mesh.merge",
+            "invoke": true,
+            "properties": {
+                "type": "CURSOR"
+            },
+            "search_name": "Merge at 3D Cursor",
+            "description": "Merge selected vertices at the 3D Cursor position.",
+            "contexts": []
+        },
+        "AT_LAST": {
+            "name": "At Last",
+            "operator_id": "mesh.merge",
+            "invoke": true,
+            "properties": {
+                "type": "LAST"
+            },
+            "search_name": "Merge at Last Selected",
+            "description": "Merge selected vertices at the position of the last selected vertex.",
+            "contexts": []
+        },
+        "RIP_VERTICES": {
+            "name": "Rip Vertices",
+            "operator_id": "mesh.rip_move",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Rip Vertices",
+            "description": "Rip selected vertices away from connected geometry, creating an opening in the mesh.",
+            "contexts": []
+        },
+        "VERTEX_SLIDE": {
+            "name": "Vertex Slide",
+            "operator_id": "transform.vert_slide",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Slide Vertices Along Connected Edges",
+            "description": "Slide selected vertices along their connected edges without freely moving them through space.",
+            "contexts": []
+        },
+        "EXTRUDE_VERTICES": {
+            "name": "Extrude Vertices",
+            "operator_id": "mesh.extrude_vertices_move",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Extrude Vertices",
+            "description": "Extrude selected vertices to create new vertices and connecting edges.",
+            "contexts": []
+        },
+        "MERGE_AT_CENTER": {
+            "name": "Merge At Center",
+            "operator_id": "mesh.merge",
+            "invoke": true,
+            "properties": {
+                "type": "CENTER"
+            },
+            "search_name": "Merge to Center",
+            "description": "Merge selected vertices at the center of their combined positions.",
+            "contexts": []
+        },
+        "FILL_FACE": {
+            "name": "Fill Face",
+            "operator_id": "mesh.edge_face_add",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Create Face from Selected Boundary",
+            "description": "Create a face from the selected boundary edges or vertices.",
+            "contexts": []
+        },
+        "KNIFE_TOOL": {
+            "name": "Knife Tool",
+            "operator_id": "mesh.knife_tool",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Cut Mesh with Knife",
+            "description": "Activate the Knife tool for drawing cuts directly across the mesh.",
+            "contexts": []
+        },
+        "JOIN_VERTICES": {
+            "name": "Join Vertices",
+            "operator_id": "mesh.vert_connect_path",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Connect Vertices with an Edge Path",
+            "description": "Connect selected vertices with an edge path.",
+            "contexts": []
+        },
+        "VERTEX_BEVEL": {
+            "name": "Vertex Bevel",
+            "operator_id": "mesh.bevel",
+            "invoke": true,
+            "properties": {
+                "affect": "VERTICES"
+            },
+            "search_name": "Bevel Selected Vertices",
+            "description": "Bevel selected vertices, cutting back corners and creating additional geometry around each vertex.",
+            "contexts": []
+        },
+        "LOOP_CUT_SLIDE": {
+            "name": "Loop Cut Slide",
+            "operator_id": "mesh.loopcut_slide",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Insert and Slide Edge Loop",
+            "description": "Insert an edge loop and immediately slide it to position the new loop.",
+            "contexts": []
+        },
+        "LOOP_CUT": {
+            "name": "Loop Cut",
+            "operator_id": "mesh.loopcut",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Insert Edge Loop",
+            "description": "Insert an edge loop through connected quad faces.",
+            "contexts": []
+        },
+        "EDGE_BEVEL": {
+            "name": "Edge Bevel",
+            "operator_id": "mesh.bevel",
+            "invoke": true,
+            "properties": {
+                "offset": 0.5,
+                "affect": "EDGES",
+                "segments": 1,
+                "profile": 0.5
+            },
+            "search_name": "Bevel Edges (1 Segment)",
+            "description": "Bevel selected edges with the preset of one segment and a rounded profile.",
+            "contexts": []
+        },
+        "FLAT_BEVEL": {
+            "name": "Flat Bevel",
+            "operator_id": "mesh.bevel",
+            "invoke": true,
+            "properties": {
+                "offset": 0.5,
+                "affect": "EDGES",
+                "segments": 2,
+                "profile": 1.0
+            },
+            "search_name": "Flat Bevel (2 Segments)",
+            "description": "Bevel selected edges with two segments and a flat profile.",
+            "contexts": []
+        },
+        "EXTRUDE_EDGES": {
+            "name": "Extrude Edges",
+            "operator_id": "mesh.extrude_edges_move",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Extrude Edges",
+            "description": "Extrude selected edges to create new edges and connecting faces where possible.",
+            "contexts": []
+        },
+        "EDGE_SLIDE": {
+            "name": "Edge Slide",
+            "operator_id": "transform.edge_slide",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Slide Edges Along Adjacent Faces",
+            "description": "Slide selected edges along their adjacent faces while maintaining connectivity.",
+            "contexts": []
+        },
+        "BRIDGE_EDGELOOPS": {
+            "name": "Bridge EdgeLoops",
+            "operator_id": "mesh.bridge_edge_loops",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Bridge Edge Loops",
+            "description": "Create faces between two selected edge loops, connecting their boundaries.",
+            "contexts": []
+        },
+        "MARK_SHARP": {
+            "name": "Mark Sharp",
+            "operator_id": "mesh.mark_sharp",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Mark Edges Sharp",
+            "description": "Mark selected edges as sharp for split-normal and shading control.",
+            "contexts": []
+        },
+        "CLEAR_SHARP": {
+            "name": "Clear Sharp",
+            "operator_id": "mesh.mark_sharp",
+            "invoke": true,
+            "properties": {
+                "clear": true
+            },
+            "search_name": "Clear Sharp Marking",
+            "description": "Remove the sharp mark from selected edges.",
+            "contexts": []
+        },
+        "MARK_SEAM": {
+            "name": "Mark Seam",
+            "operator_id": "mesh.mark_seam",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Mark UV Seams",
+            "description": "Mark selected edges as UV seams for later UV unwrapping.",
+            "contexts": []
+        },
+        "CLEAR_SEAM": {
+            "name": "Clear Seam",
+            "operator_id": "mesh.mark_seam",
+            "invoke": true,
+            "properties": {
+                "clear": true
+            },
+            "search_name": "Clear UV Seams",
+            "description": "Remove UV seam marks from selected edges.",
+            "contexts": []
+        },
+        "EDGE_BEVEL_WEIGHT": {
+            "name": "Edge Bevel Weight",
+            "operator_id": "transform.edge_bevelweight",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Set Edge Bevel Weight",
+            "description": "Open the bevel-weight transform for selected edges so their bevel influence can be adjusted.",
+            "contexts": []
+        },
+        "CLEAR_BEVEL_WEIGHT": {
+            "name": "Clear Bevel Weight",
+            "operator_id": "transform.edge_bevelweight",
+            "invoke": false,
+            "properties": {
+                "value": -1
+            },
+            "search_name": "Clear Edge Bevel Weight",
+            "description": "Set the bevel weight of selected edges to zero.",
+            "contexts": []
+        },
+        "EDGE_CREASE": {
+            "name": "Edge Crease",
+            "operator_id": "cop.ccrease",
+            "invoke": true,
+            "properties": {
+                "factor": 0.0
+            },
+            "search_name": "Set Edge Crease",
+            "description": "Open the edge-crease adjustment popup for selected edges. The initial factor is zero; adjust it in the popup.",
+            "contexts": []
+        },
+        "CLEAR_EDGE_CREASE": {
+            "name": "Clear Edge Crease",
+            "operator_id": "transform.edge_crease",
+            "invoke": false,
+            "properties": {
+                "value": -1
+            },
+            "search_name": "Clear Edge Crease",
+            "description": "Set the crease value of selected edges to zero.",
+            "contexts": []
+        },
+        "POKE": {
+            "name": "Poke",
+            "operator_id": "mesh.poke",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Poke Faces (Create Center Vertices)",
+            "description": "Poke selected faces by adding a vertex at each face center and connecting it to the face boundary.",
+            "contexts": []
+        },
+        "EXTRUDE_FACES": {
+            "name": "Extrude Faces",
+            "operator_id": "mesh.extrude_region_move",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Extrude Faces",
+            "description": "Extrude selected faces, creating new surface geometry connected to the original boundary.",
+            "contexts": []
+        },
+        "INSET": {
+            "name": "Inset",
+            "operator_id": "mesh.inset",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Inset Faces",
+            "description": "Inset selected faces by creating an inner boundary and a surrounding border.",
+            "contexts": []
+        },
+        "SHADE_FACE_SMOOTH": {
+            "name": "Shade Face Smooth",
+            "operator_id": "mesh.faces_shade_smooth",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Shade Faces Smooth",
+            "description": "Set selected faces to smooth shading.",
+            "contexts": []
+        },
+        "SHADE_FACE_FLAT": {
+            "name": "Shade Face Flat",
+            "operator_id": "mesh.faces_shade_flat",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Shade Faces Flat",
+            "description": "Set selected faces to flat shading.",
+            "contexts": []
+        },
+        "GRID_FILL": {
+            "name": "Grid Fill",
+            "operator_id": "mesh.fill_grid",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Fill Boundary with Quad Grid",
+            "description": "Fill a boundary loop with a grid of quad faces.",
+            "contexts": []
+        },
+        "EXTRUDE_ALONG_NORMALS": {
+            "name": "Extrude Along Normals",
+            "operator_id": "mesh.extrude_region_shrink_fatten",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Extrude Faces Along Their Normals",
+            "description": "Extrude selected faces along their individual face normals.",
+            "contexts": []
+        },
+        "FOLLOW_ACTIVE_QUADS": {
+            "name": "Follow Active Quads",
+            "operator_id": "uv.follow_active_quads",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Follow Active Quads UV Unwrap",
+            "description": "Unwrap selected quad faces by following the shape and UV orientation of the active quad.",
+            "contexts": []
+        },
+        "UV_RESET": {
+            "name": "UV Reset",
+            "operator_id": "uv.reset",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Reset UV Coordinates",
+            "description": "Reset UV coordinates for the selected faces using the mesh’s reset projection.",
+            "contexts": []
+        },
+        "SMART_PROJECT": {
+            "name": "Smart Project",
+            "operator_id": "uv.smart_project",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Smart UV Project",
+            "description": "Generate UV islands automatically using angle-based projection and island packing.",
+            "contexts": []
+        },
+        "UNWRAP_CONFORMAL": {
+            "name": "Unwrap Conformal",
+            "operator_id": "uv.unwrap",
+            "invoke": true,
+            "properties": {
+                "method": "CONFORMAL"
+            },
+            "search_name": "UV Unwrap (Conformal)",
+            "description": "Unwrap the selected mesh using Blender’s Conformal method, which prioritizes angular preservation.",
+            "contexts": []
+        },
+        "UNWRAP_MINIMUM_STRETCH": {
+            "name": "Unwrap Minimum Stretch",
+            "operator_id": "uv.unwrap",
+            "invoke": true,
+            "properties": {
+                "method": "MINIMUM_STRETCH"
+            },
+            "search_name": "UV Unwrap (Minimum Stretch)",
+            "description": "Unwrap the selected mesh using the Minimum Stretch method to reduce UV distortion.",
+            "contexts": []
+        },
+        "UNWRAP_ANGLE_BASED": {
+            "name": "Unwrap Angle Based",
+            "operator_id": "uv.unwrap",
+            "invoke": true,
+            "properties": {
+                "method": "ANGLE_BASED"
+            },
+            "search_name": "UV Unwrap (Angle Based)",
+            "description": "Unwrap the selected mesh using the Angle Based method, suited to organic shapes.",
+            "contexts": []
+        },
+        "BOX_SELECT_TOOL": {
+            "name": "Box Select Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.select_box"
+            },
+            "search_name": "Box Select Tool",
+            "description": "Activate the rectangular Box Select tool.",
+            "contexts": []
+        },
+        "LASSO_SELECT_TOOL": {
+            "name": "Lasso Select Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.select_lasso"
+            },
+            "search_name": "Lasso Select Tool",
+            "description": "Activate the freehand Lasso Select tool.",
+            "contexts": []
+        },
+        "CIRCLE_SELECT_TOOL": {
+            "name": "Circle Select Tool",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.select_circle"
+            },
+            "search_name": "Circle Select Tool",
+            "description": "Activate the brush-like Circle Select tool.",
+            "contexts": []
+        },
+        "ORIGIN_TO_GEOMETRY": {
+            "name": "Origin To Geometry",
+            "operator_id": "cop.originset",
+            "invoke": true,
+            "properties": {
+                "OriginToGeo": true
+            },
+            "search_name": "Move Origin to Geometry",
+            "description": "Move the object origin to the center of its geometry while keeping the mesh in place.",
+            "contexts": []
+        },
+        "CURSOR_TO_ORIGIN": {
+            "name": "Cursor To Origin",
+            "operator_id": "view3d.snap_cursor_to_center",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Move 3D Cursor to World Origin",
+            "description": "Move the 3D Cursor to the world origin (0, 0, 0).",
+            "contexts": []
+        },
+        "SELECTED_TO_CURSOR": {
+            "name": "Selected To Cursor",
+            "operator_id": "view3d.snap_selected_to_cursor",
+            "invoke": true,
+            "properties": {
+                "use_offset": true
+            },
+            "search_name": "Move Selection to 3D Cursor",
+            "description": "Move selected mesh geometry to the 3D Cursor, preserving its relative arrangement.",
+            "contexts": []
+        },
+        "GEOMETRY_TO_ORIGIN": {
+            "name": "Geometry To Origin",
+            "operator_id": "cop.originset",
+            "invoke": true,
+            "properties": {
+                "GeoToOrigin": true
+            },
+            "search_name": "Move Geometry to Object Origin",
+            "description": "Move the mesh geometry so that the object origin becomes the center of the geometry.",
+            "contexts": []
+        },
+        "ORIGIN_TO_SELECTED": {
+            "name": "Origin To Selected",
+            "operator_id": "cop.originset",
+            "invoke": true,
+            "properties": {
+                "OriginToSelected": true
+            },
+            "search_name": "Move Origin to Selected Geometry",
+            "description": "Move the object origin to the current selection while keeping the mesh in place.",
+            "contexts": []
+        },
+        "CURSOR_TO_SELECTED": {
+            "name": "Cursor To Selected",
+            "operator_id": "view3d.snap_cursor_to_selected",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Move 3D Cursor to Selection",
+            "description": "Place the 3D Cursor at the center of the current mesh selection.",
+            "contexts": []
+        },
+        "ORIGIN_TO_CURSOR": {
+            "name": "Origin To Cursor",
+            "operator_id": "cop.originset",
+            "invoke": true,
+            "properties": {
+                "OriginToCursor": true
+            },
+            "search_name": "Move Origin to 3D Cursor",
+            "description": "Move the object origin to the 3D Cursor while keeping the mesh in place.",
+            "contexts": []
+        },
+        "INITIALIZE_RETOPO": {
+            "name": "Initialize Retopo",
+            "operator_id": "cop.init_retopo",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Initialize Retopology Setup",
+            "description": "Prepare the active mesh for AllPie retopology: store it as the retopo mesh and enable the retopology viewport overlay and face-project snapping.",
+            "contexts": []
+        },
+        "WELD_TOPOLOGY_BRUSH": {
+            "name": "Weld Topology Brush",
+            "operator_id": "cop.weld_topology",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Weld Retopology Vertices",
+            "description": "Start the interactive retopology weld tool. Drag a retopology vertex toward nearby vertices to weld them together.",
+            "contexts": []
+        },
+        "RELAX_TOPOLOGY_BRUSH": {
+            "name": "Relax Topology Brush",
+            "operator_id": "cop.relax_topology",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Relax Retopology Topology",
+            "description": "Start the interactive retopology relax brush to even out vertex spacing while maintaining the surface shape.",
+            "contexts": []
+        },
+        "STRIPS_TOOL": {
+            "name": "Strips Tool",
+            "operator_id": "cop.add_strips",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Draw Quad Strips on Surface",
+            "description": "Draw a guide stroke on the target surface to generate a snapped strip of quad polygons.",
+            "contexts": []
+        },
+        "STROKES_TOOL": {
+            "name": "Strokes Tool",
+            "operator_id": "cop.add_stroke",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Create Quads from Guide Strokes",
+            "description": "Draw multiple guide strokes to generate quad topology between the guides.",
+            "contexts": []
+        },
+        "DRAW_SHARP": {
+            "name": "DRAW SHARP",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/DRAW SHARP"
+            },
+            "search_name": "Draw Sharp Brush",
+            "description": "Activate the Draw Sharp sculpt brush. It builds or cuts narrow, sharp surface features along the stroke.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "INFLATE": {
+            "name": "INFLATE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/INFLATE/DEFLATE"
+            },
+            "search_name": "Inflate/Deflate Brush",
+            "description": "Activate the Inflate / Deflate sculpt brush. It pushes the surface outward or inward along surface normals.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PINCH": {
+            "name": "PINCH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PINCH/MAGNIFY"
+            },
+            "search_name": "Pinch/Magnify Brush",
+            "description": "Activate the Pinch / Magnify sculpt brush. It pulls surface points toward the stroke center or expands them away from it.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "GRAB": {
+            "name": "GRAB",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB"
+            },
+            "search_name": "Grab Brush",
+            "description": "Activate the Grab sculpt brush for dragging and repositioning a broad region of the surface.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCRAPE": {
+            "name": "SCRAPE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SCRAPE/FILL"
+            },
+            "search_name": "Scrape/Fill Brush",
+            "description": "Activate the Scrape / Fill sculpt brush to flatten protruding areas or fill recessed areas toward a plane.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "CLAY_STRIPS": {
+            "name": "CLAY STRIPS",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/CLAY STRIPS"
+            },
+            "search_name": "Clay Strips Brush",
+            "description": "Activate the Clay Strips sculpt brush to build volume in layered, strip-like strokes.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "DRAW": {
+            "name": "DRAW",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/DRAW"
+            },
+            "search_name": "Draw Brush",
+            "description": "Activate the Draw sculpt brush to add or remove volume along the stroke.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "MASK": {
+            "name": "MASK",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/MASK"
+            },
+            "search_name": "Mask Brush",
+            "description": "Activate the Mask brush to paint a mask that protects parts of the mesh from sculpting.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SNAKE_HOOK": {
+            "name": "SNAKE HOOK",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SNAKE HOOK"
+            },
+            "search_name": "Snake Hook Brush",
+            "description": "Activate the Snake Hook brush to pull and stretch mesh geometry from the stroke start.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "ASSET_SHELF": {
+            "name": "ASSET SHELF",
+            "operator_id": "wm.call_asset_shelf_popover",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_AST_brush_sculpt"
+            },
+            "search_name": "Open Sculpt Brush Asset Shelf",
+            "description": "Open the Sculpt brush Asset Shelf to browse and activate available brush assets.",
+            "contexts": []
+        },
+        "ERASE_MULTIRES_DISPLACEMENT": {
+            "name": "ERASE MULTIRES DISPLACEMENT",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/ERASE MULTIRES DISPLACEMENT"
+            },
+            "search_name": "Erase Multires Displacement Brush",
+            "description": "Activate the Erase Multires Displacement brush to erase sculpt displacement on a Multiresolution mesh.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "RELAX_SLIDE": {
+            "name": "RELAX SLIDE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/RELAX SLIDE"
+            },
+            "search_name": "Relax Slide Brush",
+            "description": "Activate the Relax Slide brush to even out local vertex spacing while relaxing the surface.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "FACE_SET_PAINT": {
+            "name": "FACE SET PAINT",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/FACE SET PAINT"
+            },
+            "search_name": "Face Set Paint Brush",
+            "description": "Activate the Face Set Paint brush to paint and assign Face Set regions.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "TRIM": {
+            "name": "TRIM",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/TRIM"
+            },
+            "search_name": "Trim Brush",
+            "description": "Activate the Trim brush for trimming mesh regions using a brush stroke.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "CLAY": {
+            "name": "CLAY",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/CLAY"
+            },
+            "search_name": "Clay Brush",
+            "description": "Activate the Clay sculpt brush to build up volume with broad clay-like strokes.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "CREASE_SHARP": {
+            "name": "CREASE SHARP",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/CREASE SHARP"
+            },
+            "search_name": "Crease Sharp Brush",
+            "description": "Activate the Crease Sharp brush to carve narrow creases and create sharp ridges.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "AIRBRUSH": {
+            "name": "Airbrush",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/AIRBRUSH"
+            },
+            "search_name": "Airbrush Brush",
+            "description": "Activate the Airbrush preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_SQUARE": {
+            "name": "Paint Square",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT SQUARE"
+            },
+            "search_name": "Paint Square Brush",
+            "description": "Activate the Paint Square preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_SOFT": {
+            "name": "Paint Soft",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT SOFT"
+            },
+            "search_name": "Paint Soft Brush",
+            "description": "Activate the Paint Soft preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_HARD": {
+            "name": "Paint Hard",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT HARD"
+            },
+            "search_name": "Paint Hard Brush",
+            "description": "Activate the Paint Hard preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_BLEND": {
+            "name": "Paint Blend",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT BLEND"
+            },
+            "search_name": "Paint Blend Brush",
+            "description": "Activate the Paint Blend preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_SOFT_PRESSURE": {
+            "name": "Paint Soft Pressure",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT SOFT PRESSURE"
+            },
+            "search_name": "Paint Soft Pressure Brush",
+            "description": "Activate the Paint Soft Pressure preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "PAINT_HARD_PRESSURE": {
+            "name": "Paint Hard Pressure",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PAINT HARD PRESSURE"
+            },
+            "search_name": "Paint Hard Pressure Brush",
+            "description": "Activate the Paint Hard Pressure preset from Blender’s sculpt brush assets.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "BRUSH_STROKE_MENU": {
+            "name": "Brush Stroke Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_tools_brush_stroke"
+            },
+            "search_name": "Open Brush Stroke Settings",
+            "description": "Open brush stroke settings, including stroke method, spacing, jitter and related behavior.",
+            "contexts": []
+        },
+        "BRUSH_SETTING_MENU": {
+            "name": "Brush Setting Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_tools_brush_settings_advanced"
+            },
+            "search_name": "Open Advanced Brush Settings",
+            "description": "Open advanced brush settings for the active sculpt brush.",
+            "contexts": []
+        },
+        "BRUSH_TEXTURE_MENU": {
+            "name": "Brush Texture Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_tools_brush_texture"
+            },
+            "search_name": "Open Brush Texture Settings",
+            "description": "Open texture settings for the active sculpt brush.",
+            "contexts": []
+        },
+        "AUTOMASKING_CAVITY": {
+            "name": "AutoMasking Cavity",
+            "operator_id": "cop.toggle_auto_masking",
+            "invoke": true,
+            "properties": {
+                "ToggleAutoMaskingCavity": true
+            },
+            "search_name": "Toggle Cavity Auto-Masking",
+            "description": "Toggle sculpt auto-masking based on surface cavities. The brush is restricted by cavity areas when enabled.",
+            "contexts": []
+        },
+        "AUTOMASKING_CAVITY_INVERTED": {
+            "name": "AutoMasking Cavity Inverted",
+            "operator_id": "cop.toggle_auto_masking",
+            "invoke": true,
+            "properties": {
+                "ToggleAutoMaskingCavityInverted": true
+            },
+            "search_name": "Toggle Inverted Cavity Auto-Masking",
+            "description": "Toggle inverted cavity auto-masking, applying the cavity mask to the inverse of the cavity regions.",
+            "contexts": []
+        },
+        "AUTOMASKING_FACESET": {
+            "name": "AutoMasking Faceset",
+            "operator_id": "cop.toggle_auto_masking",
+            "invoke": true,
+            "properties": {
+                "ToggleAutoMaskingFaceSet": true
+            },
+            "search_name": "Toggle Face Set Auto-Masking",
+            "description": "Toggle auto-masking by Face Sets so sculpting is constrained by Face Set boundaries.",
+            "contexts": []
+        },
+        "AUTOMASKING_TOPOLOGY": {
+            "name": "AutoMasking Topology",
+            "operator_id": "cop.toggle_auto_masking",
+            "invoke": true,
+            "properties": {
+                "ToggleAutoMaskingTopology": true
+            },
+            "search_name": "Toggle Topology Auto-Masking",
+            "description": "Toggle topology auto-masking so the brush respects connected mesh topology.",
+            "contexts": []
+        },
+        "TOGGLE_STABILIZE_STROKE": {
+            "name": "Toggle Stabilize Stroke",
+            "operator_id": "cop.toggle_auto_masking",
+            "invoke": true,
+            "properties": {
+                "ToggleStabalizeStrokeOnActiveBrush": true
+            },
+            "search_name": "Toggle Stroke Stabilization",
+            "description": "Toggle stabilized strokes on the active sculpt brush to smooth mouse or tablet movement.",
+            "contexts": []
+        },
+        "SET_VOXEL_SIZE": {
+            "name": "Set Voxel Size",
+            "operator_id": "object.voxel_size_edit",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Adjust Voxel Remesh Size",
+            "description": "Open Blender’s Voxel Size control for adjusting the voxel resolution used by Voxel Remesh.",
+            "contexts": []
+        },
+        "REMESH_MENU": {
+            "name": "Remesh Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_sculpt_voxel_remesh"
+            },
+            "search_name": "Open Voxel Remesh Settings",
+            "description": "Open the Sculpt Voxel Remesh settings panel.",
+            "contexts": []
+        },
+        "QUADRIFLOW_REMESH": {
+            "name": "Quadriflow Remesh",
+            "operator_id": "cop.customquadriflow",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Run QuadriFlow Quad Remesh",
+            "description": "Open AllPie’s custom QuadriFlow remesh operator to generate quad-based topology from the current mesh.",
+            "contexts": []
+        },
+        "INCREASE_VOXELSIZE_25": {
+            "name": "Increase VoxelSize 25%",
+            "operator_id": "cop.cremesh",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseVoxelSize25"
+            },
+            "search_name": "Increase Voxel Size by 25%",
+            "description": "Increase the active mesh’s voxel size by 25%, producing a coarser voxel remesh.",
+            "contexts": []
+        },
+        "INCREASE_VOXELSIZE_10": {
+            "name": "Increase VoxelSize 10%",
+            "operator_id": "cop.cremesh",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseVoxelSize10"
+            },
+            "search_name": "Increase Voxel Size by 10%",
+            "description": "Increase the active mesh’s voxel size by 10%, producing a slightly coarser voxel remesh.",
+            "contexts": []
+        },
+        "REMESH": {
+            "name": "REMESH",
+            "operator_id": "object.voxel_remesh",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Run Voxel Remesh",
+            "description": "Run Voxel Remesh on the active mesh using its current voxel size and remesh settings.",
+            "contexts": []
+        },
+        "DECREASE_VOXELSIZE_25": {
+            "name": "Decrease VoxelSize 25%",
+            "operator_id": "cop.cremesh",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseVoxelSize25"
+            },
+            "search_name": "Decrease Voxel Size by 25%",
+            "description": "Decrease the active mesh’s voxel size by 25%, producing a finer voxel remesh.",
+            "contexts": []
+        },
+        "DECREASE_VOXELSIZE_10": {
+            "name": "Decrease VoxelSize 10%",
+            "operator_id": "cop.cremesh",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseVoxelSize10"
+            },
+            "search_name": "Decrease Voxel Size by 10%",
+            "description": "Decrease the active mesh’s voxel size by 10%, producing a slightly finer voxel remesh.",
+            "contexts": []
+        },
+        "SYMMETRY_MENU": {
+            "name": "Symmetry Menu",
+            "operator_id": "wm.call_panel",
+            "invoke": true,
+            "properties": {
+                "name": "VIEW3D_PT_sculpt_symmetry_for_topbar"
+            },
+            "search_name": "Open Sculpt Symmetry Settings",
+            "description": "Open Sculpt symmetry settings for axis mirroring and symmetrize direction.",
+            "contexts": []
+        },
+        "SYMMETRIZE": {
+            "name": "Symmetrize ",
+            "operator_id": "sculpt.symmetrize",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Mirror Geometry Across the Symmetry Plane",
+            "description": "Symmetrize the mesh by copying geometry from one side across the configured symmetry plane.",
+            "contexts": []
+        },
+        "Z_SYMMETRY": {
+            "name": "Z Symmetry ",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Toggle_Z"
+            },
+            "search_name": "Toggle Sculpt Symmetry on Z",
+            "description": "Toggle sculpt stroke mirroring across the Z axis.",
+            "contexts": []
+        },
+        "Y_SYMMETRY": {
+            "name": "Y Symmetry ",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Toggle_Y"
+            },
+            "search_name": "Toggle Sculpt Symmetry on Y",
+            "description": "Toggle sculpt stroke mirroring across the Y axis.",
+            "contexts": []
+        },
+        "X_SYMMETRY": {
+            "name": "X Symmetry ",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Toggle_X"
+            },
+            "search_name": "Toggle Sculpt Symmetry on X",
+            "description": "Toggle sculpt stroke mirroring across the X axis.",
+            "contexts": []
+        },
+        "FLIP_X": {
+            "name": "Flip X",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Flip_X"
+            },
+            "search_name": "Flip Symmetrize Direction on X",
+            "description": "Switch the X symmetrize direction between positive-to-negative and negative-to-positive.",
+            "contexts": []
+        },
+        "FLIP_Y": {
+            "name": "Flip Y",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Flip_Y"
+            },
+            "search_name": "Flip Symmetrize Direction on Y",
+            "description": "Switch the Y symmetrize direction between positive-to-negative and negative-to-positive.",
+            "contexts": []
+        },
+        "FLIP_Z": {
+            "name": "Flip Z",
+            "operator_id": "cop.symmetry",
+            "invoke": true,
+            "properties": {
+                "action": "Flip_Z"
+            },
+            "search_name": "Flip Symmetrize Direction on Z",
+            "description": "Switch the Z symmetrize direction between positive-to-negative and negative-to-positive.",
+            "contexts": []
+        },
+        "DELETE_HIGHER": {
+            "name": "Delete Higher",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "DeleteHigher"
+            },
+            "search_name": "Delete Higher Multiresolution Levels",
+            "description": "Delete Multiresolution levels above the current base level.",
+            "contexts": []
+        },
+        "APPLY_TO_BASE": {
+            "name": "Apply To Base ",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "ConformToBase"
+            },
+            "search_name": "Apply Multiresolution Detail to Base Mesh",
+            "description": "Apply the Multiresolution modifier’s sculpted displacement to the base mesh.",
+            "contexts": []
+        },
+        "INCREASE_SCULPT_LEVEL": {
+            "name": "Increase Sculpt Level ",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseSculptLevel"
+            },
+            "search_name": "Increase Multiresolution Sculpt Level",
+            "description": "Increase the Multiresolution modifier’s sculpt level by one, up to the highest available level.",
+            "contexts": []
+        },
+        "INCREASE_VEIWPORT_LEVEL": {
+            "name": "Increase Veiwport Level ",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "IncreaseViewportLevel"
+            },
+            "search_name": "Increase Multiresolution Viewport Level",
+            "description": "Increase the Multiresolution modifier’s viewport display level by one.",
+            "contexts": []
+        },
+        "SUBDIVIDE": {
+            "name": "Subdivide",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "MultiresSubdivide"
+            },
+            "search_name": "Subdivide Multiresolution Mesh",
+            "description": "Subdivide the Multiresolution modifier once, adding another detail level.",
+            "contexts": []
+        },
+        "DECREASE_SCULPT_LEVEL": {
+            "name": "Decrease Sculpt Level",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseSculptLevel"
+            },
+            "search_name": "Decrease Multiresolution Sculpt Level",
+            "description": "Decrease the Multiresolution modifier’s sculpt level by one.",
+            "contexts": []
+        },
+        "DECREASE_VIEWPORT_LEVEL": {
+            "name": "Decrease Viewport Level",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "DecreaseViewportLevel"
+            },
+            "search_name": "Decrease Multiresolution Viewport Level",
+            "description": "Decrease the Multiresolution modifier’s viewport display level by one.",
+            "contexts": []
+        },
+        "SET_RENDER_LEVEL": {
+            "name": "Set Render Level",
+            "operator_id": "cop.cmultirespie",
+            "invoke": true,
+            "properties": {
+                "action": "SculptLevelToRender"
+            },
+            "search_name": "Set Render Level to Sculpt Level",
+            "description": "Set the Multiresolution render level to match the current sculpt level.",
+            "contexts": []
+        },
+        "RESET_PIVOT": {
+            "name": "Reset Pivot",
+            "operator_id": "sculpt.set_pivot_position",
+            "invoke": false,
+            "properties": {
+                "mode": "ORIGIN"
+            },
+            "search_name": "Reset Sculpt Pivot to Object Origin",
+            "description": "Set the sculpt pivot position back to the object origin.",
+            "contexts": []
+        },
+        "COLOR_PICKER": {
+            "name": "Color Picker",
+            "operator_id": "cop.color_selector_popup",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Open Sculpt Brush Color Picker",
+            "description": "Open AllPie’s sculpt brush color popup for primary/secondary color selection and palette access.",
+            "contexts": []
+        },
+        "MASK_LASSO": {
+            "name": "Mask Lasso",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.lasso_mask"
+            },
+            "search_name": "Lasso Mask Tool",
+            "description": "Activate the Lasso Mask tool for painting a freehand mask region.",
+            "contexts": []
+        },
+        "MASK_LINE": {
+            "name": "Mask Line",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.line_mask"
+            },
+            "search_name": "Line Mask Tool",
+            "description": "Activate the Line Mask tool for drawing a straight mask stroke.",
+            "contexts": []
+        },
+        "SET_PIVOT": {
+            "name": "Set Pivot",
+            "operator_id": "sculpt.set_pivot_position",
+            "invoke": true,
+            "properties": {
+                "mode": "SURFACE"
+            },
+            "search_name": "Set Sculpt Pivot to Surface",
+            "description": "Set the sculpt pivot position to the surface under the cursor.",
+            "contexts": []
+        },
+        "GROW_VISIBILITY": {
+            "name": "Grow Visibility",
+            "operator_id": "paint.visibility_filter",
+            "invoke": true,
+            "properties": {
+                "action": "GROW"
+            },
+            "search_name": "Expand Visible Mesh Region",
+            "description": "Expand the visible mesh region by one visibility step, revealing adjacent hidden geometry.",
+            "contexts": []
+        },
+        "SHRINK_VISIBILITY": {
+            "name": "Shrink Visibility",
+            "operator_id": "paint.visibility_filter",
+            "invoke": true,
+            "properties": {
+                "action": "SHRINK"
+            },
+            "search_name": "Shrink Visible Mesh Region",
+            "description": "Shrink the visible mesh region by one visibility step, hiding boundary geometry.",
+            "contexts": []
+        },
+        "HIDE_LASSO": {
+            "name": "Hide Lasso",
+            "operator_id": "wm.tool_set_by_id",
+            "invoke": true,
+            "properties": {
+                "name": "builtin.lasso_hide"
+            },
+            "search_name": "Lasso Hide Tool",
+            "description": "Activate the Lasso Hide tool for hiding a freehand region of the mesh.",
+            "contexts": []
+        },
+        "HIDE_MASKED": {
+            "name": "Hide Masked",
+            "operator_id": "paint.hide_show_masked",
+            "invoke": true,
+            "properties": {
+                "action": "HIDE"
+            },
+            "search_name": "Hide Masked Mesh Region",
+            "description": "Hide mesh geometry covered by the current sculpt mask.",
+            "contexts": []
+        },
+        "SOLO_FACESET": {
+            "name": "Solo Faceset",
+            "operator_id": "sculpt.face_set_change_visibility",
+            "invoke": true,
+            "properties": {
+                "mode": "TOGGLE"
+            },
+            "search_name": "Toggle Isolation of Active Face Set",
+            "description": "Toggle isolation of the active Face Set, hiding or revealing other Face Sets.",
+            "contexts": []
+        },
+        "INVERT_VISIBLE": {
+            "name": "Invert Visible",
+            "operator_id": "paint.visibility_invert",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Invert Mesh Visibility",
+            "description": "Invert mesh visibility: hidden geometry becomes visible and visible geometry becomes hidden.",
+            "contexts": []
+        },
+        "UNHIDE_ALL_84FA0F": {
+            "name": "Unhide All",
+            "operator_id": "paint.hide_show_all",
+            "invoke": true,
+            "properties": {
+                "action": "SHOW"
+            },
+            "search_name": "Reveal Hidden Mesh Geometry",
+            "description": "Reveal all hidden mesh geometry.",
+            "contexts": []
+        },
+        "HIDE_FACESET": {
+            "name": "Hide Faceset",
+            "operator_id": "sculpt.face_set_change_visibility",
+            "invoke": true,
+            "properties": {
+                "mode": "HIDE_ACTIVE"
+            },
+            "search_name": "Hide Active Face Set",
+            "description": "Hide the active Face Set.",
+            "contexts": []
+        },
+        "INVERT_MASK": {
+            "name": "Invert Mask",
+            "operator_id": "paint.mask_flood_fill",
+            "invoke": true,
+            "properties": {
+                "mode": "INVERT"
+            },
+            "search_name": "Invert Sculpt Mask",
+            "description": "Invert the current sculpt mask so masked and unmasked regions are swapped.",
+            "contexts": []
+        },
+        "CLEAR_MASK": {
+            "name": "Clear Mask",
+            "operator_id": "paint.mask_flood_fill",
+            "invoke": true,
+            "properties": {
+                "mode": "VALUE",
+                "value": 0
+            },
+            "search_name": "Clear Sculpt Mask",
+            "description": "Clear the sculpt mask by setting the mask value to zero across the mesh.",
+            "contexts": []
+        },
+        "SHARPEN_MASK": {
+            "name": "Sharpen Mask",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "SHARPEN"
+            },
+            "search_name": "Sharpen Sculpt Mask Edge",
+            "description": "Sharpen the boundary of the current sculpt mask.",
+            "contexts": []
+        },
+        "SMOOTH_MASK": {
+            "name": "Smooth Mask",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "SMOOTH"
+            },
+            "search_name": "Smooth Sculpt Mask",
+            "description": "Smooth the current sculpt mask to soften transitions along its boundary.",
+            "contexts": []
+        },
+        "DECREASE_CONTRAST": {
+            "name": "Decrease Contrast",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "CONTRAST_DECREASE",
+                "auto_iteration_count": false
+            },
+            "search_name": "Decrease Sculpt Mask Contrast",
+            "description": "Decrease contrast in the sculpt mask, making the transition between masked and unmasked areas softer.",
+            "contexts": []
+        },
+        "INCREASE_CONTRAST": {
+            "name": "Increase Contrast",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "CONTRAST_INCREASE",
+                "auto_iteration_count": false
+            },
+            "search_name": "Increase Sculpt Mask Contrast",
+            "description": "Increase contrast in the sculpt mask, making the transition between masked and unmasked areas harder.",
+            "contexts": []
+        },
+        "GROW_MASK": {
+            "name": "Grow Mask",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "GROW"
+            },
+            "search_name": "Expand Sculpt Mask",
+            "description": "Expand the sculpt mask into neighboring vertices.",
+            "contexts": []
+        },
+        "SHRINK_MASK": {
+            "name": "Shrink Mask",
+            "operator_id": "sculpt.mask_filter",
+            "invoke": true,
+            "properties": {
+                "filter_type": "SHRINK"
+            },
+            "search_name": "Shrink Sculpt Mask",
+            "description": "Shrink the sculpt mask away from its boundary.",
+            "contexts": []
+        },
+        "CAVITY_MASK_INVERTED": {
+            "name": "Cavity Mask Inverted",
+            "operator_id": "sculpt.mask_from_cavity",
+            "invoke": true,
+            "properties": {
+                "settings_source": "OPERATOR",
+                "invert": true
+            },
+            "search_name": "Create Inverted Mask from Surface Cavity",
+            "description": "Generate a sculpt mask from surface cavities, with the result inverted.",
+            "contexts": []
+        },
+        "CAVITY_MASK": {
+            "name": "Cavity Mask",
+            "operator_id": "sculpt.mask_from_cavity",
+            "invoke": true,
+            "properties": {
+                "settings_source": "OPERATOR",
+                "invert": false
+            },
+            "search_name": "Create Mask from Surface Cavity",
+            "description": "Generate a sculpt mask from surface cavities using the current cavity settings.",
+            "contexts": []
+        },
+        "FACESET_FROM_MASK": {
+            "name": "Faceset From Mask",
+            "operator_id": "sculpt.face_sets_create",
+            "invoke": true,
+            "properties": {
+                "mode": "MASKED"
+            },
+            "search_name": "Create Face Set from Masked Area",
+            "description": "Create a Face Set from the currently masked region.",
+            "contexts": []
+        },
+        "MASK_FROM_EDIT_MODE": {
+            "name": "Mask From Edit Mode",
+            "operator_id": "mesh.selection_to_mask",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Create Sculpt Mask from Edit-Mode Selection",
+            "description": "Convert the current Edit Mode selection into a sculpt mask.",
+            "contexts": []
+        },
+        "MASK_FROM_FACESET": {
+            "name": "Mask From Faceset",
+            "operator_id": "cop.maskfrom_faceset",
+            "invoke": false,
+            "properties": {},
+            "search_name": "Create Sculpt Mask from Face Set",
+            "description": "Create a sculpt mask from the Face Set visibility/selection workflow, then reveal the mesh.",
+            "contexts": []
+        },
+        "MASK_EXTRACT": {
+            "name": "Mask Extract",
+            "operator_id": "sculpt.paint_mask_extract",
+            "invoke": true,
+            "properties": {},
+            "search_name": "Extract Masked Region into New Geometry",
+            "description": "Extract the masked region from the sculpt mesh, creating separate geometry from the masked area.",
+            "contexts": []
+        },
+        "MASK_SLICE": {
+            "name": "Mask Slice",
+            "operator_id": "sculpt.paint_mask_slice",
+            "invoke": true,
+            "properties": {
+                "new_object": false
+            },
+            "search_name": "Slice Mesh Along Mask (Keep in Same Object)",
+            "description": "Slice the mesh along the sculpt mask without creating a separate new object.",
+            "contexts": []
+        },
+        "MASK_SLICE_NEW_OBJ": {
+            "name": "Mask Slice New Obj",
+            "operator_id": "sculpt.paint_mask_slice",
+            "invoke": true,
+            "properties": {
+                "new_object": true
+            },
+            "search_name": "Slice Mesh Along Mask into a New Object",
+            "description": "Slice the mesh along the sculpt mask and place the sliced result in a new object.",
+            "contexts": []
+        },
+        "SCULPT_BRUSH_BLOB": {
+            "name": "BLOB",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BLOB"
+            },
+            "search_name": "Blob Brush",
+            "description": "Activate the Blob brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_CLAY_THUMB": {
+            "name": "CLAY THUMB",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/CLAY THUMB"
+            },
+            "search_name": "Clay Thumb Brush",
+            "description": "Activate the Clay Thumb brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_CREASE_POLISH": {
+            "name": "CREASE POLISH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/CREASE POLISH"
+            },
+            "search_name": "Crease Polish Brush",
+            "description": "Activate the Crease Polish brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_LAYER": {
+            "name": "LAYER",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/LAYER"
+            },
+            "search_name": "Layer Brush",
+            "description": "Activate the Layer brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_FILL_DEEPEN": {
+            "name": "FILL/DEEPEN",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/FILL/DEEPEN"
+            },
+            "search_name": "Fill/Deepen Brush",
+            "description": "Activate the Fill/Deepen brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_FLATTEN_CONTRAST": {
+            "name": "FLATTEN/CONTRAST",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/FLATTEN/CONTRAST"
+            },
+            "search_name": "Flatten/Contrast Brush",
+            "description": "Activate the Flatten/Contrast brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_PLATEAU": {
+            "name": "PLATEAU",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PLATEAU"
+            },
+            "search_name": "Plateau Brush",
+            "description": "Activate the Plateau brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SCRAPE_MULTIPLANE": {
+            "name": "SCRAPE MULTIPLANE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SCRAPE MULTIPLANE"
+            },
+            "search_name": "Scrape Multiplane Brush",
+            "description": "Activate the Scrape Multiplane brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SMOOTH": {
+            "name": "SMOOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SMOOTH"
+            },
+            "search_name": "Smooth Brush",
+            "description": "Activate the Smooth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_GRAB_2D": {
+            "name": "GRAB 2D",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB 2D"
+            },
+            "search_name": "Grab 2D Brush",
+            "description": "Activate the Grab 2D brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_GRAB_SILHOUETTE": {
+            "name": "GRAB SILHOUETTE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB SILHOUETTE"
+            },
+            "search_name": "Grab Silhouette Brush",
+            "description": "Activate the Grab Silhouette brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_ELASTIC_GRAB": {
+            "name": "ELASTIC GRAB",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/ELASTIC GRAB"
+            },
+            "search_name": "Elastic Grab Brush",
+            "description": "Activate the Elastic Grab brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_ELASTIC_SNAKE_HOOK": {
+            "name": "ELASTIC SNAKE HOOK",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/ELASTIC SNAKE HOOK"
+            },
+            "search_name": "Elastic Snake Hook Brush",
+            "description": "Activate the Elastic Snake Hook brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_THUMB": {
+            "name": "THUMB",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/THUMB"
+            },
+            "search_name": "Thumb Brush",
+            "description": "Activate the Thumb brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_POSE": {
+            "name": "POSE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/POSE"
+            },
+            "search_name": "Pose Brush",
+            "description": "Activate the Pose brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_NUDGE": {
+            "name": "NUDGE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/NUDGE"
+            },
+            "search_name": "Nudge Brush",
+            "description": "Activate the Nudge brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_PULL": {
+            "name": "PULL",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PULL"
+            },
+            "search_name": "Pull Brush",
+            "description": "Activate the Pull brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_TWIST": {
+            "name": "TWIST",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/TWIST"
+            },
+            "search_name": "Twist Brush",
+            "description": "Activate the Twist brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_RELAX_PINCH": {
+            "name": "RELAX PINCH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/RELAX PINCH"
+            },
+            "search_name": "Relax Pinch Brush",
+            "description": "Activate the Relax Pinch brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BOUNDARY": {
+            "name": "BOUNDARY",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BOUNDARY"
+            },
+            "search_name": "Boundary Brush",
+            "description": "Activate the Boundary brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_DENSITY": {
+            "name": "DENSITY",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/DENSITY"
+            },
+            "search_name": "Density Brush",
+            "description": "Activate the Density brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SMEAR_MULTIRES_DISPLACEMENT": {
+            "name": "SMEAR MULTIRES DISPLACEMENT",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SMEAR MULTIRES DISPLACEMENT"
+            },
+            "search_name": "Smear Multires Displacement Brush",
+            "description": "Activate the Smear Multires Displacement brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SCENE_PROJECT": {
+            "name": "SCENE PROJECT",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SCENE PROJECT"
+            },
+            "search_name": "Scene Project Brush",
+            "description": "Activate the Scene Project brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BLEND_HARD": {
+            "name": "BLEND HARD",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BLEND HARD"
+            },
+            "search_name": "Blend Hard Brush",
+            "description": "Activate the Blend Hard brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BLEND_SOFT": {
+            "name": "BLEND SOFT",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BLEND SOFT"
+            },
+            "search_name": "Blend Soft Brush",
+            "description": "Activate the Blend Soft brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BLEND_SQUARE": {
+            "name": "BLEND SQUARE",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BLEND SQUARE"
+            },
+            "search_name": "Blend Square Brush",
+            "description": "Activate the Blend Square brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BLUR": {
+            "name": "BLUR",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BLUR"
+            },
+            "search_name": "Blur Brush",
+            "description": "Activate the Blur brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SHARPEN": {
+            "name": "SHARPEN",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SHARPEN"
+            },
+            "search_name": "Sharpen Brush",
+            "description": "Activate the Sharpen brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_SMEAR": {
+            "name": "SMEAR",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/SMEAR"
+            },
+            "search_name": "Smear Brush",
+            "description": "Activate the Smear brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_DRAG_CLOTH": {
+            "name": "DRAG CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/DRAG CLOTH"
+            },
+            "search_name": "Drag Cloth Brush",
+            "description": "Activate the Drag Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_PUSH_CLOTH": {
+            "name": "PUSH CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PUSH CLOTH"
+            },
+            "search_name": "Push Cloth Brush",
+            "description": "Activate the Push Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_GRAB_CLOTH": {
+            "name": "GRAB CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB CLOTH"
+            },
+            "search_name": "Grab Cloth Brush",
+            "description": "Activate the Grab Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_GRAB_PLANAR_CLOTH": {
+            "name": "GRAB PLANAR CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB PLANAR CLOTH"
+            },
+            "search_name": "Grab Planar Cloth Brush",
+            "description": "Activate the Grab Planar Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_GRAB_RANDOM_CLOTH": {
+            "name": "GRAB RANDOM CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/GRAB RANDOM CLOTH"
+            },
+            "search_name": "Grab Random Cloth Brush",
+            "description": "Activate the Grab Random Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_INFLATE_CLOTH": {
+            "name": "INFLATE CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/INFLATE CLOTH"
+            },
+            "search_name": "Inflate Cloth Brush",
+            "description": "Activate the Inflate Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_EXPAND_CONTRACT_CLOTH": {
+            "name": "EXPAND/CONTRACT CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/EXPAND/CONTRACT CLOTH"
+            },
+            "search_name": "Expand/Contract Cloth Brush",
+            "description": "Activate the Expand/Contract Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_PINCH_POINT_CLOTH": {
+            "name": "PINCH POINT CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PINCH POINT CLOTH"
+            },
+            "search_name": "Pinch Point Cloth Brush",
+            "description": "Activate the Pinch Point Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_PINCH_FOLDS_CLOTH": {
+            "name": "PINCH FOLDS CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/PINCH FOLDS CLOTH"
+            },
+            "search_name": "Pinch Folds Cloth Brush",
+            "description": "Activate the Pinch Folds Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BEND_TWIST_CLOTH": {
+            "name": "BEND/TWIST CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BEND/TWIST CLOTH"
+            },
+            "search_name": "Bend/Twist Cloth Brush",
+            "description": "Activate the Bend/Twist Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_STRETCH_MOVE_CLOTH": {
+            "name": "STRETCH/MOVE CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/STRETCH/MOVE CLOTH"
+            },
+            "search_name": "Stretch/Move Cloth Brush",
+            "description": "Activate the Stretch/Move Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_BEND_BOUNDARY_CLOTH": {
+            "name": "BEND BOUNDARY CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/BEND BOUNDARY CLOTH"
+            },
+            "search_name": "Bend Boundary Cloth Brush",
+            "description": "Activate the Bend Boundary Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        },
+        "SCULPT_BRUSH_TWIST_BOUNDARY_CLOTH": {
+            "name": "TWIST BOUNDARY CLOTH",
+            "operator_id": "brush.asset_activate",
+            "invoke": true,
+            "properties": {
+                "asset_library_type": "ESSENTIALS",
+                "relative_asset_identifier": "brushes/essentials_brushes-mesh_sculpt.blend/Brush/TWIST BOUNDARY CLOTH"
+            },
+            "search_name": "Twist Boundary Cloth Brush",
+            "description": "Activate the Twist Boundary Cloth brush from Blender’s Sculpt Essentials asset library.",
+            "contexts": [
+                "Sculpt"
+            ]
+        }
+    },
+    "ThirdParty": {},
+    "Preferences": {
+        "radial": {
+            "hold_time": 0.125,
+            "deadzone": 25
+        },
+        "colors": {
+            "slot_color": [
+                0.02,
+                0.02,
+                0.02,
+                1.0
+            ],
+            "active_slot_color": [
+                0.14,
+                0.14,
+                0.14,
+                1.0
+            ],
+            "spaced_slot_color": [
+                0.02,
+                0.02,
+                0.02,
+                1.0
+            ],
+            "spaced_active_slot_color": [
+                0.14,
+                0.14,
+                0.14,
+                1.0
+            ],
+            "font_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "active_font_color": [
+                0.45,
+                0.75,
+                0.97,
+                1.0
+            ],
+            "spaced_font_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "spaced_active_font_color": [
+                0.82,
+                0.55,
+                0.33,
+                1.0
+            ],
+            "outline_color": [
+                0.18,
+                0.42,
+                0.7,
+                1.0
+            ],
+            "spaced_outline_color": [
+                0.82,
+                0.55,
+                0.33,
+                1.0
+            ],
+            "mark_color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        }
+    }
+}

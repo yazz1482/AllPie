@@ -2489,11 +2489,16 @@ def register():
     bpy.types.Scene.retopo = PointerProperty(type=RetopoSettings)
 
 def unregister():
+    # The registered PropertyGroup is referenced by Scene.retopo; remove the
+    # pointer first, then unregister dependent classes in reverse order.
+    if hasattr(bpy.types.Scene, "retopo"):
+        del bpy.types.Scene.retopo
 
-    for cls in classes:
-        bpy.utils.unregister_class(cls)
-
-    del bpy.types.Scene.retopo
+    for cls in reversed(classes):
+        try:
+            bpy.utils.unregister_class(cls)
+        except (RuntimeError, ValueError):
+            pass
 
 if __name__ == "__main__":
     register()

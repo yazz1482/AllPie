@@ -6,42 +6,14 @@ import blf
 from gpu_extras.batch import batch_for_shader
 from bpy.props import StringProperty
 from . import Preferences
-from . import CustomOperators
-from . import retopologytools
-from . import EditModePies
-from . import SculptModePies
-from . import ObjectModePies
-from . import TexturePaintPies
-from . import VertexPaintPies
-from . import WeightPaintPies
+from .core import runtime as ConfigRuntime
+from .core.operator_validation import validate_operator_preset
 
-# MENU REGISTRY
-MENUS = {
-    **EditModePies.MENUS,
-    **SculptModePies.MENUS,
-    **ObjectModePies.MENUS,
-    **TexturePaintPies.MENUS,
-    **VertexPaintPies.MENUS,
-    **WeightPaintPies.MENUS,
-}
-
-SPACE_MENUS = {
-    **EditModePies.SPACE_MENUS,
-    **SculptModePies.SPACE_MENUS,
-    **ObjectModePies.SPACE_MENUS,
-    **TexturePaintPies.SPACE_MENUS,
-    **VertexPaintPies.SPACE_MENUS,
-    **WeightPaintPies.SPACE_MENUS,
-}
-
-MENU_NAMES = {
-    **EditModePies.MENU_NAMES,
-    **ObjectModePies.MENU_NAMES,
-    **SculptModePies.MENU_NAMES,
-    **TexturePaintPies.MENU_NAMES,
-    **VertexPaintPies.SPACE_MENUS,
-    **WeightPaintPies.MENU_NAMES,
-}
+# Compatibility views are compiled once from the JSON-backed runtime cache.
+# The modal menu continues to consume the same legacy menu-item structure.
+MENUS = ConfigRuntime.MENUS
+SPACE_MENUS = ConfigRuntime.SPACE_MENUS
+MENU_NAMES = ConfigRuntime.MENU_NAMES
 
 
 # MODAL SETTINGS
@@ -111,10 +83,6 @@ def get_box_rect(self, angle, width, height):
 def set_menu(self, space, x, y):
     self.space = space
 
-    if self.menu_id == "SCULPT.ESSENTIALS_BRUSH":
-        MENUS[self.menu_id] = SculptModePies.ESSENTIALS_BRUSH_MENU
-        SPACE_MENUS[self.menu_id] = SculptModePies.ESSENTIALS_BRUSH_SPACE_MENU
-
     if space and self.menu_id in SPACE_MENUS:
         self.menu = SPACE_MENUS[self.menu_id]
     else:
@@ -128,7 +96,26 @@ def set_menu(self, space, x, y):
     update_active(self, x, y)
 
 
-def execute_slot(index, menu):
+def _report_execution_issue(message, report=None, level="WARNING"):
+    """Send an operator failure to both Blender's UI reports and the console."""
+    text = str(message)
+    print(f"[AllPie {level.title()}] {text}")
+
+    # Operator.report is the native Blender notification path. Since this is
+    # called from ModalRadialMenu.modal(), Blender can display the report in
+    # the UI when the radial operator finishes, while the console message
+    # remains available for debugging.
+    if report is not None:
+        try:
+            report({level}, text)
+        except Exception as report_error:
+            print(
+                "[AllPie Warning] Could not display the UI report: "
+                f"{type(report_error).__name__}: {report_error}"
+            )
+
+
+def execute_slot(index, menu, report=None):
     if menu is None:
         return
 
@@ -136,19 +123,80 @@ def execute_slot(index, menu):
     if item is None:
         return
 
-    operator = item["operator"]
+    operator_id = item.get("operator", "")
     props = item.get("props", {})
     invoke = item.get("invoke", False)
-    module, operator = operator.split(".")
-    op = getattr(getattr(bpy.ops, module), operator)
+    action_label = item.get("label", operator_id or "Unnamed Action")
 
     try:
+        check = validate_operator_preset(operator_id, props, check_poll=True)
+        if check.errors:
+            details = "; ".join(
+                f"{issue.path}: {issue.message}" for issue in check.errors[:4]
+            )
+            if len(check.errors) > 4:
+                details += f"; and {len(check.errors) - 4} more validation error(s)"
+            _report_execution_issue(
+                f"Action '{action_label}' could not run: {details}",
+                report,
+                level="ERROR",
+            )
+            return
+
+        if not check.registered or check.operator is None:
+            details = "; ".join(issue.message for issue in check.warnings[:2]) or "operator is unavailable"
+            _report_execution_issue(
+                f"Could not execute '{operator_id}' ({action_label}): {details}",
+                report,
+            )
+            return
+
+        if check.poll_ok is False:
+            _report_execution_issue(
+                f"Could not execute '{operator_id}' ({action_label}): operator is not "
+                "available in the current mode, selection or editor",
+                report,
+            )
+            return
+
+        for issue in check.warnings:
+            print(f"[AllPie Warning] {issue}")
+
+        call_properties = check.execution_properties
         if invoke:
-            op("INVOKE_DEFAULT", True, **props)
+            result = check.operator("INVOKE_DEFAULT", True, **call_properties)
         else:
-            op(**props)
-    except RuntimeError as error:
-        print(f"[AllPie Warning] {error}")
+            result = check.operator(**call_properties)
+
+        if isinstance(result, set) and "CANCELLED" in result:
+            _report_execution_issue(
+                f"Operator '{operator_id}' ({action_label}) cancelled without completing",
+                report,
+            )
+        elif isinstance(result, set) and not result.intersection({
+            "FINISHED",
+            "RUNNING_MODAL",
+            "INTERFACE",
+            "PASS_THROUGH",
+        }):
+            # Some UI operators (notably wm.call_panel in Blender 5.2) return
+            # INTERFACE when they successfully open their own interface. This
+            # is a valid success result, not an unexpected status. Keep the
+            # normal operator statuses and PASS_THROUGH valid as well.
+            _report_execution_issue(
+                f"Operator '{operator_id}' ({action_label}) returned an unexpected status: {sorted(result)}",
+                report,
+            )
+    except Exception as error:
+        # Imported configurations may reference optional third-party operators
+        # or context-dependent identifiers that no longer exist. Surface the
+        # failure in Blender as well as the console without interrupting the
+        # radial menu's normal modal cleanup path.
+        _report_execution_issue(
+            f"Could not execute '{operator_id}' ({action_label}): "
+            f"{type(error).__name__}: {error}",
+            report,
+        )
 
 
 def update_active(self, x, y):
@@ -381,50 +429,52 @@ def finish(self, context):
     context.area.tag_redraw()
 
 
-def find_keymap_item(pref_id):
-    kc = bpy.context.window_manager.keyconfigs.addon
-    if kc is None:
-        return None, None
+def _remove_all_radial_keymaps(kc):
+    """Remove every AllPie modal keymap item, including stale reload copies.
 
-    for km in kc.keymaps:
-        for kmi in km.keymap_items:
+    Tracking only ``addon_keymaps`` is insufficient after Blender reloads an
+    addon module: the old keymap items can survive while the Python list is
+    recreated. Scan the addon keyconfig itself so changed shortcuts cannot be
+    shadowed by stale duplicate entries.
+    """
+    for km in tuple(kc.keymaps):
+        for kmi in tuple(km.keymap_items):
             if kmi.idname != "view3d.modal_radial_menu":
                 continue
-            if getattr(kmi.properties, "pref_id", None) == pref_id:
-                return km, kmi
+            try:
+                km.keymap_items.remove(kmi)
+            except (ReferenceError, RuntimeError):
+                pass
+    addon_keymaps.clear()
 
-    return None, None
 
-
-def update_keymap(pref_id):
-    prefs = Preferences.get_preferences()
-    if prefs is None:
+def rebuild_keymaps():
+    """Recreate AllPie keymaps after a menu shortcut or context is edited."""
+    kc = bpy.context.window_manager.keyconfigs.addon
+    if kc is None:
         return
 
-    keybind = Preferences.get_keybind_store(prefs, pref_id)
-    if keybind is None:
-        return
+    _remove_all_radial_keymaps(kc)
 
-    km, kmi = find_keymap_item(pref_id)
-    if kmi is None:
-        return
-
-    kmi.active = keybind.enabled
+    keymap_names = dict.fromkeys(
+        definition[1] for definition in Preferences.get_keybind_definitions()
+    )
+    for keymap_name in keymap_names:
+        register_keymaps(kc, keymap_name)
 
 
 def register_keymaps(kc, name):
-    prefs = Preferences.get_preferences()
-    if prefs is None:
-        return
-
-    Preferences.initialize_keybinds(prefs)
-
-    for pref_id, keymap_name, default_key, default_value, menu_id, modifiers in Preferences.get_keybind_definitions():
-        if keymap_name != name:
-            continue
-
-        keybind = Preferences.get_keybind_store(prefs, pref_id)
-        if keybind is None:
+    """Register shortcuts directly from the JSON-backed runtime config."""
+    for (
+        pref_id,
+        keymap_name,
+        default_key,
+        default_value,
+        menu_id,
+        modifiers,
+        default_enabled,
+    ) in Preferences.get_keybind_definitions():
+        if keymap_name != name or default_key == "NONE":
             continue
 
         km = kc.keymaps.get(keymap_name)
@@ -433,13 +483,15 @@ def register_keymaps(kc, name):
 
         kmi = km.keymap_items.new(
             "view3d.modal_radial_menu",
-            keybind.key,
-            "PRESS",
-            shift=keybind.shift,
-            ctrl=keybind.ctrl,
-            alt=keybind.alt,
+            default_key,
+            default_value,
+            shift=bool(modifiers.get("shift", False)),
+            ctrl=bool(modifiers.get("ctrl", False)),
+            alt=bool(modifiers.get("alt", False)),
+            oskey=bool(modifiers.get("oskey", False)),
+            hyper=bool(modifiers.get("hyper", False)),
         )
-        kmi.active = keybind.enabled
+        kmi.active = bool(default_enabled)
         kmi.properties.menu_id = menu_id
         kmi.properties.hotkey = kmi.type
         kmi.properties.pref_id = pref_id
@@ -512,7 +564,7 @@ class ModalRadialMenu(bpy.types.Operator):
             active = self.active
             if active >= 0:
                 finish(self, context)
-                execute_slot(active, self.menu)
+                execute_slot(active, self.menu, report=self.report)
             else:
                 finish(self, context)
             return {"FINISHED"}
@@ -528,31 +580,27 @@ addon_keymaps = []
 
 
 def register():
+    ConfigRuntime.initialize()
     bpy.utils.register_class(ModalRadialMenu)
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
     if kc:
-        register_keymaps(kc, "Mesh")
-        register_keymaps(kc, "Sculpt")
-        register_keymaps(kc, "Object Mode")
-
-        register_keymaps(kc, "Image Paint")
-        register_keymaps(kc, "Vertex Paint")
-        register_keymaps(kc, "Weight Paint")
+        _remove_all_radial_keymaps(kc)
+        keymap_names = dict.fromkeys(
+            definition[1] for definition in Preferences.get_keybind_definitions()
+        )
+        for keymap_name in keymap_names:
+            register_keymaps(kc, keymap_name)
 
 
 def unregister():
-    Preferences.sync_all_keymaps_to_preferences()
-
-    for km, kmi in addon_keymaps:
-        try:
-            km.keymap_items.remove(kmi)
-        except ReferenceError:
-            pass
-
-    addon_keymaps.clear()
+    kc = bpy.context.window_manager.keyconfigs.addon
+    if kc is not None:
+        _remove_all_radial_keymaps(kc)
+    else:
+        addon_keymaps.clear()
     bpy.utils.unregister_class(ModalRadialMenu)
 
 

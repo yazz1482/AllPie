@@ -1,7 +1,6 @@
 import bpy
 import bl_math
 from bpy.types import Operator
-from bpy.props import StringProperty
 from bpy.props import FloatProperty
 from bpy.props import BoolProperty
 from bpy.props import IntProperty
@@ -370,103 +369,6 @@ class AllPie_OT_CustomQuadriFlow(Operator):
         return context.window_manager.invoke_props_dialog(self)
 
 
-ESSENTIALS_BRUSH_ITEMS = [
-    ("BLOB", "Blob", "Blob brush"),
-    ("CLAY", "Clay", "Clay brush"),
-    ("CLAY STRIPS", "Clay Strips", "Clay Strips brush"),
-    ("CLAY THUMB", "Clay Thumb", "Clay Thumb brush"),
-    ("CREASE POLISH", "Crease Polish", "Crease Polish brush"),
-    ("CREASE SHARP", "Crease Sharp", "Crease Sharp brush"),
-    ("DRAW", "Draw", "Draw brush"),
-    ("DRAW SHARP", "Draw Sharp", "Draw Sharp brush"),
-    ("INFLATE/DEFLATE", "Inflate/Deflate", "Inflate/Deflate brush"),
-    ("LAYER", "Layer", "Layer brush"),
-
-    ("FILL/DEEPEN", "Fill/Deepen", "Fill/Deepen brush"),
-    ("FLATTEN/CONTRAST", "Flatten/Contrast", "Flatten/Contrast brush"),
-    ("PLATEAU", "Plateau", "Plateau brush"),
-    ("SCRAPE MULTIPLANE", "Scrape Multiplane", "Scrape Multiplane brush"),
-    ("SCRAPE/FILL", "Scrape/Fill", "Scrape/Fill brush"),
-    ("SMOOTH", "Smooth", "Smooth brush"),
-    ("TRIM", "Trim", "Trim brush"),
-
-    ("PINCH/MAGNIFY", "Pinch/Magnify", "Pinch/Magnify brush"),
-    ("GRAB", "Grab", "Grab brush"),
-    ("GRAB 2D", "Grab 2D", "Grab 2D brush"),
-    ("GRAB SILHOUETTE", "Grab Silhouette", "Grab Silhouette brush"),
-    ("ELASTIC GRAB", "Elastic Grab", "Elastic Grab brush"),
-    ("ELASTIC SNAKE HOOK", "Elastic Snake Hook", "Elastic Snake Hook brush"),
-    ("SNAKE HOOK", "Snake Hook", "Snake Hook brush"),
-    ("THUMB", "Thumb", "Thumb brush"),
-    ("POSE", "Pose", "Pose brush"),
-    ("NUDGE", "Nudge", "Nudge brush"),
-    ("PULL", "Pull", "Pull brush"),
-    ("TWIST", "Twist", "Twist brush"),
-    ("RELAX SLIDE", "Relax Slide", "Relax Slide brush"),
-    ("RELAX PINCH", "Relax Pinch", "Relax Pinch brush"),
-    ("BOUNDARY", "Boundary", "Boundary brush"),
-
-    ("DENSITY", "Density", "Density brush"),
-    ("MASK", "Mask", "Mask brush"),
-    ("FACE SET PAINT", "Face Set Paint", "Face Set Paint brush"),
-    ("ERASE MULTIRES DISPLACEMENT", "Erase Multires Displacement", "Erase Multires Displacement brush"),
-    ("SMEAR MULTIRES DISPLACEMENT", "Smear Multires Displacement", "Smear Multires Displacement brush"),
-    ("SCENE PROJECT", "Scene Project", "Scene Project brush"),
-
-    ("AIRBRUSH", "Airbrush", "Airbrush"),
-    ("BLEND HARD", "Blend Hard", "Blend Hard brush"),
-    ("BLEND SOFT", "Blend Soft", "Blend Soft brush"),
-    ("BLEND SQUARE", "Blend Square", "Blend Square brush"),
-    ("BLUR", "Blur", "Blur brush"),
-    ("PAINT BLEND", "Paint Blend", "Paint Blend brush"),
-    ("PAINT HARD", "Paint Hard", "Paint Hard brush"),
-    ("PAINT HARD PRESSURE", "Paint Hard Pressure", "Paint Hard Pressure brush"),
-    ("PAINT SOFT", "Paint Soft", "Paint Soft brush"),
-    ("PAINT SOFT PRESSURE", "Paint Soft Pressure", "Paint Soft Pressure brush"),
-    ("PAINT SQUARE", "Paint Square", "Paint Square brush"),
-    ("SHARPEN", "Sharpen", "Sharpen brush"),
-    ("SMEAR", "Smear", "Smear brush"),
-
-    ("DRAG CLOTH", "Drag Cloth", "Drag Cloth brush"),
-    ("PUSH CLOTH", "Push Cloth", "Push Cloth brush"),
-    ("GRAB CLOTH", "Grab Cloth", "Grab Cloth brush"),
-    ("GRAB PLANAR CLOTH", "Grab Planar Cloth", "Grab Planar Cloth brush"),
-    ("GRAB RANDOM CLOTH", "Grab Random Cloth", "Grab Random Cloth brush"),
-    ("INFLATE CLOTH", "Inflate Cloth", "Inflate Cloth brush"),
-    ("EXPAND/CONTRACT CLOTH", "Expand/Contract Cloth", "Expand/Contract Cloth brush"),
-    ("PINCH POINT CLOTH", "Pinch Point Cloth", "Pinch Point Cloth brush"),
-    ("PINCH FOLDS CLOTH", "Pinch Folds Cloth", "Pinch Folds Cloth brush"),
-    ("BEND/TWIST CLOTH", "Bend/Twist Cloth", "Bend/Twist Cloth brush"),
-    ("STRETCH/MOVE CLOTH", "Stretch/Move Cloth", "Stretch/Move Cloth brush"),
-    ("BEND BOUNDARY CLOTH", "Bend Boundary Cloth", "Bend Boundary Cloth brush"),
-    ("TWIST BOUNDARY CLOTH", "Twist Boundary Cloth", "Twist Boundary Cloth brush"),
-]
-
-
-class AllPie_OT_Search_SculptBrushes(Operator):
-    bl_idname = "cop.searchsculptbrushes"
-    bl_label = "Search Sculpt Brushes"
-    bl_property = "SearchBrush"
-
-    PrefProperty: StringProperty(default="")
-    SearchBrush: EnumProperty(
-        name="SearchBrush",
-        items=ESSENTIALS_BRUSH_ITEMS,
-    )
-
-    def invoke(self, context, event):
-
-        context.window_manager.invoke_search_popup(self)
-        return {"RUNNING_MODAL"}
-
-    def execute(self, context):
-
-        prefs = context.preferences.addons[__package__].preferences
-        setattr(prefs, self.PrefProperty, self.SearchBrush)
-
-        return {"FINISHED"}
-
-
 class AllPie_OT_ToggleAutoMasking(Operator):
     bl_idname = "cop.toggle_auto_masking"
     bl_label = "ToggleAutoMasking Operator"
@@ -726,7 +628,6 @@ classes = (
     AllPie_OT_MultiRes,
     AllPie_OT_ColorSelectorPopup,
     AllPie_OT_CustomQuadriFlow,
-    AllPie_OT_Search_SculptBrushes,
     AllPie_OT_MaskFromFaceSet,
     AllPie_OT_ToggleAutoMasking,
     AllPie_OT_OriginSet,
@@ -744,8 +645,11 @@ def register():
 
 def unregister():
 
-    for cls in classes:
-        bpy.utils.unregister_class(cls)
+    for cls in reversed(classes):
+        try:
+            bpy.utils.unregister_class(cls)
+        except (RuntimeError, ValueError):
+            pass
 
 if __name__ == "__main__":
     register()
