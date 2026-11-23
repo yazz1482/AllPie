@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-ACTION_CONTEXT_CATALOG_API_VERSION = 6
+ACTION_CONTEXT_CATALOG_API_VERSION = 7
 BRUSH_ASSET_OPERATOR_ID = "brush.asset_activate"
 ASSET_SHELF_OPERATOR_ID = "wm.call_asset_shelf_popover"
 BRUSH_MENU_OPERATOR_IDS = frozenset({
@@ -194,6 +194,7 @@ def iter_menu_records(config: Mapping[str, Any]) -> List[Dict[str, Any]]:
             "menu_id": menu_id,
             "name": menu.get("name", menu_id),
             "key": menu.get("key", ""),
+            "keymodifiers": tuple(menu.get("keymodifiers", ())),
             "keymap": menu.get("keymap", ""),
             "enabled": bool(menu.get("enabled", True)),
             "owner_addon": "",
@@ -206,6 +207,7 @@ def iter_menu_records(config: Mapping[str, Any]) -> List[Dict[str, Any]]:
                 "menu_id": f"{addon_id}:{local_id}",
                 "name": menu.get("name", local_id),
                 "key": menu.get("key", ""),
+            "keymodifiers": tuple(menu.get("keymodifiers", ())),
                 "keymap": menu.get("keymap", ""),
                 "enabled": bool(menu.get("enabled", True) and addon.get("enabled", True)),
                 "owner_addon": addon_name,

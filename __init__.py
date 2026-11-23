@@ -67,11 +67,11 @@ def _refresh_configuration_modules():
 
     if getattr(OperatorValidation, "OPERATOR_VALIDATION_API_VERSION", 0) < 3:
         importlib.reload(OperatorValidation)
-    if getattr(menu_data, "ACTION_CONTEXT_CATALOG_API_VERSION", 0) < 6:
+    if getattr(menu_data, "ACTION_CONTEXT_CATALOG_API_VERSION", 0) < 7:
         importlib.reload(menu_data)
     if getattr(menu_exchange, "MENU_PACKAGE_API_VERSION", 0) < 3:
         importlib.reload(menu_exchange)
-    if getattr(menu_editor, "MENU_EDITOR_API_VERSION", 0) < 17:
+    if getattr(menu_editor, "MENU_EDITOR_API_VERSION", 0) < 18:
         importlib.reload(menu_editor)
     if getattr(operator_data, "OPERATOR_DATA_API_VERSION", 0) < 9:
         importlib.reload(operator_data)

@@ -26,7 +26,7 @@ from ..core import runtime as ConfigRuntime
 from ..core.validation import validate_config
 from . import menu_data, menu_exchange, operator_data
 
-MENU_EDITOR_API_VERSION = 17
+MENU_EDITOR_API_VERSION = 18
 
 _EMPTY_ACTION = "__EMPTY__"
 _ALL_ACTION_ENUM_ITEMS: Tuple[Tuple[str, str, str], ...] = (
@@ -437,6 +437,11 @@ def _ensure_editor_state(prefs: Any) -> None:
             item.menu_id = record["menu_id"]
             item.name = record["name"]
             item.key = record["key"]
+            item.shortcut = (
+                "—"
+                if record["key"] in {"", "NONE"}
+                else _format_shortcut(record["key"], record.get("keymodifiers", ()))
+            )
             item.keymap = record["keymap"]
             item.owner_addon = record["owner_addon"]
             item.enabled = record["enabled"]
@@ -471,6 +476,7 @@ class AllPieMenuListItem(PropertyGroup):
     menu_id: StringProperty()
     name: StringProperty()
     key: StringProperty()
+    shortcut: StringProperty()
     keymap: StringProperty()
     owner_addon: StringProperty()
     enabled: BoolProperty(default=True)
@@ -501,7 +507,7 @@ class ALLPIE_UL_menu_list(UIList):
         flags = []
         needle = self.filter_name.casefold().strip()
         for item in items:
-            searchable = f"{item.name} {item.menu_id} {item.keymap} {item.owner_addon}".casefold()
+            searchable = f"{item.name} {item.menu_id} {item.shortcut} {item.keymap} {item.owner_addon}".casefold()
             flags.append(self.bitflag_filter_item if not needle or needle in searchable else 0)
         return flags, []
 
@@ -515,7 +521,7 @@ class ALLPIE_UL_menu_list(UIList):
         row.prop(item, "export_selected", text="")
         row.label(text="", icon="CHECKMARK" if item.enabled else "DOT")
         row.label(text=item.name or item.menu_id)
-        row.label(text="—" if item.key in {"", "NONE"} else item.key)
+        row.label(text=item.shortcut)
         row.label(text=menu_data.keymap_label(item.keymap) or item.owner_addon)
 
 

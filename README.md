@@ -455,3 +455,9 @@ compiled in-memory registry; it never parses JSON while opening a menu.
 - Keep the original asset path casing when storing and activating brushes.
 - Migrate schema v7 configurations to merge capitalization-only duplicate brush presets and redirect menu slots to the existing presets.
 - Keep Custom asset-library identifiers and paths distinct and case-sensitive.
+
+
+## 1.6.2
+
+- Display complete menu shortcuts, including modifier keys, in the Menus browser list.
+- Include shortcut modifiers in menu-list search and preserve the display across in-place addon updates.
