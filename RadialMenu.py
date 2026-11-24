@@ -1,6 +1,7 @@
 import bpy
 import gpu
 import math
+import time
 import blf
 
 from gpu_extras.batch import batch_for_shader
@@ -48,6 +49,48 @@ FONT_COLOR = (0.45, 0.35, 0.75, 1.0)
 MARK_COLOR = (0.50, 0.50, 0.50, 0.20)
 
 
+def _pointer_id(value):
+    """Return a stable RNA pointer for a window, area or region when available."""
+    if value is None:
+        return None
+    try:
+        return value.as_pointer()
+    except (AttributeError, ReferenceError, RuntimeError):
+        return None
+
+
+def _is_origin_region(self, context):
+    """Ensure the draw callback only renders in the viewport that opened the menu."""
+    return (
+        _pointer_id(getattr(context, "window", None)) == self.origin_window_ptr
+        and _pointer_id(getattr(context, "area", None)) == self.origin_area_ptr
+        and _pointer_id(getattr(context, "region", None)) == self.origin_region_ptr
+    )
+
+
+def _tag_origin_redraw(self):
+    """Redraw only the invoking viewport, tolerating areas closed during a modal session."""
+    for region in (getattr(self, "origin_region", None),):
+        if region is not None:
+            try:
+                region.tag_redraw()
+            except (ReferenceError, RuntimeError):
+                pass
+
+
+def _get_origin_mouse_position(self, event):
+    """Convert window-relative mouse coordinates into the invoking region's space."""
+    region = getattr(self, "origin_region", None)
+    try:
+        region_x = region.x
+        region_y = region.y
+    except (AttributeError, ReferenceError, RuntimeError):
+        region_x = self.origin_region_x
+        region_y = self.origin_region_y
+
+    return event.mouse_x - region_x, event.mouse_y - region_y
+
+
 def cache_colors(self, prefs):
     if prefs is not None:
         self.slot_colors = (tuple(prefs.slot_color), tuple(prefs.spaced_slot_color))
@@ -87,6 +130,7 @@ def set_menu(self, space, x, y):
         self.menu = SPACE_MENUS[self.menu_id]
     else:
         self.menu = MENUS.get(self.menu_id)
+    self.menu = self.menu or []
 
     self.slices = SLICES
     self.active = -1
@@ -115,7 +159,42 @@ def _report_execution_issue(message, report=None, level="WARNING"):
             )
 
 
-def execute_slot(index, menu, report=None):
+def _is_expected_noop_cancelled(operator_id, properties, context):
+    """Return True when a cancelled operator has already reached its target state.
+
+    Blender's mesh.select_mode reports CANCELLED when the requested selection
+    mode is already active and the operator therefore has nothing to change.
+    This is a successful no-op from the user's perspective, not an execution
+    failure worth reporting from the radial menu.
+    """
+    if operator_id != "mesh.select_mode" or context is None:
+        return False
+
+    # Explicit disable/toggle actions have different semantics. Only suppress
+    # the common set/enable case used by AllPie's built-in selection presets.
+    action = properties.get("action")
+    if action not in (None, "ENABLE"):
+        return False
+
+    mode_index = {"VERT": 0, "EDGE": 1, "FACE": 2}.get(properties.get("type"))
+    if mode_index is None:
+        return False
+
+    tool_settings = getattr(context, "tool_settings", None)
+    if tool_settings is None:
+        scene = getattr(context, "scene", None)
+        tool_settings = getattr(scene, "tool_settings", None)
+    if tool_settings is None:
+        return False
+
+    try:
+        selection_modes = tool_settings.mesh_select_mode
+        return bool(selection_modes[mode_index])
+    except (AttributeError, IndexError, ReferenceError, TypeError):
+        return False
+
+
+def execute_slot(index, menu, report=None, context=None):
     if menu is None:
         return
 
@@ -169,10 +248,11 @@ def execute_slot(index, menu, report=None):
             result = check.operator(**call_properties)
 
         if isinstance(result, set) and "CANCELLED" in result:
-            _report_execution_issue(
-                f"Operator '{operator_id}' ({action_label}) cancelled without completing",
-                report,
-            )
+            if not _is_expected_noop_cancelled(operator_id, props, context):
+                _report_execution_issue(
+                    f"Operator '{operator_id}' ({action_label}) cancelled without completing",
+                    report,
+                )
         elif isinstance(result, set) and not result.intersection({
             "FINISHED",
             "RUNNING_MODAL",
@@ -265,7 +345,10 @@ def build_geometry(self):
 
         self.labels.append((i, text_lines))
 
-    self.box_outline_batch = batch_for_shader(self.separator_shader, "LINES", {"pos": outline_verts})
+    self.box_outline_batch = (
+        batch_for_shader(self.separator_shader, "LINES", {"pos": outline_verts})
+        if outline_verts else None
+    )
 
 
 def draw_mark(self):
@@ -334,11 +417,12 @@ def draw_menu(self):
     draw_boxes(self)
 
     outline_color = self.outline_colors[self.space]
-    self.separator_shader.bind()
-    self.separator_shader.uniform_float("color", outline_color)
-    gpu.state.line_width_set(OUTLINE_WIDTH)
-    self.box_outline_batch.draw(self.separator_shader)
-    gpu.state.line_width_set(1.0)
+    if self.box_outline_batch is not None:
+        self.separator_shader.bind()
+        self.separator_shader.uniform_float("color", outline_color)
+        gpu.state.line_width_set(OUTLINE_WIDTH)
+        self.box_outline_batch.draw(self.separator_shader)
+        gpu.state.line_width_set(1.0)
 
     font_color = self.font_colors[self.space]
     draw_labels(self)
@@ -349,6 +433,13 @@ def draw_menu(self):
 
 
 def draw(self):
+    if getattr(self, "finished", True):
+        return
+
+    context = bpy.context
+    if not _is_origin_region(self, context):
+        return
+
     if self.menu_visible:
         draw_menu(self)
     else:
@@ -409,24 +500,49 @@ def update_gesture(self, x, y):
     )
 
 
-def finish(self, context):
+def _remove_hold_timer(self):
+    timer = getattr(self, "hold_timer", None)
+    self.hold_timer = None
+    self.hold_timer_active = False
+
+    if timer is None:
+        return
+
+    window_manager = getattr(self, "window_manager", None)
+    if window_manager is None:
+        return
+
+    try:
+        window_manager.event_timer_remove(timer)
+    except Exception as error:
+        print(f"[AllPie Warning] Could not remove radial hold timer: {error}")
+
+
+def finish(self, context=None):
+    """Release every modal resource exactly once, even on cancellation paths."""
+    if getattr(self, "finished", True):
+        return
+
+    # Mark finished before releasing resources so a redraw cannot use partially
+    # cleared state and repeated cleanup calls remain harmless.
     self.finished = True
     self.menu_visible = False
 
-    if self.hold_timer_active:
-        context.window_manager.event_timer_remove(self.hold_timer)
-        self.hold_timer = None
-        self.hold_timer_active = False
+    _remove_hold_timer(self)
 
-    if self.handle is not None:
-        bpy.types.SpaceView3D.draw_handler_remove(self.handle, "WINDOW")
-        self.handle = None
+    handle = getattr(self, "handle", None)
+    self.handle = None
+    if handle is not None:
+        try:
+            bpy.types.SpaceView3D.draw_handler_remove(handle, "WINDOW")
+        except Exception as error:
+            print(f"[AllPie Warning] Could not remove radial draw handler: {error}")
 
-    self.box_batches.clear()
+    self.box_batches = []
     self.box_outline_batch = None
     self.gesture_batch = None
     self.gesture_endpoint_batch = None
-    context.area.tag_redraw()
+    _tag_origin_redraw(self)
 
 
 def _remove_all_radial_keymaps(kc):
@@ -508,72 +624,115 @@ class ModalRadialMenu(bpy.types.Operator):
     pref_id: StringProperty()
 
     def invoke(self, context, event):
+        # Initialize cleanup-safe state before creating any Blender resources.
+        self.finished = False
+        self.menu_visible = False
+        self.handle = None
+        self.hold_timer = None
+        self.hold_timer_active = False
+        self.box_batches = []
+        self.box_outline_batch = None
+        self.gesture_batch = None
+        self.gesture_endpoint_batch = None
+
+        self.window_manager = context.window_manager
+        self.origin_window = context.window
+        self.origin_area = context.area
+        self.origin_region = context.region
+        self.origin_window_ptr = _pointer_id(context.window)
+        self.origin_area_ptr = _pointer_id(context.area)
+        self.origin_region_ptr = _pointer_id(context.region)
+        self.origin_region_x = context.region.x
+        self.origin_region_y = context.region.y
+
         self.cx = event.mouse_region_x
         self.cy = event.mouse_region_y
         self.active = -1
-        self.menu_visible = False
-        self.finished = False
-        self.gesture_batch = None
-        self.gesture_endpoint_batch = None
         self.opening_key = event.type
 
-        prefs = Preferences.get_preferences()
-        self.hold_time = prefs.hold_time if prefs is not None else HOLD_TIME
-        self.deadzone = prefs.deadzone if prefs is not None else DEADZONE
-        cache_colors(self, prefs)
+        try:
+            prefs = Preferences.get_preferences()
+            self.hold_time = prefs.hold_time if prefs is not None else HOLD_TIME
+            self.deadzone = prefs.deadzone if prefs is not None else DEADZONE
+            cache_colors(self, prefs)
 
-        self.hold_timer = context.window_manager.event_timer_add(self.hold_time, window=context.window)
-        self.hold_timer_active = True
-        self.shader = gpu.shader.from_builtin("UNIFORM_COLOR")
-        self.separator_shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+            self.shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+            self.separator_shader = gpu.shader.from_builtin("UNIFORM_COLOR")
+            set_menu(self, False, self.cx, self.cy)
 
-        set_menu(self, False, event.mouse_region_x, event.mouse_region_y)
-        self.handle = bpy.types.SpaceView3D.draw_handler_add(draw, (self,), "WINDOW", "POST_PIXEL")
-        context.window_manager.modal_handler_add(self)
-        context.area.tag_redraw()
-        return {"RUNNING_MODAL"}
+            self.hold_timer = self.window_manager.event_timer_add(
+                self.hold_time,
+                window=self.origin_window,
+            )
+            self.hold_timer_active = True
+            self.hold_deadline = time.perf_counter() + self.hold_time
+
+            self.handle = bpy.types.SpaceView3D.draw_handler_add(
+                draw,
+                (self,),
+                "WINDOW",
+                "POST_PIXEL",
+            )
+            self.window_manager.modal_handler_add(self)
+            _tag_origin_redraw(self)
+            return {"RUNNING_MODAL"}
+
+        except Exception as error:
+            finish(self, context)
+            self.report({"ERROR"}, f"Could not start radial menu: {type(error).__name__}: {error}")
+            return {"CANCELLED"}
 
     def modal(self, context, event):
+        if self.finished:
+            return {"CANCELLED"}
+
+        if event.type == "WINDOW_DEACTIVATE":
+            finish(self, context)
+            return {"CANCELLED"}
+
         if event.type == "TIMER" and self.hold_timer_active:
-            self.menu_visible = True
-            context.window_manager.event_timer_remove(self.hold_timer)
-            self.hold_timer = None
-            self.hold_timer_active = False
-            context.area.tag_redraw()
+            # Blender can deliver TIMER events from other systems. Only reveal
+            # the menu once the configured hold duration has actually elapsed.
+            if time.perf_counter() >= self.hold_deadline:
+                self.menu_visible = True
+                _remove_hold_timer(self)
+                _tag_origin_redraw(self)
             return {"RUNNING_MODAL"}
 
         if event.type == "MOUSEMOVE":
-            update_active(self, event.mouse_region_x, event.mouse_region_y)
-            update_gesture(self, event.mouse_region_x, event.mouse_region_y)
-            context.area.tag_redraw()
+            x, y = _get_origin_mouse_position(self, event)
+            update_active(self, x, y)
+            update_gesture(self, x, y)
+            _tag_origin_redraw(self)
             return {"RUNNING_MODAL"}
 
-        if event.type == "SPACE" and event.value == "PRESS":
-            set_menu(self, not self.space, event.mouse_region_x, event.mouse_region_y)
+        if event.type == "SPACE" and event.value == "PRESS" and not getattr(event, "is_repeat", False):
+            x, y = _get_origin_mouse_position(self, event)
+            set_menu(self, not self.space, x, y)
             self.menu_visible = True
-
-            if self.hold_timer_active:
-                context.window_manager.event_timer_remove(self.hold_timer)
-                self.hold_timer = None
-                self.hold_timer_active = False
-
-            context.area.tag_redraw()
+            _remove_hold_timer(self)
+            _tag_origin_redraw(self)
             return {"RUNNING_MODAL"}
 
         if event.type == self.opening_key and event.value == "RELEASE":
             active = self.active
+            menu = self.menu
+            finish(self, context)
             if active >= 0:
-                finish(self, context)
-                execute_slot(active, self.menu, report=self.report)
-            else:
-                finish(self, context)
+                execute_slot(active, menu, report=self.report, context=context)
             return {"FINISHED"}
 
-        if event.type == "ESC":
+        if event.type == "ESC" and event.value == "PRESS":
             finish(self, context)
             return {"CANCELLED"}
 
+        # All other events are intentionally captured while the radial menu is
+        # active. Do not return PASS_THROUGH: viewport navigation is disabled.
         return {"RUNNING_MODAL"}
+
+    def cancel(self, context):
+        finish(self, context)
+
 
 
 addon_keymaps = []

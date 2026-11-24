@@ -1,5 +1,20 @@
 # AllPie — Blender Addon
 
+## 1.6.4
+
+- Avoid reporting a false execution warning when `mesh.select_mode` is cancelled because the requested selection mode is already active.
+- Continue reporting genuine operator cancellations and preserve the existing radial action execution behavior.
+
+## 1.6.3
+
+- Restrict radial-menu drawing to the exact window, area and region that opened it.
+- Centralize modal resource cleanup and make cleanup safe to call repeatedly.
+- Remove radial timers and draw handlers when modal startup fails, the operator is cancelled, or the window loses focus.
+- Validate the hold duration using a monotonic clock so unrelated TIMER events cannot reveal the menu early.
+- Ignore repeated Space key events while switching between normal and spaced menus.
+- Keep the radial menu capturing all input while active; viewport-navigation pass-through remains disabled.
+
+
 ## 1.6.1
 
 - Full Configuration Export now includes the currently selected Menus editor draft, including brush-slot assignments and shortcut changes, even before Apply is pressed.
