@@ -52,7 +52,7 @@ def _refresh_configuration_modules():
         operator_properties, operator_setup, config_editor,
     )
 
-    if getattr(ConfigRuntime, "RUNTIME_API_VERSION", 0) < 18:
+    if getattr(ConfigRuntime, "RUNTIME_API_VERSION", 0) < 27:
         # BrushAssets must reload before ConfigLoader and operator_data because
         # both import brush-reference normalization and identity helpers directly.
         importlib.reload(BrushAssets)
@@ -67,17 +67,17 @@ def _refresh_configuration_modules():
 
     if getattr(OperatorValidation, "OPERATOR_VALIDATION_API_VERSION", 0) < 3:
         importlib.reload(OperatorValidation)
-    if getattr(menu_data, "ACTION_CONTEXT_CATALOG_API_VERSION", 0) < 7:
+    if getattr(menu_data, "ACTION_CONTEXT_CATALOG_API_VERSION", 0) < 16:
         importlib.reload(menu_data)
-    if getattr(menu_exchange, "MENU_PACKAGE_API_VERSION", 0) < 3:
+    if getattr(menu_exchange, "MENU_PACKAGE_API_VERSION", 0) < 9:
         importlib.reload(menu_exchange)
-    if getattr(menu_editor, "MENU_EDITOR_API_VERSION", 0) < 18:
+    if getattr(menu_editor, "MENU_EDITOR_API_VERSION", 0) < 36:
         importlib.reload(menu_editor)
-    if getattr(operator_data, "OPERATOR_DATA_API_VERSION", 0) < 9:
-        importlib.reload(operator_data)
-    operator_properties_outdated = getattr(operator_properties, "OPERATOR_PROPERTIES_API_VERSION", 0) < 2
-    operator_setup_outdated = getattr(operator_setup, "OPERATOR_SETUP_API_VERSION", 0) < 5
-    if operator_properties_outdated or operator_setup_outdated:
+    operator_properties_outdated = getattr(operator_properties, "OPERATOR_PROPERTIES_API_VERSION", 0) < 5
+    operator_data_outdated = getattr(operator_data, "OPERATOR_DATA_API_VERSION", 0) < 22
+    operator_setup_outdated = getattr(operator_setup, "OPERATOR_SETUP_API_VERSION", 0) < 25
+    operator_editor_outdated = getattr(operator_editor, "OPERATOR_EDITOR_API_VERSION", 0) < 42
+    if operator_properties_outdated or operator_data_outdated or operator_setup_outdated:
         # Dynamic PropertyGroups are stored in bpy.app.driver_namespace so they
         # can survive Python module reloads. Clear their old schemas before
         # loading the new required-property rules.
@@ -85,11 +85,20 @@ def _refresh_configuration_modules():
             operator_setup.unregister_dynamic_property_groups()
         except Exception as error:
             print(f"[AllPie] Could not clear old operator setup groups: {error}")
+    # operator_data imports operator_properties, and operator_setup imports
+    # both. Reload dependencies before dependants so in-place Blender extension
+    # upgrades do not retain stale helper function references.
     if operator_properties_outdated:
         importlib.reload(operator_properties)
+    if operator_data_outdated:
+        importlib.reload(operator_data)
     if operator_setup_outdated:
         importlib.reload(operator_setup)
-    if getattr(operator_editor, "OPERATOR_EDITOR_API_VERSION", 0) < 9:
+    if operator_editor_outdated:
+        try:
+            operator_editor.cancel_operator_catalog_scan()
+        except Exception:
+            pass
         importlib.reload(operator_editor)
     # config_editor imports load_config by name. Reload it after ConfigLoader
     # and ConfigRuntime so its ConfigLoadResult objects belong to the same

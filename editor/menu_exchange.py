@@ -10,18 +10,27 @@ from __future__ import annotations
 
 import json
 import re
+import uuid
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
 from ..core.brush_assets import BRUSH_ASSET_OPERATOR_ID, operator_properties_match
-from ..core.schema import make_default_config
+from ..core.schema import make_default_config, SCHEMA_VERSION
+from ..core.preset_identity import MAX_ENUM_VALUE, unique_enum_value
 from ..core.validation import validate_config
+from ..config.loader import migrate_config
 from . import menu_data
 
-MENU_PACKAGE_API_VERSION = 3
+MENU_PACKAGE_API_VERSION = 9
 MENU_PACKAGE_FORMAT = "allpie_menus"
-MENU_PACKAGE_VERSION = 1
+# Version 3 introduced permanent preset IDs; version 4 also stores stable
+# numeric EnumProperty values so slot selections remain stable in Blender RNA.
+MENU_PACKAGE_VERSION = 4
+LEGACY_MENU_PACKAGE_VERSION = 1
+PREVIOUS_MENU_PACKAGE_VERSION = 2
+STABLE_ID_MENU_PACKAGE_VERSION = 3
+SUPPORTED_MENU_PACKAGE_VERSIONS = frozenset({1, 2, 3, 4})
 
 
 def _reject_duplicate_keys(pairs):
@@ -35,6 +44,37 @@ def _reject_duplicate_keys(pairs):
 
 def _reject_nonstandard_constant(value: str):
     raise ValueError(f"non-standard JSON constant: {value}")
+
+
+def _validate_package_header(package: Mapping[str, Any]) -> int:
+    """Validate the versioned package envelope shared by load and merge.
+
+    Keep version-1 imports for packages made by 1.6.8 and earlier, version-2
+    imports for releases that included per-slot labels, and version-3 imports
+    with permanent preset IDs. Version 4 adds persistent numeric enum values.
+    Legacy slot-label fields are discarded before current schema validation.
+    New exports use version 4.
+    """
+    if package.get("format") != MENU_PACKAGE_FORMAT:
+        raise ValueError("This is not an AllPie menu package")
+
+    version = package.get("version")
+    if (
+        isinstance(version, bool)
+        or not isinstance(version, int)
+        or version not in SUPPORTED_MENU_PACKAGE_VERSIONS
+    ):
+        supported = ", ".join(str(item) for item in sorted(SUPPORTED_MENU_PACKAGE_VERSIONS))
+        raise ValueError(
+            f"Unsupported AllPie menu package version: {version!r} (supported: {supported})"
+        )
+
+    allowed_fields = {"format", "version", "Menus", "Operators"}
+    unknown_fields = sorted(set(package) - allowed_fields)
+    if unknown_fields:
+        raise ValueError(f"Unknown menu package field(s): {', '.join(unknown_fields)}")
+
+    return version
 
 
 def _safe_identifier(value: str) -> str:
@@ -62,28 +102,37 @@ def _resolve_action(
     config: Mapping[str, Any],
     reference: str,
     owner_addon: Optional[str],
-) -> Tuple[str, Mapping[str, Any], Optional[str]]:
-    """Resolve a slot reference using the same precedence as AllPie's registry."""
-    third_party = config.get("ThirdParty", {})
+) -> Tuple[str, Mapping[str, Any], Optional[str], str]:
+    """Resolve a stable slot UUID to (UUID, action, owner addon, legacy key)."""
+    reference = str(reference or "")
+    for legacy_id, action in config.get("Operators", {}).items():
+        if isinstance(action, Mapping) and str(action.get("preset_id", "")) == reference:
+            return reference, action, None, str(legacy_id)
 
+    third_party = config.get("ThirdParty", {})
+    for addon_id, addon in third_party.items():
+        if not isinstance(addon, Mapping):
+            continue
+        for legacy_id, action in addon.get("Operators", {}).items():
+            if isinstance(action, Mapping) and str(action.get("preset_id", "")) == reference:
+                return reference, action, str(addon_id), str(legacy_id)
+
+    # Accept legacy references as a defensive compatibility path for configs
+    # that have not yet passed through schema migration.
     if ":" in reference:
         addon_id, local_id = reference.split(":", 1)
         addon = third_party.get(addon_id, {})
-        action = addon.get("Operators", {}).get(local_id)
+        action = addon.get("Operators", {}).get(local_id) if isinstance(addon, Mapping) else None
         if isinstance(action, Mapping):
-            return f"{addon_id}:{local_id}", action, addon_id
-        raise ValueError(f"Menu references missing third-party operator preset '{reference}'")
-
+            return str(action.get("preset_id", reference)), action, addon_id, local_id
     if owner_addon:
         own_addon = third_party.get(owner_addon, {})
-        action = own_addon.get("Operators", {}).get(reference)
+        action = own_addon.get("Operators", {}).get(reference) if isinstance(own_addon, Mapping) else None
         if isinstance(action, Mapping):
-            return f"{owner_addon}:{reference}", action, owner_addon
-
+            return str(action.get("preset_id", reference)), action, owner_addon, reference
     action = config.get("Operators", {}).get(reference)
     if isinstance(action, Mapping):
-        return reference, action, None
-
+        return str(action.get("preset_id", reference)), action, None, reference
     raise ValueError(f"Menu references missing operator preset '{reference}'")
 
 
@@ -99,9 +148,13 @@ def build_menu_package(
     package_menus: Dict[str, Any] = {}
     package_operators: Dict[str, Any] = {}
     portable_action_ids: Dict[str, str] = {}
-
     for menu_id in selected_ids:
         menu = deepcopy(menu_data.get_menu(dict(config), menu_id))
+        # Never export deprecated slot-local labels, even when this helper is
+        # called with an older in-memory configuration.
+        menu.pop("slot_labels", None)
+        menu.pop("spaced_slot_labels", None)
+
         owner_addon, local_menu_id = menu_data.split_menu_id(menu_id)
         if local_menu_id in package_menus:
             local_menu_id = _unique_id(package_menus, local_menu_id, "MENU")
@@ -119,17 +172,19 @@ def build_menu_package(
                 if not isinstance(reference, str):
                     raise ValueError(f"Menu '{menu_id}' has an invalid action reference in {slot_field}")
 
-                resolved_id, action, action_owner = _resolve_action(config, reference, owner_addon)
+                resolved_id, action, action_owner, legacy_id = _resolve_action(config, reference, owner_addon)
                 portable_id = portable_action_ids.get(resolved_id)
                 if portable_id is None:
                     if action_owner is None:
-                        base_id = resolved_id
+                        base_id = legacy_id
                     else:
-                        base_id = _safe_identifier(f"{action_owner}_{resolved_id.split(':', 1)[1]}")
+                        base_id = _safe_identifier(f"{action_owner}_{legacy_id}")
                     portable_id = _unique_id(package_operators, base_id, "ACTION")
                     portable_action_ids[resolved_id] = portable_id
                     package_operators[portable_id] = deepcopy(dict(action))
-                rewritten_slots[slot_number] = portable_id
+                # Slot references always remain the stable UUID; the package's
+                # dictionary key is only a local compatibility/storage alias.
+                rewritten_slots[slot_number] = resolved_id
             menu[slot_field] = rewritten_slots
 
         package_menus[local_menu_id] = menu
@@ -167,20 +222,11 @@ def load_menu_package(path: Any) -> Dict[str, Any]:
 
     if not isinstance(package, dict):
         raise ValueError("Menu JSON root must be an object")
-    if package.get("format") != MENU_PACKAGE_FORMAT:
-        raise ValueError("This JSON file is not an AllPie menu export")
-    version = package.get("version")
-    if isinstance(version, bool) or not isinstance(version, int) or version != MENU_PACKAGE_VERSION:
-        raise ValueError(f"Unsupported AllPie menu package version: {version!r}")
+    _validate_package_header(package)
     if not isinstance(package.get("Menus"), dict) or not package["Menus"]:
         raise ValueError("Menu JSON must contain at least one menu in 'Menus'")
     if not isinstance(package.get("Operators", {}), dict):
         raise ValueError("Menu JSON field 'Operators' must be an object")
-
-    allowed_fields = {"format", "version", "Menus", "Operators"}
-    unknown_fields = sorted(set(package) - allowed_fields)
-    if unknown_fields:
-        raise ValueError(f"Unknown menu JSON field(s): {', '.join(unknown_fields)}")
 
     return package
 
@@ -245,14 +291,7 @@ def merge_menu_package(
     """
     if not isinstance(package, Mapping):
         raise ValueError("Menu package must be an object")
-    if package.get("format") != MENU_PACKAGE_FORMAT:
-        raise ValueError("This file is not an AllPie menu package")
-    package_version = package.get("version")
-    if isinstance(package_version, bool) or not isinstance(package_version, int) or package_version != MENU_PACKAGE_VERSION:
-        raise ValueError(f"Unsupported AllPie menu package version: {package_version!r}")
-    unknown_fields = sorted(set(package) - {"format", "version", "Menus", "Operators"})
-    if unknown_fields:
-        raise ValueError(f"Unknown menu package field(s): {', '.join(unknown_fields)}")
+    _validate_package_header(package)
 
     raw_menus = package.get("Menus")
     raw_operators = package.get("Operators", {})
@@ -264,8 +303,26 @@ def merge_menu_package(
     # Validate the portable records independently before merging them into the
     # user's data. This catches malformed IDs, fields, slots and references.
     package_config = make_default_config()
-    package_config["Menus"] = deepcopy(dict(raw_menus))
+    package_menus = deepcopy(dict(raw_menus))
+    for menu in package_menus.values():
+        if isinstance(menu, dict):
+            menu.pop("slot_labels", None)
+            menu.pop("spaced_slot_labels", None)
+    package_config["Menus"] = package_menus
     package_config["Operators"] = deepcopy(dict(raw_operators))
+    package_version = int(package.get("version", 1))
+    if package_version in {1, 2}:
+        # Legacy packages store local action keys in slots and contain no
+        # permanent preset IDs. Convert them through both identity migrations.
+        package_config["schema_version"] = 12
+        package_config, _migrated = migrate_config(package_config)
+    elif package_version == 3:
+        # Version 3 has stable UUID references but predates persistent enum
+        # numbers. Migrate it without changing its menu/operator identities.
+        package_config["schema_version"] = 13
+        package_config, _migrated = migrate_config(package_config)
+    else:
+        package_config["schema_version"] = SCHEMA_VERSION
     package_report = validate_config(
         package_config,
         valid_event_types=valid_event_types,
@@ -279,39 +336,77 @@ def merge_menu_package(
     merged.setdefault("Menus", {})
     merged.setdefault("Operators", {})
     merged.setdefault("ThirdParty", {})
+    operators = merged["Operators"]
 
     action_id_map: Dict[str, str] = {}
     added_actions = 0
     reused_actions = 0
-    for package_action_id, action in normalized_package["Operators"].items():
-        operators = merged["Operators"]
-        existing_action = operators.get(package_action_id)
-        equivalent_id = None
+    existing_by_preset_id = {
+        str(action.get("preset_id")): action
+        for action in operators.values()
+        if isinstance(action, Mapping) and action.get("preset_id")
+    }
+    # A preset UUID is global across AllPie and third-party namespaces. Only
+    # AllPie-owned presets are eligible for equivalence reuse here, but every
+    # existing UUID must be reserved to prevent collisions on import.
+    used_preset_ids = set(existing_by_preset_id)
+    used_enum_values = {
+        action.get("enum_value")
+        for action in operators.values()
+        if isinstance(action, Mapping)
+        and isinstance(action.get("enum_value"), int)
+        and not isinstance(action.get("enum_value"), bool)
+        and 1 <= action.get("enum_value") <= MAX_ENUM_VALUE
+    }
+    for addon in merged.get("ThirdParty", {}).values():
+        for action in addon.get("Operators", {}).values():
+            if isinstance(action, Mapping):
+                if action.get("preset_id"):
+                    used_preset_ids.add(str(action["preset_id"]))
+                enum_value = action.get("enum_value")
+                if isinstance(enum_value, int) and not isinstance(enum_value, bool) and 1 <= enum_value <= MAX_ENUM_VALUE:
+                    used_enum_values.add(enum_value)
+    for package_action_key, action in normalized_package["Operators"].items():
+        package_preset_id = str(action.get("preset_id", ""))
+        existing_action = existing_by_preset_id.get(package_preset_id)
+        equivalent_action = None
 
-        # Prefer the exact preset ID when it already represents the same
-        # executable action, then search other presets for a semantic match.
-        if (
-            isinstance(existing_action, Mapping)
-            and _actions_are_equivalent(existing_action, action)
-        ):
-            equivalent_id = package_action_id
+        if isinstance(existing_action, Mapping) and _actions_are_equivalent(existing_action, action):
+            equivalent_action = existing_action
         else:
-            for candidate_id, candidate_action in operators.items():
+            for candidate_action in operators.values():
                 if _actions_are_equivalent(candidate_action, action):
-                    equivalent_id = candidate_id
+                    equivalent_action = candidate_action
                     break
 
-        if equivalent_id is not None:
-            target_action_id = equivalent_id
-            _merge_action_contexts(operators[target_action_id], action)
+        if equivalent_action is not None:
+            target_preset_id = str(equivalent_action.get("preset_id", ""))
+            _merge_action_contexts(equivalent_action, action)
             reused_actions += 1
         else:
-            target_action_id = _unique_id(
-                operators, package_action_id, "IMPORTED"
-            )
-            operators[target_action_id] = deepcopy(action)
+            target_legacy_key = _unique_id(operators, package_action_key, "IMPORTED")
+            target_preset_id = package_preset_id
+            if not target_preset_id or target_preset_id in used_preset_ids:
+                target_preset_id = "op_" + uuid.uuid4().hex
+                while target_preset_id in used_preset_ids:
+                    target_preset_id = "op_" + uuid.uuid4().hex
+            imported_action = deepcopy(dict(action))
+            imported_action["preset_id"] = target_preset_id
+            enum_value = imported_action.get("enum_value")
+            if (
+                isinstance(enum_value, bool)
+                or not isinstance(enum_value, int)
+                or not 1 <= enum_value <= MAX_ENUM_VALUE
+                or enum_value in used_enum_values
+            ):
+                enum_value = unique_enum_value(target_preset_id, used_enum_values)
+            imported_action["enum_value"] = enum_value
+            operators[target_legacy_key] = imported_action
+            existing_by_preset_id[target_preset_id] = imported_action
+            used_preset_ids.add(target_preset_id)
+            used_enum_values.add(enum_value)
             added_actions += 1
-        action_id_map[package_action_id] = target_action_id
+        action_id_map[package_preset_id] = target_preset_id
 
     imported_menu_ids = []
     remapped_menu_ids = {}

@@ -15,9 +15,9 @@ from ..config.loader import ConfigLoadResult, load_config
 from .adapter import build_legacy_views
 from .registry import MenuRegistry, build_registry
 from .schema import CompiledConfig, keymap_contexts
-from .validation import ValidationIssue, validate_config
+from .validation import ValidationIssue, reserved_menu_shortcut_message, validate_config
 
-RUNTIME_API_VERSION = 18
+RUNTIME_API_VERSION = 27
 
 ADDON_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG_PATH = ADDON_ROOT / "config" / "allpie_config.json"
@@ -369,6 +369,11 @@ def _update_brushes_in_config(
         return False
 
     changed = False
+    actions_by_preset_id = {
+        str(action.get("preset_id")): action
+        for action in config.get("Operators", {}).values()
+        if isinstance(action, dict) and action.get("preset_id")
+    }
     assignments = (
         (menu_data.get("slots", {}), normal_brushes, 1),
         # The spaced brush preference fields map to visible radial slots 2–8;
@@ -381,7 +386,7 @@ def _update_brushes_in_config(
             action_id = slot_map.get(str(start_slot + offset))
             if action_id is None:
                 continue
-            action = config["Operators"].get(action_id)
+            action = actions_by_preset_id.get(str(action_id))
             if action is None:
                 continue
             relative_asset = ESSENTIALS_ASSET_PATH + brush_name
@@ -389,12 +394,9 @@ def _update_brushes_in_config(
             if action.get("name") != brush_name:
                 action["name"] = brush_name
                 changed = True
-            # Picker-only metadata follows the currently assigned Essentials
-            # brush while the legacy radial label remains the original name.
-            # Keep the picker-facing label concise so natural searches such as
-            # "draw brush" match exactly. The menu context already tells the
-            # user these are Sculpt actions; repeating "Sculpt" in every label
-            # makes useful multi-word searches less predictable.
+            # The canonical preset name remains the radial and picker display
+            # label. search_name is only a search alias that adds the word
+            # "Brush" for natural queries such as "draw brush".
             search_name = f"{brush_name.replace('/', ' / ').title()} Brush"
             description = (
                 f"Activate the {brush_name} brush preset from Blender's Essentials "
@@ -513,7 +515,16 @@ def migrate_legacy_preferences(preferences: Any) -> bool:
     valid_event_types = get_blender_event_identifiers()
     for legacy in getattr(preferences, "keybinds", ()):
         legacy_key = str(getattr(legacy, "key", "") or "")
-        if legacy_key == "NONE" or (valid_event_types is not None and legacy_key not in valid_event_types):
+        if legacy_key == "NONE":
+            continue
+        reserved_message = reserved_menu_shortcut_message(legacy_key)
+        if reserved_message:
+            # Internal radial controls cannot be migrated as menu-opening
+            # shortcuts. Skip only the conflicting legacy binding; keep the
+            # menu and its remaining configuration intact.
+            print(f"[AllPie] Ignored legacy shortcut {legacy_key!r}: {reserved_message.lower()}")
+            continue
+        if valid_event_types is not None and legacy_key not in valid_event_types:
             # A pre-JSON preference may contain an obsolete or malformed event
             # identifier. Ignore that one legacy shortcut rather than allowing
             # it to abort first-run migration or register an invalid keymap.

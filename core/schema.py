@@ -11,12 +11,13 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Dict, Mapping, Optional, Tuple
 
-SCHEMA_VERSION = 9
+SCHEMA_VERSION = 15
 SLOT_COUNT = 8
 SLOT_IDS = tuple(str(index) for index in range(1, SLOT_COUNT + 1))
 
-# These are the contexts currently used by AllPie's existing keymaps. Custom
-# Blender keymap names remain permitted by validation.
+# These are the six original mode contexts included by the Common menu scope.
+# Editor contexts are deliberately separate so Common keeps its established
+# meaning and does not unexpectedly register menus in additional editors.
 BUILTIN_KEYMAPS = (
     "Object Mode",
     "Mesh",
@@ -30,8 +31,21 @@ BUILTIN_KEYMAPS = (
 # every built-in AllPie context above, while remaining one JSON menu record.
 COMMON_KEYMAP = "Common"
 
-# Contexts that support Brush Menus with brush assets and Asset Shelf actions.
-BRUSH_MENU_KEYMAPS = ("Sculpt", "Image Paint", "Vertex Paint", "Weight Paint")
+# Blender's keymap definitions pair a display name with a space/region scope.
+# The Image Paint keymap is shared by viewport texture painting and the Image
+# Editor's Paint mode, so editor-specific menu selection is handled by the
+# radial dispatcher instead of changing this global keymap scope.
+EDITOR_KEYMAP_SPECS = {
+    "uv editor": ("EMPTY", "WINDOW"),
+    "image": ("IMAGE_EDITOR", "WINDOW"),
+    "node editor": ("NODE_EDITOR", "WINDOW"),
+}
+
+
+def keymap_registration_spec(keymap: str) -> Tuple[str, str]:
+    """Return Blender space and region identifiers for a keymap name."""
+    value = str(keymap or "").strip().casefold()
+    return EDITOR_KEYMAP_SPECS.get(value, ("EMPTY", "WINDOW"))
 
 
 def keymap_contexts(keymap: str) -> Tuple[str, ...]:

@@ -1,5 +1,5 @@
 {
-    "schema_version": 9,
+    "schema_version": 15,
     "Menus": {
         "OBJECT.ADD": {
             "name": "Add Object",
@@ -10,16 +10,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "8": "ADD_PLANE",
-                "3": "ADD_CUBE",
-                "5": "SEARCH_ADD_MENU",
-                "1": "ADD_MENU",
-                "2": "ADD_CYLINDER",
-                "4": "ADD_UVSPHERE",
-                "6": "ADD_CONE",
-                "7": "ADD_GRID"
+                "8": "op_c36c0f5b84015f19a93681363f036b8a",
+                "3": "op_ea92ba54e4f25ae186bbdc2e98aa2f7d",
+                "5": "op_4d8e027fd03051a3ac9e772a071f9fd6",
+                "1": "op_f6d71dd976f85db896d02a0337abf12c",
+                "2": "op_b9638fd96192588f9c4684c740709f56",
+                "4": "op_75cefcd23bdf5cb992f4d3968dfc586f",
+                "6": "op_77e962e45d645ea794c4791443a978e2",
+                "7": "op_ea2727bd70a057e786dfcab97691190d"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.APPLY_TRANSFORMS": {
             "name": "Apply Transforms",
@@ -30,16 +31,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "3": "ROTATION",
-                "5": "ALL_TRANSFORMS",
-                "6": "ROTATION_AND_SCALE",
-                "8": "LOCATION_AND_SCALE",
-                "7": "LOCATION_AND_ROTATION",
-                "1": "APPLY_TRANSFORMS_MENU",
-                "2": "LOCATION",
-                "4": "SCALE"
+                "3": "op_9ba523d228905f19835d2cee25cafa56",
+                "5": "op_6edbc100a6ce5124835aaeee764891a9",
+                "6": "op_0034c4875d2d5519b07237553749f045",
+                "8": "op_637d277ab07b529a94e85243f3a88019",
+                "7": "op_9c572b0e72e45dd2ac88710674d46613",
+                "1": "op_466996d88b9c5229bdee0121115dad86",
+                "2": "op_bc21cce9655e5ee28d4fb97f08cced93",
+                "4": "op_2590c48c9ca25cb4a1c041a754db6d3d"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.MODIFIER": {
             "name": "Add Modifier",
@@ -50,16 +52,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "2": "SUBDIVISION",
-                "3": "MIRROR",
-                "5": "MODIFIER_SEARCH",
-                "8": "MULTIRES",
-                "4": "SOLIDIFY",
-                "6": "DISPLACE",
-                "7": "SHRINKWRAP",
-                "1": "ARRAY"
+                "2": "op_fc7c6991c8d45283b1ba6a2cd5698ad3",
+                "3": "op_2d6031f87b185271a7f7d8a9d5ca8ab5",
+                "5": "op_a0725cba286051c6a9ee1c5ecd4cf8cc",
+                "8": "op_d997ebf41a085ac9b2e0e2023e41b83c",
+                "4": "op_c864e4a3f8f75892b2b13fca015aa7e4",
+                "6": "op_a1dc0292a8e1509fbd176187936df247",
+                "7": "op_3ca81d95102058c48aad820896e4eccd",
+                "1": "op_044e32ab74775933b9219c85f19a1d29"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.SELECTION": {
             "name": "Selection & Hide",
@@ -68,16 +71,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "6": "DESELECT_ALL",
-                "4": "SELECT_ALL",
-                "5": "INVERT_SELECTION",
-                "3": "RENAME_OBJECT",
-                "7": "MOVE_TO_COLLECTION",
-                "1": "UNHIDE_ALL",
-                "2": "SOLO_OBJECT",
-                "8": "HIDE_SELECTED"
+                "6": "op_011f1a19a8b152179e8505cd9398d0e9",
+                "4": "op_ede8aca17c0259e9a404cf729e73f021",
+                "5": "op_ddea23d5773c58d1918ff6a8c6cd456f",
+                "3": "op_d79bf8b9c15651b5898a7f8d6e033cbd",
+                "7": "op_a8a30c709330585fa571d1b6ed9ab1f6",
+                "1": "op_1ef79bc9a4a654518676e411931c4e11",
+                "2": "op_6f46ea17460755d7bf6613471071493e",
+                "8": "op_9955d52426c7592596fc5462cf7fc495"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.TOOL_SELECT": {
             "name": "Tool Select",
@@ -86,16 +90,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "6": "CURSOR_TOOL",
-                "4": "LASSO_SELECT",
-                "1": "ROTATE_TOOL",
-                "5": "TWEAK_TOOL",
-                "8": "MOVE_TOOL",
-                "2": "SCALE_TOOL",
-                "3": "ADD_CUBE_TOOL",
-                "7": "ADD_CYLINDER_TOOL"
+                "6": "op_ba33d2de993e5c91b670c12d8a32ffe1",
+                "4": "op_d07dd1dd88345263bd22f234e8522a75",
+                "1": "op_e32a6bab05ae5a97be6c93ac7d32d600",
+                "5": "op_ac0376dce80e50e9941c21079113ade6",
+                "8": "op_b7a7cb485ec652bf8c85acdcbc4bd09c",
+                "2": "op_97334a907c31595ebc8b822e63c088fc",
+                "3": "op_c4ceb8653788564da062637e1326e495",
+                "7": "op_19ee2f3db51b5911b1c353902125305e"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.SHADING": {
             "name": "Shading",
@@ -104,16 +109,17 @@
             "keymap": "Common",
             "enabled": true,
             "slots": {
-                "1": "SHADING_MENU",
-                "7": "WIREFRAME",
-                "3": "SOLID",
-                "6": "STUDIO",
-                "5": "MATCAP",
-                "4": "FLAT",
-                "2": "MATERIAL",
-                "8": "RENDERED"
+                "1": "op_527e6eb5d12c5b4b87416c85d25b2875",
+                "7": "op_0731af3e8d0e5254a89e4bc5420f0d09",
+                "3": "op_c7a738125caa5d6d92f54ac87c74a703",
+                "6": "op_e6a8d5363c4656cd82df4b1fff78e421",
+                "5": "op_b98c48bef2c05915a67ce57b7058778f",
+                "4": "op_38b889aa9248543994fc256413f56af1",
+                "2": "op_48472b66692e5c7d8854667e0e3c4fb9",
+                "8": "op_0346e0713b375b94a6fb90a93faed3c6"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.VIEW": {
             "name": "View",
@@ -124,16 +130,17 @@
             "keymap": "Common",
             "enabled": true,
             "slots": {
-                "2": "TOP",
-                "4": "FRONT",
-                "3": "RIGHT",
-                "8": "BOTTOM",
-                "7": "LEFT",
-                "6": "BACK",
-                "1": "VIEW_MAXIMIZE",
-                "5": "VIEW_SELECTED"
+                "2": "op_b0009dbe6bdc5f3b85b9c9a563d57fce",
+                "4": "op_8f4e441ebbbf556aa3d36e4a9c8d0a58",
+                "3": "op_8074cbe9cf09543ca8d03b1eaed6b364",
+                "8": "op_0d8b69082607574290529a480fea10ac",
+                "7": "op_0a34d0a5e4da5a4cbb4d233f2c29c7ba",
+                "6": "op_fea873dfd5925e06be0914d02b3ee165",
+                "1": "op_2a7873be68ad5b0c9f56149eb74d8133",
+                "5": "op_37dc8559c9a15a5fbe0373a15fba6e53"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.MODE": {
             "name": "Mode",
@@ -144,14 +151,15 @@
             "keymap": "Common",
             "enabled": true,
             "slots": {
-                "7": "OBJECT_MODE",
-                "1": "TEXTURE_PAINT_MODE",
-                "3": "EDIT_MODE",
-                "5": "SCULPT_MODE",
-                "2": "WEIGHT_PAINT_MODE",
-                "8": "VERTEX_PAINT_MODE"
+                "7": "op_4ca8842da9b35a05a26ded659a2d21ab",
+                "1": "op_926a45fddee5589d8651276801c7bfc1",
+                "3": "op_bcc41bfd2efe5bb59df25b119bd567d1",
+                "5": "op_dff3fc5d1d8a50b597410a2ff7b3c31e",
+                "2": "op_e9835382513856c3ac709485120a011d",
+                "8": "op_25f0690456ac54b5ac67ac17e366d018"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "OBJECT.SUBD": {
             "name": "Subdivision",
@@ -160,16 +168,17 @@
             "keymap": "Object Mode",
             "enabled": true,
             "slots": {
-                "3": "INCREASE_SUBDIVISION",
-                "2": "INCREASE_RENDER_LEVEL",
-                "7": "DECREASE_SUBDIVISION",
-                "8": "DECREASE_RENDER_LEVEL",
-                "1": "SHOW_IN_VIEWPORT",
-                "5": "SHOW_IN_EDITMODE",
-                "4": "SHOW_IN_RENDER",
-                "6": "SHOW_CAGE"
+                "3": "op_b8c3d03af1c250ee8327de6d4b52127f",
+                "2": "op_3e2250895c2451b49fe05733a74729c2",
+                "7": "op_601df2984931578d99a5fe12f610c4f0",
+                "8": "op_9d81854cc5445b30ab2b166913c0bc30",
+                "1": "op_e1c912aff9225a65ad17cafebe4d6853",
+                "5": "op_796978a2061c5614a77ab11a47da9f56",
+                "4": "op_91a313eb07b35fb7b171f46d92a992da",
+                "6": "op_85171470bf235300a7281100bea3f8bb"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.SELECTION": {
             "name": "Selection & Hide",
@@ -178,25 +187,26 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "8": "VERT_SELECT",
-                "1": "EDGE_SELECT",
-                "2": "FACE_SELECT",
-                "4": "SELECT_ALL_93DF52",
-                "5": "INVERT_SELECTION_29AC03",
-                "6": "DESELECT_ALL_CB73F0",
-                "7": "LOOP_INNER_REGION",
-                "3": "SELECT_MIRROR"
+                "8": "op_a306b56b702d57aba4524b9cdf518393",
+                "1": "op_9b51dadba5d15ae3826a9afc9583a532",
+                "2": "op_9780e9808e3b55b5b27975a970324e22",
+                "4": "op_a04e84fce2c0559d98e3e52fb0a3353d",
+                "5": "op_70f2dc7ae0a85f7e964ee76a956ce3d4",
+                "6": "op_4139751eb10451f3b63a0e881695fc2f",
+                "7": "op_9a8087691ee6550bbf8f447ebc152215",
+                "3": "op_8b7bb42783ae5f95bc6c18d6a32ecc92"
             },
             "spaced_slots": {
-                "8": "HIDE_SELECTED_76F040",
-                "1": "UNHIDE_ALL_396850",
-                "2": "SOLO_SELECTED",
-                "3": "SELECT_NON_MANIFOLD",
-                "7": "SELECT_SHARP_EDGES",
-                "6": "CHECKER_DESELECT",
-                "4": "SELECT_SIMILAR",
-                "5": "SELECT_LINKED"
-            }
+                "8": "op_94a6c3086545543f8a70543e5845b3b5",
+                "1": "op_ca9765b13b715437ac0c2756f0eb8597",
+                "2": "op_40a71d1534f9564a8ec6221cd638af0b",
+                "3": "op_8c06cef24b3e58df837ac3b93c26801e",
+                "7": "op_e04f368eeb2d563bacf7825ae9eeab9c",
+                "6": "op_c426892b48615eea91ccde102206bf93",
+                "4": "op_0554ea3a5c915d75a9a321fb5bf986e8",
+                "5": "op_170e63c7ecb054b19465058fdeb1cb8c"
+            },
+            "spaced_slots_enabled": true
         },
         "EDIT.DELETE": {
             "name": "Deletion",
@@ -205,16 +215,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "1": "EDGE_DELETE",
-                "2": "FACE_DELETE",
-                "3": "ONLY_FACE",
-                "4": "FACE_DISSOLVE",
-                "5": "EDGE_DISSOLVE",
-                "6": "VERTICES_DISSOLVE",
-                "7": "EDGE_AND_FACE",
-                "8": "VERTICES_DELETE"
+                "1": "op_6b2b68a0c99454ea8fcb7de8fce57ad9",
+                "2": "op_76d2960f8c5c55b8aa7a5f246608e485",
+                "3": "op_38da2e9b620f5def9ce0305e9522170a",
+                "4": "op_f088806f209658968bc91b9a5a0a206f",
+                "5": "op_723445e9a27d5d2cb3edace8075cbaf2",
+                "6": "op_51b11604adea542b9c1a12f4bd7d1841",
+                "7": "op_1cc5593ea9485ea6be5d53a41a569b6e",
+                "8": "op_2c74ba1c33dd5556aef225d785930103"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.MERGE": {
             "name": "Merge & Separate",
@@ -223,16 +234,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "1": "SEPARATE_SELECTION",
-                "2": "SEPARATE_LOOSE_GEOMETRY",
-                "8": "SEPARATE_BY_MATERIAL",
-                "3": "MERGE_BY_DISTANCE",
-                "5": "AT_CENTER",
-                "6": "AT_FIRST",
-                "7": "AT_CURSOR",
-                "4": "AT_LAST"
+                "1": "op_e03331860b77571ca2636156d3adf68b",
+                "2": "op_3bcabcee851c554fa3e620efe7244634",
+                "8": "op_211cf7e421995f36966f355e40fb04ff",
+                "3": "op_f28edf4993a65662acae12ccbbc876a9",
+                "5": "op_d830469a0744589992e96d0c6c505775",
+                "6": "op_0c0af8e7df975eb2869344d6538e86f4",
+                "7": "op_6f8b169edbc45d9996e877a589a4c32a",
+                "4": "op_2ca1ade13bd7594fb567e17ec3b38aab"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.VERTEX": {
             "name": "Vertex",
@@ -241,25 +253,26 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "8": "RIP_VERTICES",
-                "2": "VERTEX_SLIDE",
-                "1": "EXTRUDE_VERTICES",
-                "5": "MERGE_AT_CENTER",
-                "4": "FILL_FACE",
-                "7": "KNIFE_TOOL",
-                "6": "JOIN_VERTICES",
-                "3": "VERTEX_BEVEL"
+                "8": "op_a687ef01cf8b5ba39472b075b94136b1",
+                "2": "op_56e7375a245d57429a657bbe0995e382",
+                "1": "op_76f7b6444417588c80df78f8ab61e4f7",
+                "5": "op_9ea5e9b2fe1c5ae9ad554a8444c4d952",
+                "4": "op_a06ed6e37b8059e8b09d0b6a5389406f",
+                "7": "op_b94665a4a0005ddca59c5ba1f160b11a",
+                "6": "op_f9bf1383675a51589c26be90cec1ce1f",
+                "3": "op_3206b66dcf715123b871e1cb7826ca96"
             },
             "spaced_slots": {
-                "1": "SEPARATE_SELECTION",
-                "2": "SEPARATE_LOOSE_GEOMETRY",
-                "8": "SEPARATE_BY_MATERIAL",
-                "3": "MERGE_BY_DISTANCE",
-                "5": "AT_CENTER",
-                "6": "AT_FIRST",
-                "7": "AT_CURSOR",
-                "4": "AT_LAST"
-            }
+                "1": "op_e03331860b77571ca2636156d3adf68b",
+                "2": "op_3bcabcee851c554fa3e620efe7244634",
+                "8": "op_211cf7e421995f36966f355e40fb04ff",
+                "3": "op_f28edf4993a65662acae12ccbbc876a9",
+                "5": "op_d830469a0744589992e96d0c6c505775",
+                "6": "op_0c0af8e7df975eb2869344d6538e86f4",
+                "7": "op_6f8b169edbc45d9996e877a589a4c32a",
+                "4": "op_2ca1ade13bd7594fb567e17ec3b38aab"
+            },
+            "spaced_slots_enabled": true
         },
         "EDIT.EDGE": {
             "name": "Edge",
@@ -268,25 +281,26 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "7": "LOOP_CUT_SLIDE",
-                "6": "LOOP_CUT",
-                "3": "EDGE_BEVEL",
-                "5": "FLAT_BEVEL",
-                "1": "EXTRUDE_EDGES",
-                "2": "EDGE_SLIDE",
-                "8": "BRIDGE_EDGELOOPS",
-                "4": "FILL_FACE"
+                "7": "op_c213aade90e153479503c889e229c6be",
+                "6": "op_ebebba7032145322974be804d0542db8",
+                "3": "op_97968421a49b59988647f9a89b94da4b",
+                "5": "op_c4109e1e31115813a8f76a0e9d73ba21",
+                "1": "op_0ece629f779651a7a0be29e73b2e2a41",
+                "2": "op_1aed6ca1664f53e88f67c350b7f4486f",
+                "8": "op_2c4c03800d1956dd9cabfc973931fdf8",
+                "4": "op_a06ed6e37b8059e8b09d0b6a5389406f"
             },
             "spaced_slots": {
-                "2": "MARK_SHARP",
-                "8": "CLEAR_SHARP",
-                "3": "MARK_SEAM",
-                "7": "CLEAR_SEAM",
-                "4": "EDGE_BEVEL_WEIGHT",
-                "6": "CLEAR_BEVEL_WEIGHT",
-                "5": "EDGE_CREASE",
-                "1": "CLEAR_EDGE_CREASE"
-            }
+                "2": "op_c0c9b0cc07325934a603f89da3465ec3",
+                "8": "op_4b73c41ac48d5e8f971132f26bd9f48e",
+                "3": "op_0854ed5d77fa5540846d4c6df50b4095",
+                "7": "op_c3fcf2b6268a5e33a41a727ad1e87d69",
+                "4": "op_40673c914371551282340808d68eb0b7",
+                "6": "op_4dff54e2654556188e4f960f5b554d64",
+                "5": "op_e8849cb7f8785f47b37e46eb647e5f8b",
+                "1": "op_d744287ad57e5286a98b661297f54d5c"
+            },
+            "spaced_slots_enabled": true
         },
         "EDIT.FACE": {
             "name": "Face",
@@ -295,25 +309,26 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "7": "POKE",
-                "1": "EXTRUDE_FACES",
-                "3": "INSET",
-                "8": "SHADE_FACE_SMOOTH",
-                "2": "SHADE_FACE_FLAT",
-                "4": "FILL_FACE",
-                "6": "GRID_FILL",
-                "5": "EXTRUDE_ALONG_NORMALS"
+                "7": "op_14fb5138235e52769a34b822b759310d",
+                "1": "op_2b423127ef725fd6a2ececb269fac02e",
+                "3": "op_40cb22777cc953d4833cb82e8c8f5c26",
+                "8": "op_47d63b7c72ed599e8efe95487a7f512b",
+                "2": "op_7f6c21a438ac5b3cb45920adb9d7926f",
+                "4": "op_a06ed6e37b8059e8b09d0b6a5389406f",
+                "6": "op_3fede2effefc53bc91746d99958e458c",
+                "5": "op_1d183126be8450ed94cbfbfe12808048"
             },
             "spaced_slots": {
-                "2": "FOLLOW_ACTIVE_QUADS",
-                "1": "UV_RESET",
-                "8": "SMART_PROJECT",
-                "3": "MARK_SEAM",
-                "7": "CLEAR_SEAM",
-                "4": "UNWRAP_CONFORMAL",
-                "5": "UNWRAP_MINIMUM_STRETCH",
-                "6": "UNWRAP_ANGLE_BASED"
-            }
+                "2": "op_a0dc442ba6ab5fa7a0c61f17992d7412",
+                "1": "op_0d87dea24dea5a5e93cf0b7cc9ffd636",
+                "8": "op_e540b494a1445d90b2522fc0319105b9",
+                "3": "op_0854ed5d77fa5540846d4c6df50b4095",
+                "7": "op_c3fcf2b6268a5e33a41a727ad1e87d69",
+                "4": "op_16442a8fc7db563a9c9110bf3c073b96",
+                "5": "op_7b4f321d474e5d17aed5eb2244d3308f",
+                "6": "op_69ccfd25c6d65ccfa809d9c4cc9040e4"
+            },
+            "spaced_slots_enabled": true
         },
         "EDIT.TOOL_SELECT": {
             "name": "Tool Select",
@@ -322,16 +337,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "7": "BOX_SELECT_TOOL",
-                "3": "LASSO_SELECT_TOOL",
-                "4": "CIRCLE_SELECT_TOOL",
-                "6": "CURSOR_TOOL",
-                "1": "ROTATE_TOOL",
-                "5": "TWEAK_TOOL",
-                "8": "MOVE_TOOL",
-                "2": "SCALE_TOOL"
+                "7": "op_d42ffd2ee6f150a2a992fa806e6229f5",
+                "3": "op_bce8995f24e45ea98cf3ac43dd202f6e",
+                "4": "op_cb729ce195e050029e0cd211ffad491c",
+                "6": "op_ba33d2de993e5c91b670c12d8a32ffe1",
+                "1": "op_e32a6bab05ae5a97be6c93ac7d32d600",
+                "5": "op_ac0376dce80e50e9941c21079113ade6",
+                "8": "op_b7a7cb485ec652bf8c85acdcbc4bd09c",
+                "2": "op_97334a907c31595ebc8b822e63c088fc"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.UV": {
             "name": "UV",
@@ -340,16 +356,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "2": "FOLLOW_ACTIVE_QUADS",
-                "1": "UV_RESET",
-                "8": "SMART_PROJECT",
-                "3": "MARK_SEAM",
-                "7": "CLEAR_SEAM",
-                "4": "UNWRAP_CONFORMAL",
-                "5": "UNWRAP_MINIMUM_STRETCH",
-                "6": "UNWRAP_ANGLE_BASED"
+                "2": "op_a0dc442ba6ab5fa7a0c61f17992d7412",
+                "1": "op_0d87dea24dea5a5e93cf0b7cc9ffd636",
+                "8": "op_e540b494a1445d90b2522fc0319105b9",
+                "3": "op_0854ed5d77fa5540846d4c6df50b4095",
+                "7": "op_c3fcf2b6268a5e33a41a727ad1e87d69",
+                "4": "op_16442a8fc7db563a9c9110bf3c073b96",
+                "5": "op_7b4f321d474e5d17aed5eb2244d3308f",
+                "6": "op_69ccfd25c6d65ccfa809d9c4cc9040e4"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.ORIGIN": {
             "name": "Origin",
@@ -360,16 +377,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "2": "ORIGIN_TO_GEOMETRY",
-                "8": "CURSOR_TO_ORIGIN",
-                "6": "CURSOR_TOOL",
-                "1": "SELECTED_TO_CURSOR",
-                "5": "GEOMETRY_TO_ORIGIN",
-                "3": "ORIGIN_TO_SELECTED",
-                "7": "CURSOR_TO_SELECTED",
-                "4": "ORIGIN_TO_CURSOR"
+                "2": "op_ca96548ec2525a6792edc27226d6e140",
+                "8": "op_0314beecdfde5cb2a4e76b40ae375304",
+                "6": "op_ba33d2de993e5c91b670c12d8a32ffe1",
+                "1": "op_5affb372d2605e4fb0f5b3bc5f427e31",
+                "5": "op_6404c09c030250549f8b466ec443b302",
+                "3": "op_d053573b96e953f3ac3f16f387609fd2",
+                "7": "op_506c226b6f7f5bfab127b7617980ed48",
+                "4": "op_fbd8fbd56bf253fb9a9a279c7b83de3f"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.RETOPO": {
             "name": "Retopology",
@@ -378,16 +396,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "1": "INITIALIZE_RETOPO",
-                "2": "WELD_TOPOLOGY_BRUSH",
-                "3": "RELAX_TOPOLOGY_BRUSH",
-                "4": "STRIPS_TOOL",
-                "5": "STROKES_TOOL",
-                "6": "LOOP_CUT",
-                "7": "KNIFE_TOOL",
-                "8": "BRIDGE_EDGELOOPS"
+                "1": "op_81b785690f50587a8c3e821935ceaece",
+                "2": "op_ab7a5ce76eb95b898a1c615b4e395254",
+                "3": "op_3338077c28bf5420a663892b5d0056f9",
+                "4": "op_a4b1118c47e15d8cb584f6315fb035a0",
+                "5": "op_3ff363f9fb5c58b2a1f3a3a8bae649ad",
+                "6": "op_ebebba7032145322974be804d0542db8",
+                "7": "op_b94665a4a0005ddca59c5ba1f160b11a",
+                "8": "op_2c4c03800d1956dd9cabfc973931fdf8"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "EDIT.SUBD": {
             "name": "Subdivision",
@@ -396,16 +415,17 @@
             "keymap": "Mesh",
             "enabled": true,
             "slots": {
-                "3": "INCREASE_SUBDIVISION",
-                "2": "INCREASE_RENDER_LEVEL",
-                "7": "DECREASE_SUBDIVISION",
-                "8": "DECREASE_RENDER_LEVEL",
-                "1": "SHOW_IN_VIEWPORT",
-                "5": "SHOW_IN_EDITMODE",
-                "4": "SHOW_IN_RENDER",
-                "6": "SHOW_CAGE"
+                "3": "op_b8c3d03af1c250ee8327de6d4b52127f",
+                "2": "op_3e2250895c2451b49fe05733a74729c2",
+                "7": "op_601df2984931578d99a5fe12f610c4f0",
+                "8": "op_9d81854cc5445b30ab2b166913c0bc30",
+                "1": "op_e1c912aff9225a65ad17cafebe4d6853",
+                "5": "op_796978a2061c5614a77ab11a47da9f56",
+                "4": "op_91a313eb07b35fb7b171f46d92a992da",
+                "6": "op_85171470bf235300a7281100bea3f8bb"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.ESSENTIALS_BRUSH": {
             "name": "Essentials Brushes",
@@ -414,26 +434,26 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "2": "DRAW_SHARP",
-                "6": "INFLATE",
-                "8": "PINCH",
-                "7": "GRAB",
-                "5": "SCRAPE",
-                "3": "CLAY_STRIPS",
-                "1": "DRAW",
-                "4": "MASK"
+                "2": "op_70cb5c919a655fc88b5937cc638458aa",
+                "6": "op_ab939a6e9ac35f6b996a8aa88c58014a",
+                "8": "op_29595170dbef51979f35be72eed1cc23",
+                "7": "op_b176ca9b0c325bb0b9431b3d9ffa7403",
+                "5": "op_33baa86f5b7f5feb985f91eeb15c520d",
+                "3": "op_14dff7d8419350dca09c48b965a31f82",
+                "1": "op_e5a2c1569ccd5ce1b4f506c6afdc10be",
+                "4": "op_84b39be8b7fe5d7087b193f3a2194910"
             },
             "spaced_slots": {
-                "7": "SNAKE_HOOK",
-                "1": "ASSET_SHELF",
-                "6": "ERASE_MULTIRES_DISPLACEMENT",
-                "8": "RELAX_SLIDE",
-                "4": "FACE_SET_PAINT",
-                "5": "TRIM",
-                "3": "CLAY",
-                "2": "CREASE_SHARP"
+                "7": "op_62bd1473d8605ed7aec8325842ea1c2d",
+                "1": "op_3cddb2eb95ba5a1a93bfda11157e0a9d",
+                "6": "op_2767bef3c74a57a5afb1330d62eccdbc",
+                "8": "op_5945b20d8ee25ecd9ee52f02515f9a18",
+                "4": "op_ebb9e88442e550fb84febb5ad93f4683",
+                "5": "op_5ff644e502f8518aac81e8922ddceef2",
+                "3": "op_4ac5c4502ac85703a9654526fe4267e4",
+                "2": "op_9d1c21fe94025725ba057351f3dc79c8"
             },
-            "is_brush_menu": true
+            "spaced_slots_enabled": true
         },
         "SCULPT.PAINT_BRUSH": {
             "name": "Paint Brushes",
@@ -442,17 +462,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "1": "ASSET_SHELF",
-                "5": "AIRBRUSH",
-                "4": "PAINT_SQUARE",
-                "3": "PAINT_SOFT",
-                "7": "PAINT_HARD",
-                "6": "PAINT_BLEND",
-                "2": "PAINT_SOFT_PRESSURE",
-                "8": "PAINT_HARD_PRESSURE"
+                "1": "op_3cddb2eb95ba5a1a93bfda11157e0a9d",
+                "5": "op_70afccc72a2d5f479530a97e41e843a5",
+                "4": "op_4126c6a51b9f5df6850d2b74c923db62",
+                "3": "op_2b3a655828425999adefa76a9e3eec00",
+                "7": "op_6d2af3c9bab65335a22872424e02a5dc",
+                "6": "op_38d6f439b0a350918ed7e0a05dc671be",
+                "2": "op_0a1aacca312a5deaa90fcc2db8df164d",
+                "8": "op_6f1ec606014559cfa2206f24fab3fad2"
             },
             "spaced_slots": {},
-            "is_brush_menu": true
+            "spaced_slots_enabled": false
         },
         "SCULPT.BRUSH_SETTINGS": {
             "name": "Brush Settings",
@@ -461,16 +481,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "1": "BRUSH_STROKE_MENU",
-                "2": "BRUSH_SETTING_MENU",
-                "8": "BRUSH_TEXTURE_MENU",
-                "3": "AUTOMASKING_CAVITY",
-                "7": "AUTOMASKING_CAVITY_INVERTED",
-                "4": "AUTOMASKING_FACESET",
-                "6": "AUTOMASKING_TOPOLOGY",
-                "5": "TOGGLE_STABILIZE_STROKE"
+                "1": "op_fdc339dd86b8536e9cfa72235c74e6c9",
+                "2": "op_2259c4ba1a2a5f0f9a0dec09167df6f0",
+                "8": "op_988785efebb85451809b52cc68d2d090",
+                "3": "op_27ee8d5666f4519388b6c438143a287b",
+                "7": "op_b16458c7ba205cf6be85a23956584541",
+                "4": "op_ed6915750cd65ec28af2d8c773f984aa",
+                "6": "op_b21721fbb080552d8b10ce00fbc1a1ba",
+                "5": "op_f460b1c6b67756dba57717314466cfd8"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.REMESH": {
             "name": "Remesh",
@@ -479,16 +500,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "2": "SET_VOXEL_SIZE",
-                "1": "REMESH_MENU",
-                "8": "QUADRIFLOW_REMESH",
-                "7": "INCREASE_VOXELSIZE_25",
-                "6": "INCREASE_VOXELSIZE_10",
-                "5": "REMESH",
-                "3": "DECREASE_VOXELSIZE_25",
-                "4": "DECREASE_VOXELSIZE_10"
+                "2": "op_c68dac10aa8d515b87ba0f90789c4686",
+                "1": "op_bc9bd98fe35d5dc78dba0ac12b63dd26",
+                "8": "op_bc776b3db2bd5a77a0c748444db00456",
+                "7": "op_ce522b45e23056ff8ef1fec2139df3d6",
+                "6": "op_f27362fcd18d5cdd8617c4e85fd6b0ce",
+                "5": "op_6a5cff886eae5d92ab17a2c00b096ece",
+                "3": "op_ee9846bdccee59719aca59a5bc16b5fd",
+                "4": "op_e3a02fffe1a95b9ea2ececab5013d269"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.SYMMETRY": {
             "name": "Symmetry",
@@ -497,16 +519,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "1": "SYMMETRY_MENU",
-                "5": "SYMMETRIZE",
-                "4": "Z_SYMMETRY",
-                "3": "Y_SYMMETRY",
-                "2": "X_SYMMETRY",
-                "8": "FLIP_X",
-                "7": "FLIP_Y",
-                "6": "FLIP_Z"
+                "1": "op_5474cd3dbba5502994c54247e29e7fba",
+                "5": "op_c132ba3c78d359f4a983a01c9a374026",
+                "4": "op_a8379649d3b15e1d9ae2222d448037e6",
+                "3": "op_09c2c8a0f4b75184a06b4b0c5bc0bc31",
+                "2": "op_d7f183a9060b54c98f310e0088b88ea0",
+                "8": "op_8c499db10069572d9ac2fd43eda5f0b9",
+                "7": "op_e2c1171599485b41ac59357b813654c3",
+                "6": "op_741de805cf915bf1b0556e9c6c301656"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.MULTIRES": {
             "name": "Multires",
@@ -515,16 +538,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "1": "DELETE_HIGHER",
-                "2": "APPLY_TO_BASE",
-                "3": "INCREASE_SCULPT_LEVEL",
-                "4": "INCREASE_VEIWPORT_LEVEL",
-                "5": "SUBDIVIDE",
-                "7": "DECREASE_SCULPT_LEVEL",
-                "6": "DECREASE_VIEWPORT_LEVEL",
-                "8": "SET_RENDER_LEVEL"
+                "1": "op_a50e529d4b5f51c2932eb5498f56c959",
+                "2": "op_fcab3f86f269594981fbcd8f2e506f33",
+                "3": "op_ed3a93546fc05d7096d090e8048af3ba",
+                "4": "op_08b26e8d872050768173f0a5a87b48fa",
+                "5": "op_cd95f40b83e35440b75ade5c5a1d4f15",
+                "7": "op_f58a7397831e50c89fc8684daf8aeee2",
+                "6": "op_d50582fa779d5b36b00ddad3c9c62cf8",
+                "8": "op_9bd56b0bcdcc5430807d807687b9e18d"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.TOOL_SELECT": {
             "name": "Tool Select",
@@ -533,16 +557,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "6": "RESET_PIVOT",
-                "5": "COLOR_PICKER",
-                "1": "ROTATE_TOOL",
-                "3": "MASK_LASSO",
-                "7": "MASK_LINE",
-                "4": "SET_PIVOT",
-                "8": "MOVE_TOOL",
-                "2": "SCALE_TOOL"
+                "6": "op_55780177534552a1b7907ef08d403d64",
+                "5": "op_01effb928b605020b620fc32de4dddf3",
+                "1": "op_e32a6bab05ae5a97be6c93ac7d32d600",
+                "3": "op_d72df586a5e75c4d84b6b9634d44c922",
+                "7": "op_8de126af6838511a93f51eca13ac50a7",
+                "4": "op_dcb10e8f248b5e2da0921d67bfd8b3fe",
+                "8": "op_b7a7cb485ec652bf8c85acdcbc4bd09c",
+                "2": "op_97334a907c31595ebc8b822e63c088fc"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.VISIBILITY": {
             "name": "Visibility",
@@ -551,16 +576,17 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "3": "GROW_VISIBILITY",
-                "7": "SHRINK_VISIBILITY",
-                "4": "HIDE_LASSO",
-                "6": "HIDE_MASKED",
-                "2": "SOLO_FACESET",
-                "5": "INVERT_VISIBLE",
-                "1": "UNHIDE_ALL_84FA0F",
-                "8": "HIDE_FACESET"
+                "3": "op_46d468cbff49549387001044834c9aa5",
+                "7": "op_800983ea5e9c533bbe2f65ee9b6cf8ba",
+                "4": "op_e591a8a788245780a2d1260c20b66332",
+                "6": "op_697a351df96150e9832a042ef0c97324",
+                "2": "op_2c41df6646d45217ba1887c81984dd5a",
+                "5": "op_fc1c211a16ce5d8186755077be54b196",
+                "1": "op_ae846e7ab69e56a0828282a55be8d61d",
+                "8": "op_c54963183a9e5e8caf59281f57da9fc0"
             },
-            "spaced_slots": {}
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         },
         "SCULPT.MASK": {
             "name": "Mask Menu",
@@ -569,25 +595,42 @@
             "keymap": "Sculpt",
             "enabled": true,
             "slots": {
-                "7": "INVERT_MASK",
-                "3": "CLEAR_MASK",
-                "5": "SHARPEN_MASK",
-                "1": "SMOOTH_MASK",
-                "6": "DECREASE_CONTRAST",
-                "4": "INCREASE_CONTRAST",
-                "2": "GROW_MASK",
-                "8": "SHRINK_MASK"
+                "7": "op_797c256b408d5b3c87d60b8835398802",
+                "3": "op_89b068c61d1c5ab1ac530c6f8e7ab59d",
+                "5": "op_e02c4e78b07d5424b65579747c02fb58",
+                "1": "op_39fbc6d5bb485ea3af89b271b36cbd49",
+                "6": "op_8952d4b45264579cb83e1e486f32ddba",
+                "4": "op_371f86e437d7550fb0c5bde2275e0670",
+                "2": "op_e4d38c23f13c5724b35e9861972f5c7f",
+                "8": "op_aa34afbfbe335769a6a6be24fdf7a176"
             },
             "spaced_slots": {
-                "6": "CAVITY_MASK_INVERTED",
-                "4": "CAVITY_MASK",
-                "1": "FACESET_FROM_MASK",
-                "8": "MASK_FROM_EDIT_MODE",
-                "5": "MASK_FROM_FACESET",
-                "2": "MASK_EXTRACT",
-                "3": "MASK_SLICE",
-                "7": "MASK_SLICE_NEW_OBJ"
-            }
+                "6": "op_cc17d2abfd6d5e2d95d359cd6d50cae1",
+                "4": "op_8746885438775d82812619d72c448944",
+                "1": "op_dd41e302d25e59fbab440d1b45148a1c",
+                "8": "op_3cea73285cde5b35a2be0fa66c754723",
+                "5": "op_c912ad97023c595f9f9aa48f77e9dfc7",
+                "2": "op_563b5d2f7a5359bdbcbf83da894a135f",
+                "3": "op_245d53eed4bd598caa57bc53c20d6aa9",
+                "7": "op_142eca0288e35eef97d5907cbe947996"
+            },
+            "spaced_slots_enabled": true
+        },
+        "IMAGE.MODE": {
+            "name": "Mode",
+            "key": "TAB",
+            "keymodifiers": [
+                "CTRL"
+            ],
+            "keymap": "Image",
+            "enabled": true,
+            "slots": {
+                "1": "op_52a7ff7059f459e89a082c3776650cf4",
+                "3": "op_399f4d6399495ac7876e77829729f7d4",
+                "5": "op_3c36a10db77e5561978b4a4354b26d28"
+            },
+            "spaced_slots": {},
+            "spaced_slots_enabled": false
         }
     },
     "Operators": {
@@ -598,7 +641,9 @@
             "properties": {},
             "search_name": "Add Plane",
             "description": "Add a four-vertex plane at the 3D Cursor. Useful as a starting surface for modeling.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c36c0f5b84015f19a93681363f036b8a",
+            "enum_value": 1083335946
         },
         "ADD_CUBE": {
             "name": "Add Cube",
@@ -607,7 +652,9 @@
             "properties": {},
             "search_name": "Add Cube",
             "description": "Add a cube mesh at the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ea92ba54e4f25ae186bbdc2e98aa2f7d",
+            "enum_value": 3328477
         },
         "SEARCH_ADD_MENU": {
             "name": "Search Add Menu",
@@ -618,7 +665,9 @@
             },
             "search_name": "Search Add Menu",
             "description": "Open Blender’s searchable Add menu so you can search for any available object or primitive.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_4d8e027fd03051a3ac9e772a071f9fd6",
+            "enum_value": 1684611952
         },
         "ADD_MENU": {
             "name": "Add Menu",
@@ -629,7 +678,9 @@
             },
             "search_name": "Open Add Menu",
             "description": "Open Blender’s standard Add menu in the 3D Viewport.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f6d71dd976f85db896d02a0337abf12c",
+            "enum_value": 1564347972
         },
         "ADD_CYLINDER": {
             "name": "Add Cylinder",
@@ -638,7 +689,9 @@
             "properties": {},
             "search_name": "Add Cylinder",
             "description": "Add a cylinder mesh at the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b9638fd96192588f9c4684c740709f56",
+            "enum_value": 927934209
         },
         "ADD_UVSPHERE": {
             "name": "Add UVSphere",
@@ -647,7 +700,9 @@
             "properties": {},
             "search_name": "Add UV Sphere",
             "description": "Add a UV sphere mesh at the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_75cefcd23bdf5cb992f4d3968dfc586f",
+            "enum_value": 458226125
         },
         "ADD_CONE": {
             "name": "Add Cone",
@@ -656,7 +711,9 @@
             "properties": {},
             "search_name": "Add Cone",
             "description": "Add a cone mesh at the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_77e962e45d645ea794c4791443a978e2",
+            "enum_value": 217363761
         },
         "ADD_GRID": {
             "name": "Add Grid",
@@ -665,7 +722,9 @@
             "properties": {},
             "search_name": "Add Grid",
             "description": "Add a subdivided grid mesh at the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ea2727bd70a057e786dfcab97691190d",
+            "enum_value": 57953864
         },
         "ROTATION": {
             "name": "Rotation",
@@ -678,7 +737,9 @@
             },
             "search_name": "Apply Rotation",
             "description": "Apply the active object’s rotation to its mesh data. The object keeps its current appearance but its rotation values are reset.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9ba523d228905f19835d2cee25cafa56",
+            "enum_value": 681679024
         },
         "ALL_TRANSFORMS": {
             "name": "All Transforms",
@@ -691,7 +752,9 @@
             },
             "search_name": "Apply Location, Rotation and Scale",
             "description": "Apply location, rotation and scale to the object’s data, resetting those transform values while preserving the visible result.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6edbc100a6ce5124835aaeee764891a9",
+            "enum_value": 64476731
         },
         "ROTATION_AND_SCALE": {
             "name": "Rotation & Scale",
@@ -704,7 +767,9 @@
             },
             "search_name": "Apply Rotation and Scale",
             "description": "Apply rotation and scale to the object’s data while leaving its location unchanged.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0034c4875d2d5519b07237553749f045",
+            "enum_value": 863149182
         },
         "LOCATION_AND_SCALE": {
             "name": "Location & Scale",
@@ -717,7 +782,9 @@
             },
             "search_name": "Apply Location and Scale",
             "description": "Apply location and scale to the object’s data while leaving its rotation unchanged.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_637d277ab07b529a94e85243f3a88019",
+            "enum_value": 1674550177
         },
         "LOCATION_AND_ROTATION": {
             "name": "Location & Rotation",
@@ -730,7 +797,9 @@
             },
             "search_name": "Apply Location and Rotation",
             "description": "Apply location and rotation to the object’s data while leaving its scale unchanged.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9c572b0e72e45dd2ac88710674d46613",
+            "enum_value": 1610298722
         },
         "APPLY_TRANSFORMS_MENU": {
             "name": "  Apply Transforms Menu",
@@ -741,7 +810,9 @@
             },
             "search_name": "Apply Transforms Menu",
             "description": "Open Blender’s Apply menu to choose which object transforms to apply.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_466996d88b9c5229bdee0121115dad86",
+            "enum_value": 538279749
         },
         "LOCATION": {
             "name": "Location",
@@ -754,7 +825,9 @@
             },
             "search_name": "Apply Location",
             "description": "Apply the object’s location to its data, resetting its location values while preserving its visible position.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_bc21cce9655e5ee28d4fb97f08cced93",
+            "enum_value": 766887748
         },
         "SCALE": {
             "name": "Scale",
@@ -767,7 +840,9 @@
             },
             "search_name": "Apply Scale",
             "description": "Apply the object’s scale to its data, resetting scale values while preserving its visible size.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2590c48c9ca25cb4a1c041a754db6d3d",
+            "enum_value": 891707355
         },
         "SUBDIVISION": {
             "name": "SubDivision",
@@ -778,7 +853,9 @@
             },
             "search_name": "Add Subdivision Surface Modifier",
             "description": "Add a Subdivision Surface modifier to smooth and subdivide the object non-destructively.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fc7c6991c8d45283b1ba6a2cd5698ad3",
+            "enum_value": 181493569
         },
         "MIRROR": {
             "name": "Mirror",
@@ -789,7 +866,9 @@
             },
             "search_name": "Add Mirror Modifier",
             "description": "Add a Mirror modifier to create mirrored geometry across its configured axes.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2d6031f87b185271a7f7d8a9d5ca8ab5",
+            "enum_value": 766418545
         },
         "MODIFIER_SEARCH": {
             "name": "Modifier Search",
@@ -800,7 +879,9 @@
             },
             "search_name": "Search Modifiers",
             "description": "Open Blender’s searchable modifier list. Type a modifier name to find and add it.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a0725cba286051c6a9ee1c5ecd4cf8cc",
+            "enum_value": 1920334412
         },
         "MULTIRES": {
             "name": "Multires",
@@ -811,7 +892,9 @@
             },
             "search_name": "Add Multiresolution Modifier",
             "description": "Add a Multiresolution modifier, allowing the mesh to be subdivided and sculpted at multiple detail levels.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d997ebf41a085ac9b2e0e2023e41b83c",
+            "enum_value": 1577951777
         },
         "SOLIDIFY": {
             "name": "Solidify",
@@ -822,7 +905,9 @@
             },
             "search_name": "Solidify",
             "description": "Add a Solidify modifier to give a surface mesh thickness.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c864e4a3f8f75892b2b13fca015aa7e4",
+            "enum_value": 300576341
         },
         "DISPLACE": {
             "name": "Displace",
@@ -833,7 +918,9 @@
             },
             "search_name": "Displace",
             "description": "Add a Displace modifier that offsets vertices using a texture.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a1dc0292a8e1509fbd176187936df247",
+            "enum_value": 1869586213
         },
         "SHRINKWRAP": {
             "name": "Shrinkwrap",
@@ -844,7 +931,9 @@
             },
             "search_name": "Shrinkwrap",
             "description": "Add a Shrinkwrap modifier that projects the mesh onto a target surface once a target is assigned.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3ca81d95102058c48aad820896e4eccd",
+            "enum_value": 490993408
         },
         "ARRAY": {
             "name": "Array",
@@ -857,7 +946,9 @@
             },
             "search_name": "Add Geometry Nodes Array",
             "description": "Add the Geometry Nodes Array asset, which repeats geometry in an array-like pattern.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_044e32ab74775933b9219c85f19a1d29",
+            "enum_value": 280936666
         },
         "DESELECT_ALL": {
             "name": "Deselect All",
@@ -868,7 +959,9 @@
             },
             "search_name": "Deselect All Objects",
             "description": "Deselect every currently selected object.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_011f1a19a8b152179e8505cd9398d0e9",
+            "enum_value": 644106586
         },
         "SELECT_ALL": {
             "name": "Select All",
@@ -879,7 +972,9 @@
             },
             "search_name": "Select All Objects",
             "description": "Select every selectable object in the current view layer.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ede8aca17c0259e9a404cf729e73f021",
+            "enum_value": 1813180624
         },
         "INVERT_SELECTION": {
             "name": "Invert Selection",
@@ -890,7 +985,9 @@
             },
             "search_name": "Invert Object Selection",
             "description": "Invert object selection: selected objects become deselected and unselected objects become selected.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ddea23d5773c58d1918ff6a8c6cd456f",
+            "enum_value": 204154098
         },
         "RENAME_OBJECT": {
             "name": "Rename Object",
@@ -901,7 +998,9 @@
             },
             "search_name": "Rename Active Object",
             "description": "Open the object name editing panel for the active object.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d79bf8b9c15651b5898a7f8d6e033cbd",
+            "enum_value": 2144577229
         },
         "MOVE_TO_COLLECTION": {
             "name": "Move To Collection",
@@ -912,7 +1011,9 @@
             },
             "search_name": "Move Objects to Collection",
             "description": "Open the collection menu to move selected objects into another collection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a8a30c709330585fa571d1b6ed9ab1f6",
+            "enum_value": 1600760824
         },
         "UNHIDE_ALL": {
             "name": "Unhide All",
@@ -923,7 +1024,9 @@
             },
             "search_name": "Show Hidden Objects",
             "description": "Make all hidden objects visible again without changing their selection state.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_1ef79bc9a4a654518676e411931c4e11",
+            "enum_value": 2072461438
         },
         "SOLO_OBJECT": {
             "name": "Solo Object",
@@ -934,7 +1037,9 @@
             },
             "search_name": "Isolate Selected Objects",
             "description": "Isolate selected objects by hiding unselected objects in the viewport.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6f46ea17460755d7bf6613471071493e",
+            "enum_value": 1664491400
         },
         "HIDE_SELECTED": {
             "name": "Hide Selected",
@@ -945,7 +1050,9 @@
             },
             "search_name": "Hide Selected Objects",
             "description": "Hide selected objects in the viewport.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9955d52426c7592596fc5462cf7fc495",
+            "enum_value": 25107830
         },
         "CURSOR_TOOL": {
             "name": "Cursor Tool",
@@ -956,7 +1063,9 @@
             },
             "search_name": "Cursor Tool",
             "description": "Activate the 3D Cursor tool for placing or moving the 3D Cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ba33d2de993e5c91b670c12d8a32ffe1",
+            "enum_value": 1522302820
         },
         "LASSO_SELECT": {
             "name": "Lasso Select",
@@ -967,7 +1076,9 @@
             },
             "search_name": "Lasso Select",
             "description": "Activate the freehand Lasso Select tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d07dd1dd88345263bd22f234e8522a75",
+            "enum_value": 1775453440
         },
         "ROTATE_TOOL": {
             "name": "Rotate Tool",
@@ -978,7 +1089,9 @@
             },
             "search_name": "Rotate Tool",
             "description": "Activate the Rotate transform tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e32a6bab05ae5a97be6c93ac7d32d600",
+            "enum_value": 1549237294
         },
         "TWEAK_TOOL": {
             "name": "Tweak Tool",
@@ -989,7 +1102,9 @@
             },
             "search_name": "Select Tool (Tweak)",
             "description": "Activate the Select/Tweak tool for selecting and dragging elements.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ac0376dce80e50e9941c21079113ade6",
+            "enum_value": 1306453249
         },
         "MOVE_TOOL": {
             "name": "Move Tool",
@@ -1000,7 +1115,9 @@
             },
             "search_name": "Move Tool",
             "description": "Activate the Move transform tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b7a7cb485ec652bf8c85acdcbc4bd09c",
+            "enum_value": 1410462576
         },
         "SCALE_TOOL": {
             "name": "Scale Tool",
@@ -1011,7 +1128,9 @@
             },
             "search_name": "Scale Tool",
             "description": "Activate the Scale transform tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_97334a907c31595ebc8b822e63c088fc",
+            "enum_value": 1372161659
         },
         "ADD_CUBE_TOOL": {
             "name": "Add Cube Tool",
@@ -1022,7 +1141,9 @@
             },
             "search_name": "Add Cube Tool",
             "description": "Activate the interactive Add Cube tool. Click and drag in the viewport to create a cube.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c4ceb8653788564da062637e1326e495",
+            "enum_value": 1034375880
         },
         "ADD_CYLINDER_TOOL": {
             "name": "Add Cylinder Tool",
@@ -1033,7 +1154,9 @@
             },
             "search_name": "Add Cylinder Tool",
             "description": "Activate the interactive Add Cylinder tool. Click and drag in the viewport to create a cylinder.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_19ee2f3db51b5911b1c353902125305e",
+            "enum_value": 384719983
         },
         "SHADING_MENU": {
             "name": "Shading Menu",
@@ -1044,7 +1167,9 @@
             },
             "search_name": "Open Viewport Shading Settings",
             "description": "Open the viewport shading popover for changing shading mode, lighting and display options.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_527e6eb5d12c5b4b87416c85d25b2875",
+            "enum_value": 2072738442
         },
         "WIREFRAME": {
             "name": "Wireframe",
@@ -1055,7 +1180,9 @@
             },
             "search_name": "Switch to Wireframe Shading",
             "description": "Switch the viewport to Wireframe shading so mesh edges and vertices are visible through surfaces.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0731af3e8d0e5254a89e4bc5420f0d09",
+            "enum_value": 739167918
         },
         "SOLID": {
             "name": "Solid",
@@ -1066,7 +1193,9 @@
             },
             "search_name": "Switch to Solid Shading",
             "description": "Switch the viewport to Solid shading for fast, untextured modeling display.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c7a738125caa5d6d92f54ac87c74a703",
+            "enum_value": 1198811682
         },
         "STUDIO": {
             "name": "Studio",
@@ -1077,7 +1206,9 @@
             },
             "search_name": "Use Studio Lighting",
             "description": "Set viewport lighting to Studio mode. Studio lighting uses Blender’s studio light environment.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e6a8d5363c4656cd82df4b1fff78e421",
+            "enum_value": 1556350425
         },
         "MATCAP": {
             "name": "Matcap",
@@ -1088,7 +1219,9 @@
             },
             "search_name": "Use Matcap Lighting",
             "description": "Set viewport lighting to MatCap mode, using a material-capture sphere to shade the model.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b98c48bef2c05915a67ce57b7058778f",
+            "enum_value": 989879921
         },
         "FLAT": {
             "name": "Flat",
@@ -1099,7 +1232,9 @@
             },
             "search_name": "Use Flat Lighting",
             "description": "Set viewport lighting to Flat mode, removing studio-light shading variation.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_38b889aa9248543994fc256413f56af1",
+            "enum_value": 351076713
         },
         "MATERIAL": {
             "name": "Material",
@@ -1110,7 +1245,9 @@
             },
             "search_name": "Switch to Material Preview",
             "description": "Switch the viewport to Material Preview so material shaders and lighting can be previewed.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_48472b66692e5c7d8854667e0e3c4fb9",
+            "enum_value": 1160822788
         },
         "RENDERED": {
             "name": "Rendered",
@@ -1121,7 +1258,9 @@
             },
             "search_name": "Switch to Rendered View",
             "description": "Switch the viewport to Rendered shading to preview the scene using the active render engine.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0346e0713b375b94a6fb90a93faed3c6",
+            "enum_value": 2139123254
         },
         "TOP": {
             "name": "Top",
@@ -1132,7 +1271,9 @@
             },
             "search_name": "Top",
             "description": "Align the view to look straight down the world Z axis.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b0009dbe6bdc5f3b85b9c9a563d57fce",
+            "enum_value": 583474802
         },
         "FRONT": {
             "name": "Front",
@@ -1143,7 +1284,9 @@
             },
             "search_name": "Front",
             "description": "Align the view to the front (looking along the world Y axis).",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8f4e441ebbbf556aa3d36e4a9c8d0a58",
+            "enum_value": 1500177408
         },
         "RIGHT": {
             "name": "Right",
@@ -1154,7 +1297,9 @@
             },
             "search_name": "Right",
             "description": "Align the view to the right side of the scene.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8074cbe9cf09543ca8d03b1eaed6b364",
+            "enum_value": 604843454
         },
         "BOTTOM": {
             "name": "Bottom",
@@ -1165,7 +1310,9 @@
             },
             "search_name": "Bottom",
             "description": "Align the view to look upward from below the scene.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0d8b69082607574290529a480fea10ac",
+            "enum_value": 1855897917
         },
         "LEFT": {
             "name": "Left",
@@ -1176,7 +1323,9 @@
             },
             "search_name": "Left",
             "description": "Align the view to the left side of the scene.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0a34d0a5e4da5a4cbb4d233f2c29c7ba",
+            "enum_value": 28067892
         },
         "BACK": {
             "name": "Back",
@@ -1187,7 +1336,9 @@
             },
             "search_name": "Back",
             "description": "Align the view to the back of the scene.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fea873dfd5925e06be0914d02b3ee165",
+            "enum_value": 627075814
         },
         "VIEW_MAXIMIZE": {
             "name": "View Maximize",
@@ -1196,7 +1347,9 @@
             "properties": {},
             "search_name": "Toggle Full-Area View",
             "description": "Toggle the current editor area between normal layout and full-area view.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2a7873be68ad5b0c9f56149eb74d8133",
+            "enum_value": 1950942032
         },
         "VIEW_SELECTED": {
             "name": "View Selected",
@@ -1205,7 +1358,9 @@
             "properties": {},
             "search_name": "Frame Selected",
             "description": "Frame the selected objects or mesh elements in the 3D Viewport.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_37dc8559c9a15a5fbe0373a15fba6e53",
+            "enum_value": 2121660296
         },
         "OBJECT_MODE": {
             "name": "Object Mode",
@@ -1216,7 +1371,9 @@
             },
             "search_name": "Object Mode",
             "description": "Switch the active object to Object Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_4ca8842da9b35a05a26ded659a2d21ab",
+            "enum_value": 607916830
         },
         "TEXTURE_PAINT_MODE": {
             "name": "Texture Paint Mode",
@@ -1227,7 +1384,9 @@
             },
             "search_name": "Texture Paint Mode",
             "description": "Switch the active object to Texture Paint Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_926a45fddee5589d8651276801c7bfc1",
+            "enum_value": 2010814910
         },
         "EDIT_MODE": {
             "name": "Edit Mode",
@@ -1238,7 +1397,9 @@
             },
             "search_name": "Edit Mode",
             "description": "Switch the active mesh object to Edit Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_bcc41bfd2efe5bb59df25b119bd567d1",
+            "enum_value": 735565268
         },
         "SCULPT_MODE": {
             "name": "Sculpt Mode",
@@ -1249,7 +1410,9 @@
             },
             "search_name": "Sculpt Mode",
             "description": "Switch the active mesh object to Sculpt Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_dff3fc5d1d8a50b597410a2ff7b3c31e",
+            "enum_value": 1469721872
         },
         "WEIGHT_PAINT_MODE": {
             "name": "Weight Paint Mode",
@@ -1260,7 +1423,9 @@
             },
             "search_name": "Weight Paint Mode",
             "description": "Switch the active object to Weight Paint Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e9835382513856c3ac709485120a011d",
+            "enum_value": 253899929
         },
         "VERTEX_PAINT_MODE": {
             "name": "Vertex Paint Mode",
@@ -1271,7 +1436,9 @@
             },
             "search_name": "Vertex Paint Mode",
             "description": "Switch the active mesh object to Vertex Paint Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_25f0690456ac54b5ac67ac17e366d018",
+            "enum_value": 2134196879
         },
         "INCREASE_SUBDIVISION": {
             "name": "Increase Subdivision",
@@ -1282,7 +1449,9 @@
             },
             "search_name": "Increase Viewport Subdivision Level",
             "description": "Increase the Subdivision Surface modifier’s viewport subdivision level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b8c3d03af1c250ee8327de6d4b52127f",
+            "enum_value": 1838912748
         },
         "INCREASE_RENDER_LEVEL": {
             "name": "Increase Render Level ",
@@ -1293,7 +1462,9 @@
             },
             "search_name": "Increase Render Subdivision Level",
             "description": "Increase the Subdivision Surface modifier’s render subdivision level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3e2250895c2451b49fe05733a74729c2",
+            "enum_value": 213729396
         },
         "DECREASE_SUBDIVISION": {
             "name": "Decrease Subdivision",
@@ -1304,7 +1475,9 @@
             },
             "search_name": "Decrease Viewport Subdivision Level",
             "description": "Decrease the Subdivision Surface modifier’s viewport subdivision level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_601df2984931578d99a5fe12f610c4f0",
+            "enum_value": 1818907080
         },
         "DECREASE_RENDER_LEVEL": {
             "name": "Decrease Render Level",
@@ -1315,7 +1488,9 @@
             },
             "search_name": "Decrease Render Subdivision Level",
             "description": "Decrease the Subdivision Surface modifier’s render subdivision level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9d81854cc5445b30ab2b166913c0bc30",
+            "enum_value": 2117267931
         },
         "SHOW_IN_VIEWPORT": {
             "name": "Show In Viewport",
@@ -1326,7 +1501,9 @@
             },
             "search_name": "Toggle Subdivision in Viewport",
             "description": "Toggle whether the Subdivision Surface modifier affects the 3D Viewport.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e1c912aff9225a65ad17cafebe4d6853",
+            "enum_value": 2336914
         },
         "SHOW_IN_EDITMODE": {
             "name": "Show In EditMode",
@@ -1337,7 +1514,9 @@
             },
             "search_name": "Toggle Subdivision in Edit Mode",
             "description": "Toggle whether the Subdivision Surface modifier is displayed in Edit Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_796978a2061c5614a77ab11a47da9f56",
+            "enum_value": 1013963524
         },
         "SHOW_IN_RENDER": {
             "name": "Show In Render",
@@ -1348,7 +1527,9 @@
             },
             "search_name": "Toggle Subdivision in Render",
             "description": "Toggle whether the Subdivision Surface modifier is evaluated during rendering.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_91a313eb07b35fb7b171f46d92a992da",
+            "enum_value": 1338641302
         },
         "SHOW_CAGE": {
             "name": "Show Cage",
@@ -1359,7 +1540,9 @@
             },
             "search_name": "Toggle Subdivision Edit Cage",
             "description": "Toggle display of the modifier edit cage so the editable cage follows the evaluated surface.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_85171470bf235300a7281100bea3f8bb",
+            "enum_value": 916032561
         },
         "VERT_SELECT": {
             "name": "Vert Select",
@@ -1370,7 +1553,9 @@
             },
             "search_name": "Select Vertices",
             "description": "Switch mesh selection to vertices only.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a306b56b702d57aba4524b9cdf518393",
+            "enum_value": 79333641
         },
         "EDGE_SELECT": {
             "name": "Edge Select",
@@ -1381,7 +1566,9 @@
             },
             "search_name": "Select Edges",
             "description": "Switch mesh selection to edges only.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9b51dadba5d15ae3826a9afc9583a532",
+            "enum_value": 1339013252
         },
         "FACE_SELECT": {
             "name": "Face Select",
@@ -1392,7 +1579,9 @@
             },
             "search_name": "Select Faces",
             "description": "Switch mesh selection to faces only.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9780e9808e3b55b5b27975a970324e22",
+            "enum_value": 183832554
         },
         "SELECT_ALL_93DF52": {
             "name": "Select All",
@@ -1403,7 +1592,9 @@
             },
             "search_name": "Select All Mesh Elements",
             "description": "Select all vertices, edges and faces in the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a04e84fce2c0559d98e3e52fb0a3353d",
+            "enum_value": 1584240826
         },
         "INVERT_SELECTION_29AC03": {
             "name": "Invert Selection",
@@ -1414,7 +1605,9 @@
             },
             "search_name": "Invert Mesh Selection",
             "description": "Invert the current mesh-element selection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_70f2dc7ae0a85f7e964ee76a956ce3d4",
+            "enum_value": 1705745282
         },
         "DESELECT_ALL_CB73F0": {
             "name": "Deselect All",
@@ -1425,7 +1618,9 @@
             },
             "search_name": "Deselect All Mesh Elements",
             "description": "Deselect all selected vertices, edges and faces.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_4139751eb10451f3b63a0e881695fc2f",
+            "enum_value": 1793643508
         },
         "LOOP_INNER_REGION": {
             "name": "Loop Inner Region",
@@ -1434,7 +1629,9 @@
             "properties": {},
             "search_name": "Select Loop Interior Region",
             "description": "Select the region enclosed by the current edge-loop selection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9a8087691ee6550bbf8f447ebc152215",
+            "enum_value": 653938090
         },
         "SELECT_MIRROR": {
             "name": "Select Mirror",
@@ -1445,7 +1642,9 @@
             },
             "search_name": "Select Mirrored Geometry",
             "description": "Select corresponding mirrored elements across the mesh symmetry plane, extending the current selection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8b7bb42783ae5f95bc6c18d6a32ecc92",
+            "enum_value": 38415934
         },
         "HIDE_SELECTED_76F040": {
             "name": "Hide Selected",
@@ -1456,7 +1655,9 @@
             },
             "search_name": "Hide Selected Mesh Elements",
             "description": "Hide selected mesh elements in Edit Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_94a6c3086545543f8a70543e5845b3b5",
+            "enum_value": 70732735
         },
         "UNHIDE_ALL_396850": {
             "name": "UnHide All",
@@ -1465,7 +1666,9 @@
             "properties": {},
             "search_name": "Reveal Hidden Mesh Geometry",
             "description": "Reveal all hidden mesh elements in Edit Mode.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ca9765b13b715437ac0c2756f0eb8597",
+            "enum_value": 612974181
         },
         "SOLO_SELECTED": {
             "name": "Solo Selected",
@@ -1476,7 +1679,9 @@
             },
             "search_name": "Hide Unselected Mesh Elements",
             "description": "Hide unselected mesh elements, leaving the selected geometry visible.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_40a71d1534f9564a8ec6221cd638af0b",
+            "enum_value": 1292490581
         },
         "SELECT_NON_MANIFOLD": {
             "name": "Select Non Manifold",
@@ -1485,7 +1690,9 @@
             "properties": {},
             "search_name": "Select Non-Manifold Geometry",
             "description": "Select non-manifold edges, such as boundary edges and edges shared by an invalid number of faces.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8c06cef24b3e58df837ac3b93c26801e",
+            "enum_value": 2016277668
         },
         "SELECT_SHARP_EDGES": {
             "name": "Select Sharp Edges",
@@ -1494,7 +1701,9 @@
             "properties": {},
             "search_name": "Select Sharp Edges",
             "description": "Select edges whose angle between adjacent faces is considered sharp.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e04f368eeb2d563bacf7825ae9eeab9c",
+            "enum_value": 1522823274
         },
         "CHECKER_DESELECT": {
             "name": "Checker Deselect",
@@ -1503,7 +1712,9 @@
             "properties": {},
             "search_name": "Checker Deselect",
             "description": "Apply checker deselection to the current selection, deselecting alternating elements according to the operator settings.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c426892b48615eea91ccde102206bf93",
+            "enum_value": 545462751
         },
         "SELECT_SIMILAR": {
             "name": "Select Similar",
@@ -1512,7 +1723,9 @@
             "properties": {},
             "search_name": "Select Similar Elements",
             "description": "Select mesh elements similar to the active selection, using Blender’s similarity criteria.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0554ea3a5c915d75a9a321fb5bf986e8",
+            "enum_value": 1892006444
         },
         "SELECT_LINKED": {
             "name": "Select Linked",
@@ -1521,7 +1734,9 @@
             "properties": {},
             "search_name": "Select Linked Geometry Under Cursor",
             "description": "Select connected geometry under the mouse cursor, expanding to its linked component.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_170e63c7ecb054b19465058fdeb1cb8c",
+            "enum_value": 1985947485
         },
         "EDGE_DELETE": {
             "name": "Edge Delete",
@@ -1532,7 +1747,9 @@
             },
             "search_name": "Delete Edges",
             "description": "Delete selected edges and the geometry connected to those edges according to Blender’s Edge delete operation.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6b2b68a0c99454ea8fcb7de8fce57ad9",
+            "enum_value": 2045343336
         },
         "FACE_DELETE": {
             "name": "Face Delete",
@@ -1543,7 +1760,9 @@
             },
             "search_name": "Delete Faces",
             "description": "Delete selected faces. Boundary edges and vertices may remain, depending on surrounding topology.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_76d2960f8c5c55b8aa7a5f246608e485",
+            "enum_value": 338179283
         },
         "ONLY_FACE": {
             "name": "Only Face",
@@ -1554,7 +1773,9 @@
             },
             "search_name": "Delete Faces Only (Keep Edges)",
             "description": "Delete selected faces only, preserving their surrounding edges and vertices.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_38da2e9b620f5def9ce0305e9522170a",
+            "enum_value": 1262378295
         },
         "FACE_DISSOLVE": {
             "name": "Face Dissolve",
@@ -1563,7 +1784,9 @@
             "properties": {},
             "search_name": "Dissolve Faces",
             "description": "Dissolve selected faces while preserving surrounding geometry where possible, removing the face boundaries.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f088806f209658968bc91b9a5a0a206f",
+            "enum_value": 1301145958
         },
         "EDGE_DISSOLVE": {
             "name": "Edge Dissolve",
@@ -1572,7 +1795,9 @@
             "properties": {},
             "search_name": "Dissolve Edges",
             "description": "Dissolve selected edges and merge adjacent faces where possible, preserving the surrounding surface.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_723445e9a27d5d2cb3edace8075cbaf2",
+            "enum_value": 746321378
         },
         "VERTICES_DISSOLVE": {
             "name": "Vertices Dissolve",
@@ -1581,7 +1806,9 @@
             "properties": {},
             "search_name": "Dissolve Vertices",
             "description": "Dissolve selected vertices and their connected edges while preserving surrounding faces where possible.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_51b11604adea542b9c1a12f4bd7d1841",
+            "enum_value": 1859462281
         },
         "EDGE_AND_FACE": {
             "name": "Edge & Face",
@@ -1592,7 +1819,9 @@
             },
             "search_name": "Delete Edges and Faces",
             "description": "Delete selected edges and faces together.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_1cc5593ea9485ea6be5d53a41a569b6e",
+            "enum_value": 1591879018
         },
         "VERTICES_DELETE": {
             "name": "Vertices Delete",
@@ -1603,7 +1832,9 @@
             },
             "search_name": "Delete Vertices",
             "description": "Delete selected vertices and the edges and faces connected to them.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2c74ba1c33dd5556aef225d785930103",
+            "enum_value": 675440629
         },
         "SEPARATE_SELECTION": {
             "name": "Separate Selection",
@@ -1614,7 +1845,9 @@
             },
             "search_name": "Separate Selected Geometry",
             "description": "Separate the selected geometry into a new object.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e03331860b77571ca2636156d3adf68b",
+            "enum_value": 2047245336
         },
         "SEPARATE_LOOSE_GEOMETRY": {
             "name": "Separate Loose Geometry",
@@ -1625,7 +1858,9 @@
             },
             "search_name": "Separate Loose Parts",
             "description": "Split disconnected loose parts into separate objects.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3bcabcee851c554fa3e620efe7244634",
+            "enum_value": 484460957
         },
         "SEPARATE_BY_MATERIAL": {
             "name": "Separate By Material",
@@ -1636,7 +1871,9 @@
             },
             "search_name": "Separate by Material",
             "description": "Separate mesh geometry into objects according to its assigned material slots.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_211cf7e421995f36966f355e40fb04ff",
+            "enum_value": 789484988
         },
         "MERGE_BY_DISTANCE": {
             "name": "Merge By Distance",
@@ -1645,7 +1882,9 @@
             "properties": {},
             "search_name": "Merge Vertices by Distance",
             "description": "Merge vertices that are closer than the configured distance, removing duplicate or overlapping vertices.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f28edf4993a65662acae12ccbbc876a9",
+            "enum_value": 1753021805
         },
         "AT_CENTER": {
             "name": "At Center",
@@ -1656,7 +1895,9 @@
             },
             "search_name": "Merge to Center",
             "description": "Merge selected vertices at the center of their combined positions.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d830469a0744589992e96d0c6c505775",
+            "enum_value": 1678620587
         },
         "AT_FIRST": {
             "name": "At First",
@@ -1667,7 +1908,9 @@
             },
             "search_name": "Merge at First Selected",
             "description": "Merge selected vertices at the position of the first selected vertex.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0c0af8e7df975eb2869344d6538e86f4",
+            "enum_value": 1333593920
         },
         "AT_CURSOR": {
             "name": "At Cursor",
@@ -1678,7 +1921,9 @@
             },
             "search_name": "Merge at 3D Cursor",
             "description": "Merge selected vertices at the 3D Cursor position.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6f8b169edbc45d9996e877a589a4c32a",
+            "enum_value": 1505600667
         },
         "AT_LAST": {
             "name": "At Last",
@@ -1689,7 +1934,9 @@
             },
             "search_name": "Merge at Last Selected",
             "description": "Merge selected vertices at the position of the last selected vertex.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2ca1ade13bd7594fb567e17ec3b38aab",
+            "enum_value": 168027365
         },
         "RIP_VERTICES": {
             "name": "Rip Vertices",
@@ -1698,7 +1945,9 @@
             "properties": {},
             "search_name": "Rip Vertices",
             "description": "Rip selected vertices away from connected geometry, creating an opening in the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a687ef01cf8b5ba39472b075b94136b1",
+            "enum_value": 183173068
         },
         "VERTEX_SLIDE": {
             "name": "Vertex Slide",
@@ -1707,7 +1956,9 @@
             "properties": {},
             "search_name": "Slide Vertices Along Connected Edges",
             "description": "Slide selected vertices along their connected edges without freely moving them through space.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_56e7375a245d57429a657bbe0995e382",
+            "enum_value": 122227194
         },
         "EXTRUDE_VERTICES": {
             "name": "Extrude Vertices",
@@ -1716,7 +1967,9 @@
             "properties": {},
             "search_name": "Extrude Vertices",
             "description": "Extrude selected vertices to create new vertices and connecting edges.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_76f7b6444417588c80df78f8ab61e4f7",
+            "enum_value": 332319190
         },
         "MERGE_AT_CENTER": {
             "name": "Merge At Center",
@@ -1727,7 +1980,9 @@
             },
             "search_name": "Merge to Center",
             "description": "Merge selected vertices at the center of their combined positions.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9ea5e9b2fe1c5ae9ad554a8444c4d952",
+            "enum_value": 1312102107
         },
         "FILL_FACE": {
             "name": "Fill Face",
@@ -1736,7 +1991,9 @@
             "properties": {},
             "search_name": "Create Face from Selected Boundary",
             "description": "Create a face from the selected boundary edges or vertices.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a06ed6e37b8059e8b09d0b6a5389406f",
+            "enum_value": 1555811932
         },
         "KNIFE_TOOL": {
             "name": "Knife Tool",
@@ -1745,7 +2002,9 @@
             "properties": {},
             "search_name": "Cut Mesh with Knife",
             "description": "Activate the Knife tool for drawing cuts directly across the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b94665a4a0005ddca59c5ba1f160b11a",
+            "enum_value": 256565382
         },
         "JOIN_VERTICES": {
             "name": "Join Vertices",
@@ -1754,7 +2013,9 @@
             "properties": {},
             "search_name": "Connect Vertices with an Edge Path",
             "description": "Connect selected vertices with an edge path.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f9bf1383675a51589c26be90cec1ce1f",
+            "enum_value": 477372647
         },
         "VERTEX_BEVEL": {
             "name": "Vertex Bevel",
@@ -1765,7 +2026,9 @@
             },
             "search_name": "Bevel Selected Vertices",
             "description": "Bevel selected vertices, cutting back corners and creating additional geometry around each vertex.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3206b66dcf715123b871e1cb7826ca96",
+            "enum_value": 1591665435
         },
         "LOOP_CUT_SLIDE": {
             "name": "Loop Cut Slide",
@@ -1774,7 +2037,9 @@
             "properties": {},
             "search_name": "Insert and Slide Edge Loop",
             "description": "Insert an edge loop and immediately slide it to position the new loop.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c213aade90e153479503c889e229c6be",
+            "enum_value": 899657766
         },
         "LOOP_CUT": {
             "name": "Loop Cut",
@@ -1783,7 +2048,9 @@
             "properties": {},
             "search_name": "Insert Edge Loop",
             "description": "Insert an edge loop through connected quad faces.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ebebba7032145322974be804d0542db8",
+            "enum_value": 776641344
         },
         "EDGE_BEVEL": {
             "name": "Edge Bevel",
@@ -1797,7 +2064,9 @@
             },
             "search_name": "Bevel Edges (1 Segment)",
             "description": "Bevel selected edges with the preset of one segment and a rounded profile.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_97968421a49b59988647f9a89b94da4b",
+            "enum_value": 154400927
         },
         "FLAT_BEVEL": {
             "name": "Flat Bevel",
@@ -1811,7 +2080,9 @@
             },
             "search_name": "Flat Bevel (2 Segments)",
             "description": "Bevel selected edges with two segments and a flat profile.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c4109e1e31115813a8f76a0e9d73ba21",
+            "enum_value": 1737060505
         },
         "EXTRUDE_EDGES": {
             "name": "Extrude Edges",
@@ -1820,7 +2091,9 @@
             "properties": {},
             "search_name": "Extrude Edges",
             "description": "Extrude selected edges to create new edges and connecting faces where possible.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0ece629f779651a7a0be29e73b2e2a41",
+            "enum_value": 1191968931
         },
         "EDGE_SLIDE": {
             "name": "Edge Slide",
@@ -1829,7 +2102,9 @@
             "properties": {},
             "search_name": "Slide Edges Along Adjacent Faces",
             "description": "Slide selected edges along their adjacent faces while maintaining connectivity.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_1aed6ca1664f53e88f67c350b7f4486f",
+            "enum_value": 2001450634
         },
         "BRIDGE_EDGELOOPS": {
             "name": "Bridge EdgeLoops",
@@ -1838,7 +2113,9 @@
             "properties": {},
             "search_name": "Bridge Edge Loops",
             "description": "Create faces between two selected edge loops, connecting their boundaries.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2c4c03800d1956dd9cabfc973931fdf8",
+            "enum_value": 2020187521
         },
         "MARK_SHARP": {
             "name": "Mark Sharp",
@@ -1847,7 +2124,9 @@
             "properties": {},
             "search_name": "Mark Edges Sharp",
             "description": "Mark selected edges as sharp for split-normal and shading control.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c0c9b0cc07325934a603f89da3465ec3",
+            "enum_value": 1830942252
         },
         "CLEAR_SHARP": {
             "name": "Clear Sharp",
@@ -1858,7 +2137,9 @@
             },
             "search_name": "Clear Sharp Marking",
             "description": "Remove the sharp mark from selected edges.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_4b73c41ac48d5e8f971132f26bd9f48e",
+            "enum_value": 319455831
         },
         "MARK_SEAM": {
             "name": "Mark Seam",
@@ -1867,7 +2148,9 @@
             "properties": {},
             "search_name": "Mark UV Seams",
             "description": "Mark selected edges as UV seams for later UV unwrapping.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0854ed5d77fa5540846d4c6df50b4095",
+            "enum_value": 1184613150
         },
         "CLEAR_SEAM": {
             "name": "Clear Seam",
@@ -1878,7 +2161,9 @@
             },
             "search_name": "Clear UV Seams",
             "description": "Remove UV seam marks from selected edges.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c3fcf2b6268a5e33a41a727ad1e87d69",
+            "enum_value": 1806162922
         },
         "EDGE_BEVEL_WEIGHT": {
             "name": "Edge Bevel Weight",
@@ -1887,7 +2172,9 @@
             "properties": {},
             "search_name": "Set Edge Bevel Weight",
             "description": "Open the bevel-weight transform for selected edges so their bevel influence can be adjusted.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_40673c914371551282340808d68eb0b7",
+            "enum_value": 82175548
         },
         "CLEAR_BEVEL_WEIGHT": {
             "name": "Clear Bevel Weight",
@@ -1898,7 +2185,9 @@
             },
             "search_name": "Clear Edge Bevel Weight",
             "description": "Set the bevel weight of selected edges to zero.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_4dff54e2654556188e4f960f5b554d64",
+            "enum_value": 10042457
         },
         "EDGE_CREASE": {
             "name": "Edge Crease",
@@ -1909,7 +2198,9 @@
             },
             "search_name": "Set Edge Crease",
             "description": "Open the edge-crease adjustment popup for selected edges. The initial factor is zero; adjust it in the popup.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e8849cb7f8785f47b37e46eb647e5f8b",
+            "enum_value": 649228086
         },
         "CLEAR_EDGE_CREASE": {
             "name": "Clear Edge Crease",
@@ -1920,7 +2211,9 @@
             },
             "search_name": "Clear Edge Crease",
             "description": "Set the crease value of selected edges to zero.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d744287ad57e5286a98b661297f54d5c",
+            "enum_value": 306658944
         },
         "POKE": {
             "name": "Poke",
@@ -1929,7 +2222,9 @@
             "properties": {},
             "search_name": "Poke Faces (Create Center Vertices)",
             "description": "Poke selected faces by adding a vertex at each face center and connecting it to the face boundary.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_14fb5138235e52769a34b822b759310d",
+            "enum_value": 851490622
         },
         "EXTRUDE_FACES": {
             "name": "Extrude Faces",
@@ -1938,7 +2233,9 @@
             "properties": {},
             "search_name": "Extrude Faces",
             "description": "Extrude selected faces, creating new surface geometry connected to the original boundary.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2b423127ef725fd6a2ececb269fac02e",
+            "enum_value": 1037708470
         },
         "INSET": {
             "name": "Inset",
@@ -1947,7 +2244,9 @@
             "properties": {},
             "search_name": "Inset Faces",
             "description": "Inset selected faces by creating an inner boundary and a surrounding border.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_40cb22777cc953d4833cb82e8c8f5c26",
+            "enum_value": 390155681
         },
         "SHADE_FACE_SMOOTH": {
             "name": "Shade Face Smooth",
@@ -1956,7 +2255,9 @@
             "properties": {},
             "search_name": "Shade Faces Smooth",
             "description": "Set selected faces to smooth shading.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_47d63b7c72ed599e8efe95487a7f512b",
+            "enum_value": 60792574
         },
         "SHADE_FACE_FLAT": {
             "name": "Shade Face Flat",
@@ -1965,7 +2266,9 @@
             "properties": {},
             "search_name": "Shade Faces Flat",
             "description": "Set selected faces to flat shading.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_7f6c21a438ac5b3cb45920adb9d7926f",
+            "enum_value": 1132833554
         },
         "GRID_FILL": {
             "name": "Grid Fill",
@@ -1974,7 +2277,9 @@
             "properties": {},
             "search_name": "Fill Boundary with Quad Grid",
             "description": "Fill a boundary loop with a grid of quad faces.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3fede2effefc53bc91746d99958e458c",
+            "enum_value": 1375790475
         },
         "EXTRUDE_ALONG_NORMALS": {
             "name": "Extrude Along Normals",
@@ -1983,7 +2288,9 @@
             "properties": {},
             "search_name": "Extrude Faces Along Their Normals",
             "description": "Extrude selected faces along their individual face normals.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_1d183126be8450ed94cbfbfe12808048",
+            "enum_value": 2051656066
         },
         "FOLLOW_ACTIVE_QUADS": {
             "name": "Follow Active Quads",
@@ -1992,7 +2299,9 @@
             "properties": {},
             "search_name": "Follow Active Quads UV Unwrap",
             "description": "Unwrap selected quad faces by following the shape and UV orientation of the active quad.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a0dc442ba6ab5fa7a0c61f17992d7412",
+            "enum_value": 185550264
         },
         "UV_RESET": {
             "name": "UV Reset",
@@ -2001,7 +2310,9 @@
             "properties": {},
             "search_name": "Reset UV Coordinates",
             "description": "Reset UV coordinates for the selected faces using the mesh’s reset projection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0d87dea24dea5a5e93cf0b7cc9ffd636",
+            "enum_value": 1056378873
         },
         "SMART_PROJECT": {
             "name": "Smart Project",
@@ -2010,7 +2321,9 @@
             "properties": {},
             "search_name": "Smart UV Project",
             "description": "Generate UV islands automatically using angle-based projection and island packing.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e540b494a1445d90b2522fc0319105b9",
+            "enum_value": 1438417447
         },
         "UNWRAP_CONFORMAL": {
             "name": "Unwrap Conformal",
@@ -2021,7 +2334,9 @@
             },
             "search_name": "UV Unwrap (Conformal)",
             "description": "Unwrap the selected mesh using Blender’s Conformal method, which prioritizes angular preservation.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_16442a8fc7db563a9c9110bf3c073b96",
+            "enum_value": 652416955
         },
         "UNWRAP_MINIMUM_STRETCH": {
             "name": "Unwrap Minimum Stretch",
@@ -2032,7 +2347,9 @@
             },
             "search_name": "UV Unwrap (Minimum Stretch)",
             "description": "Unwrap the selected mesh using the Minimum Stretch method to reduce UV distortion.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_7b4f321d474e5d17aed5eb2244d3308f",
+            "enum_value": 713425017
         },
         "UNWRAP_ANGLE_BASED": {
             "name": "Unwrap Angle Based",
@@ -2043,7 +2360,9 @@
             },
             "search_name": "UV Unwrap (Angle Based)",
             "description": "Unwrap the selected mesh using the Angle Based method, suited to organic shapes.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_69ccfd25c6d65ccfa809d9c4cc9040e4",
+            "enum_value": 1452831546
         },
         "BOX_SELECT_TOOL": {
             "name": "Box Select Tool",
@@ -2054,7 +2373,9 @@
             },
             "search_name": "Box Select Tool",
             "description": "Activate the rectangular Box Select tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d42ffd2ee6f150a2a992fa806e6229f5",
+            "enum_value": 867047750
         },
         "LASSO_SELECT_TOOL": {
             "name": "Lasso Select Tool",
@@ -2065,7 +2386,9 @@
             },
             "search_name": "Lasso Select Tool",
             "description": "Activate the freehand Lasso Select tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_bce8995f24e45ea98cf3ac43dd202f6e",
+            "enum_value": 21556962
         },
         "CIRCLE_SELECT_TOOL": {
             "name": "Circle Select Tool",
@@ -2076,7 +2399,9 @@
             },
             "search_name": "Circle Select Tool",
             "description": "Activate the brush-like Circle Select tool.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_cb729ce195e050029e0cd211ffad491c",
+            "enum_value": 1343398663
         },
         "ORIGIN_TO_GEOMETRY": {
             "name": "Origin To Geometry",
@@ -2087,7 +2412,9 @@
             },
             "search_name": "Move Origin to Geometry",
             "description": "Move the object origin to the center of its geometry while keeping the mesh in place.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ca96548ec2525a6792edc27226d6e140",
+            "enum_value": 1884037686
         },
         "CURSOR_TO_ORIGIN": {
             "name": "Cursor To Origin",
@@ -2096,7 +2423,9 @@
             "properties": {},
             "search_name": "Move 3D Cursor to World Origin",
             "description": "Move the 3D Cursor to the world origin (0, 0, 0).",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_0314beecdfde5cb2a4e76b40ae375304",
+            "enum_value": 1046807411
         },
         "SELECTED_TO_CURSOR": {
             "name": "Selected To Cursor",
@@ -2107,7 +2436,9 @@
             },
             "search_name": "Move Selection to 3D Cursor",
             "description": "Move selected mesh geometry to the 3D Cursor, preserving its relative arrangement.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_5affb372d2605e4fb0f5b3bc5f427e31",
+            "enum_value": 1038698158
         },
         "GEOMETRY_TO_ORIGIN": {
             "name": "Geometry To Origin",
@@ -2118,7 +2449,9 @@
             },
             "search_name": "Move Geometry to Object Origin",
             "description": "Move the mesh geometry so that the object origin becomes the center of the geometry.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6404c09c030250549f8b466ec443b302",
+            "enum_value": 212049534
         },
         "ORIGIN_TO_SELECTED": {
             "name": "Origin To Selected",
@@ -2129,7 +2462,9 @@
             },
             "search_name": "Move Origin to Selected Geometry",
             "description": "Move the object origin to the current selection while keeping the mesh in place.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d053573b96e953f3ac3f16f387609fd2",
+            "enum_value": 2015113604
         },
         "CURSOR_TO_SELECTED": {
             "name": "Cursor To Selected",
@@ -2138,7 +2473,9 @@
             "properties": {},
             "search_name": "Move 3D Cursor to Selection",
             "description": "Place the 3D Cursor at the center of the current mesh selection.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_506c226b6f7f5bfab127b7617980ed48",
+            "enum_value": 364444680
         },
         "ORIGIN_TO_CURSOR": {
             "name": "Origin To Cursor",
@@ -2149,7 +2486,9 @@
             },
             "search_name": "Move Origin to 3D Cursor",
             "description": "Move the object origin to the 3D Cursor while keeping the mesh in place.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fbd8fbd56bf253fb9a9a279c7b83de3f",
+            "enum_value": 2146756757
         },
         "INITIALIZE_RETOPO": {
             "name": "Initialize Retopo",
@@ -2158,7 +2497,9 @@
             "properties": {},
             "search_name": "Initialize Retopology Setup",
             "description": "Prepare the active mesh for AllPie retopology: store it as the retopo mesh and enable the retopology viewport overlay and face-project snapping.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_81b785690f50587a8c3e821935ceaece",
+            "enum_value": 1215385879
         },
         "WELD_TOPOLOGY_BRUSH": {
             "name": "Weld Topology Brush",
@@ -2167,7 +2508,9 @@
             "properties": {},
             "search_name": "Weld Retopology Vertices",
             "description": "Start the interactive retopology weld tool. Drag a retopology vertex toward nearby vertices to weld them together.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ab7a5ce76eb95b898a1c615b4e395254",
+            "enum_value": 525851038
         },
         "RELAX_TOPOLOGY_BRUSH": {
             "name": "Relax Topology Brush",
@@ -2176,7 +2519,9 @@
             "properties": {},
             "search_name": "Relax Retopology Topology",
             "description": "Start the interactive retopology relax brush to even out vertex spacing while maintaining the surface shape.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3338077c28bf5420a663892b5d0056f9",
+            "enum_value": 645583646
         },
         "STRIPS_TOOL": {
             "name": "Strips Tool",
@@ -2185,7 +2530,9 @@
             "properties": {},
             "search_name": "Draw Quad Strips on Surface",
             "description": "Draw a guide stroke on the target surface to generate a snapped strip of quad polygons.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a4b1118c47e15d8cb584f6315fb035a0",
+            "enum_value": 1278625489
         },
         "STROKES_TOOL": {
             "name": "Strokes Tool",
@@ -2194,7 +2541,9 @@
             "properties": {},
             "search_name": "Create Quads from Guide Strokes",
             "description": "Draw multiple guide strokes to generate quad topology between the guides.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3ff363f9fb5c58b2a1f3a3a8bae649ad",
+            "enum_value": 1363764778
         },
         "DRAW_SHARP": {
             "name": "DRAW SHARP",
@@ -2208,7 +2557,9 @@
             "description": "Activate the Draw Sharp sculpt brush. It builds or cuts narrow, sharp surface features along the stroke.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_70cb5c919a655fc88b5937cc638458aa",
+            "enum_value": 1747555099
         },
         "INFLATE": {
             "name": "INFLATE",
@@ -2222,7 +2573,9 @@
             "description": "Activate the Inflate / Deflate sculpt brush. It pushes the surface outward or inward along surface normals.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_ab939a6e9ac35f6b996a8aa88c58014a",
+            "enum_value": 2013983499
         },
         "PINCH": {
             "name": "PINCH",
@@ -2236,7 +2589,9 @@
             "description": "Activate the Pinch / Magnify sculpt brush. It pulls surface points toward the stroke center or expands them away from it.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_29595170dbef51979f35be72eed1cc23",
+            "enum_value": 28579748
         },
         "GRAB": {
             "name": "GRAB",
@@ -2250,7 +2605,9 @@
             "description": "Activate the Grab sculpt brush for dragging and repositioning a broad region of the surface.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_b176ca9b0c325bb0b9431b3d9ffa7403",
+            "enum_value": 221765890
         },
         "SCRAPE": {
             "name": "SCRAPE",
@@ -2264,7 +2621,9 @@
             "description": "Activate the Scrape / Fill sculpt brush to flatten protruding areas or fill recessed areas toward a plane.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_33baa86f5b7f5feb985f91eeb15c520d",
+            "enum_value": 744697832
         },
         "CLAY_STRIPS": {
             "name": "CLAY STRIPS",
@@ -2278,7 +2637,9 @@
             "description": "Activate the Clay Strips sculpt brush to build volume in layered, strip-like strokes.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_14dff7d8419350dca09c48b965a31f82",
+            "enum_value": 1304613507
         },
         "DRAW": {
             "name": "DRAW",
@@ -2292,7 +2653,9 @@
             "description": "Activate the Draw sculpt brush to add or remove volume along the stroke.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_e5a2c1569ccd5ce1b4f506c6afdc10be",
+            "enum_value": 1750809536
         },
         "MASK": {
             "name": "MASK",
@@ -2306,7 +2669,9 @@
             "description": "Activate the Mask brush to paint a mask that protects parts of the mesh from sculpting.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_84b39be8b7fe5d7087b193f3a2194910",
+            "enum_value": 622126874
         },
         "SNAKE_HOOK": {
             "name": "SNAKE HOOK",
@@ -2320,7 +2685,9 @@
             "description": "Activate the Snake Hook brush to pull and stretch mesh geometry from the stroke start.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_62bd1473d8605ed7aec8325842ea1c2d",
+            "enum_value": 1338409567
         },
         "ASSET_SHELF": {
             "name": "ASSET SHELF",
@@ -2331,7 +2698,9 @@
             },
             "search_name": "Open Sculpt Brush Asset Shelf",
             "description": "Open the Sculpt brush Asset Shelf to browse and activate available brush assets.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3cddb2eb95ba5a1a93bfda11157e0a9d",
+            "enum_value": 862886881
         },
         "ERASE_MULTIRES_DISPLACEMENT": {
             "name": "ERASE MULTIRES DISPLACEMENT",
@@ -2345,7 +2714,9 @@
             "description": "Activate the Erase Multires Displacement brush to erase sculpt displacement on a Multiresolution mesh.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_2767bef3c74a57a5afb1330d62eccdbc",
+            "enum_value": 1693875064
         },
         "RELAX_SLIDE": {
             "name": "RELAX SLIDE",
@@ -2359,7 +2730,9 @@
             "description": "Activate the Relax Slide brush to even out local vertex spacing while relaxing the surface.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_5945b20d8ee25ecd9ee52f02515f9a18",
+            "enum_value": 1338758049
         },
         "FACE_SET_PAINT": {
             "name": "FACE SET PAINT",
@@ -2373,7 +2746,9 @@
             "description": "Activate the Face Set Paint brush to paint and assign Face Set regions.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_ebb9e88442e550fb84febb5ad93f4683",
+            "enum_value": 990178798
         },
         "TRIM": {
             "name": "TRIM",
@@ -2387,7 +2762,9 @@
             "description": "Activate the Trim brush for trimming mesh regions using a brush stroke.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_5ff644e502f8518aac81e8922ddceef2",
+            "enum_value": 995120155
         },
         "CLAY": {
             "name": "CLAY",
@@ -2401,7 +2778,9 @@
             "description": "Activate the Clay sculpt brush to build up volume with broad clay-like strokes.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4ac5c4502ac85703a9654526fe4267e4",
+            "enum_value": 241025670
         },
         "CREASE_SHARP": {
             "name": "CREASE SHARP",
@@ -2415,7 +2794,9 @@
             "description": "Activate the Crease Sharp brush to carve narrow creases and create sharp ridges.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_9d1c21fe94025725ba057351f3dc79c8",
+            "enum_value": 24823562
         },
         "AIRBRUSH": {
             "name": "Airbrush",
@@ -2429,7 +2810,9 @@
             "description": "Activate the Airbrush preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_70afccc72a2d5f479530a97e41e843a5",
+            "enum_value": 380365763
         },
         "PAINT_SQUARE": {
             "name": "Paint Square",
@@ -2443,7 +2826,9 @@
             "description": "Activate the Paint Square preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4126c6a51b9f5df6850d2b74c923db62",
+            "enum_value": 1366677069
         },
         "PAINT_SOFT": {
             "name": "Paint Soft",
@@ -2457,7 +2842,9 @@
             "description": "Activate the Paint Soft preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_2b3a655828425999adefa76a9e3eec00",
+            "enum_value": 719402338
         },
         "PAINT_HARD": {
             "name": "Paint Hard",
@@ -2471,7 +2858,9 @@
             "description": "Activate the Paint Hard preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_6d2af3c9bab65335a22872424e02a5dc",
+            "enum_value": 929296941
         },
         "PAINT_BLEND": {
             "name": "Paint Blend",
@@ -2485,7 +2874,9 @@
             "description": "Activate the Paint Blend preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_38d6f439b0a350918ed7e0a05dc671be",
+            "enum_value": 40848655
         },
         "PAINT_SOFT_PRESSURE": {
             "name": "Paint Soft Pressure",
@@ -2499,7 +2890,9 @@
             "description": "Activate the Paint Soft Pressure preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_0a1aacca312a5deaa90fcc2db8df164d",
+            "enum_value": 1406913492
         },
         "PAINT_HARD_PRESSURE": {
             "name": "Paint Hard Pressure",
@@ -2513,7 +2906,9 @@
             "description": "Activate the Paint Hard Pressure preset from Blender’s sculpt brush assets.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_6f1ec606014559cfa2206f24fab3fad2",
+            "enum_value": 1893255897
         },
         "BRUSH_STROKE_MENU": {
             "name": "Brush Stroke Menu",
@@ -2524,7 +2919,9 @@
             },
             "search_name": "Open Brush Stroke Settings",
             "description": "Open brush stroke settings, including stroke method, spacing, jitter and related behavior.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fdc339dd86b8536e9cfa72235c74e6c9",
+            "enum_value": 401991259
         },
         "BRUSH_SETTING_MENU": {
             "name": "Brush Setting Menu",
@@ -2535,7 +2932,9 @@
             },
             "search_name": "Open Advanced Brush Settings",
             "description": "Open advanced brush settings for the active sculpt brush.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2259c4ba1a2a5f0f9a0dec09167df6f0",
+            "enum_value": 1849001175
         },
         "BRUSH_TEXTURE_MENU": {
             "name": "Brush Texture Menu",
@@ -2546,7 +2945,9 @@
             },
             "search_name": "Open Brush Texture Settings",
             "description": "Open texture settings for the active sculpt brush.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_988785efebb85451809b52cc68d2d090",
+            "enum_value": 2081875317
         },
         "AUTOMASKING_CAVITY": {
             "name": "AutoMasking Cavity",
@@ -2557,7 +2958,9 @@
             },
             "search_name": "Toggle Cavity Auto-Masking",
             "description": "Toggle sculpt auto-masking based on surface cavities. The brush is restricted by cavity areas when enabled.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_27ee8d5666f4519388b6c438143a287b",
+            "enum_value": 564583572
         },
         "AUTOMASKING_CAVITY_INVERTED": {
             "name": "AutoMasking Cavity Inverted",
@@ -2568,7 +2971,9 @@
             },
             "search_name": "Toggle Inverted Cavity Auto-Masking",
             "description": "Toggle inverted cavity auto-masking, applying the cavity mask to the inverse of the cavity regions.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b16458c7ba205cf6be85a23956584541",
+            "enum_value": 145153379
         },
         "AUTOMASKING_FACESET": {
             "name": "AutoMasking Faceset",
@@ -2579,7 +2984,9 @@
             },
             "search_name": "Toggle Face Set Auto-Masking",
             "description": "Toggle auto-masking by Face Sets so sculpting is constrained by Face Set boundaries.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ed6915750cd65ec28af2d8c773f984aa",
+            "enum_value": 703338731
         },
         "AUTOMASKING_TOPOLOGY": {
             "name": "AutoMasking Topology",
@@ -2590,7 +2997,9 @@
             },
             "search_name": "Toggle Topology Auto-Masking",
             "description": "Toggle topology auto-masking so the brush respects connected mesh topology.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_b21721fbb080552d8b10ce00fbc1a1ba",
+            "enum_value": 1107762034
         },
         "TOGGLE_STABILIZE_STROKE": {
             "name": "Toggle Stabilize Stroke",
@@ -2601,7 +3010,9 @@
             },
             "search_name": "Toggle Stroke Stabilization",
             "description": "Toggle stabilized strokes on the active sculpt brush to smooth mouse or tablet movement.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f460b1c6b67756dba57717314466cfd8",
+            "enum_value": 50124006
         },
         "SET_VOXEL_SIZE": {
             "name": "Set Voxel Size",
@@ -2610,7 +3021,9 @@
             "properties": {},
             "search_name": "Adjust Voxel Remesh Size",
             "description": "Open Blender’s Voxel Size control for adjusting the voxel resolution used by Voxel Remesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c68dac10aa8d515b87ba0f90789c4686",
+            "enum_value": 1855131474
         },
         "REMESH_MENU": {
             "name": "Remesh Menu",
@@ -2621,7 +3034,9 @@
             },
             "search_name": "Open Voxel Remesh Settings",
             "description": "Open the Sculpt Voxel Remesh settings panel.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_bc9bd98fe35d5dc78dba0ac12b63dd26",
+            "enum_value": 2033265058
         },
         "QUADRIFLOW_REMESH": {
             "name": "Quadriflow Remesh",
@@ -2630,7 +3045,9 @@
             "properties": {},
             "search_name": "Run QuadriFlow Quad Remesh",
             "description": "Open AllPie’s custom QuadriFlow remesh operator to generate quad-based topology from the current mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_bc776b3db2bd5a77a0c748444db00456",
+            "enum_value": 1183307128
         },
         "INCREASE_VOXELSIZE_25": {
             "name": "Increase VoxelSize 25%",
@@ -2641,7 +3058,9 @@
             },
             "search_name": "Increase Voxel Size by 25%",
             "description": "Increase the active mesh’s voxel size by 25%, producing a coarser voxel remesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ce522b45e23056ff8ef1fec2139df3d6",
+            "enum_value": 421865779
         },
         "INCREASE_VOXELSIZE_10": {
             "name": "Increase VoxelSize 10%",
@@ -2652,7 +3071,9 @@
             },
             "search_name": "Increase Voxel Size by 10%",
             "description": "Increase the active mesh’s voxel size by 10%, producing a slightly coarser voxel remesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f27362fcd18d5cdd8617c4e85fd6b0ce",
+            "enum_value": 1990745225
         },
         "REMESH": {
             "name": "REMESH",
@@ -2661,7 +3082,9 @@
             "properties": {},
             "search_name": "Run Voxel Remesh",
             "description": "Run Voxel Remesh on the active mesh using its current voxel size and remesh settings.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_6a5cff886eae5d92ab17a2c00b096ece",
+            "enum_value": 1976999765
         },
         "DECREASE_VOXELSIZE_25": {
             "name": "Decrease VoxelSize 25%",
@@ -2672,7 +3095,9 @@
             },
             "search_name": "Decrease Voxel Size by 25%",
             "description": "Decrease the active mesh’s voxel size by 25%, producing a finer voxel remesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ee9846bdccee59719aca59a5bc16b5fd",
+            "enum_value": 1518925723
         },
         "DECREASE_VOXELSIZE_10": {
             "name": "Decrease VoxelSize 10%",
@@ -2683,7 +3108,9 @@
             },
             "search_name": "Decrease Voxel Size by 10%",
             "description": "Decrease the active mesh’s voxel size by 10%, producing a slightly finer voxel remesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e3a02fffe1a95b9ea2ececab5013d269",
+            "enum_value": 925959279
         },
         "SYMMETRY_MENU": {
             "name": "Symmetry Menu",
@@ -2694,7 +3121,9 @@
             },
             "search_name": "Open Sculpt Symmetry Settings",
             "description": "Open Sculpt symmetry settings for axis mirroring and symmetrize direction.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_5474cd3dbba5502994c54247e29e7fba",
+            "enum_value": 62729558
         },
         "SYMMETRIZE": {
             "name": "Symmetrize ",
@@ -2703,7 +3132,9 @@
             "properties": {},
             "search_name": "Mirror Geometry Across the Symmetry Plane",
             "description": "Symmetrize the mesh by copying geometry from one side across the configured symmetry plane.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c132ba3c78d359f4a983a01c9a374026",
+            "enum_value": 1663516688
         },
         "Z_SYMMETRY": {
             "name": "Z Symmetry ",
@@ -2714,7 +3145,9 @@
             },
             "search_name": "Toggle Sculpt Symmetry on Z",
             "description": "Toggle sculpt stroke mirroring across the Z axis.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a8379649d3b15e1d9ae2222d448037e6",
+            "enum_value": 2007891829
         },
         "Y_SYMMETRY": {
             "name": "Y Symmetry ",
@@ -2725,7 +3158,9 @@
             },
             "search_name": "Toggle Sculpt Symmetry on Y",
             "description": "Toggle sculpt stroke mirroring across the Y axis.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_09c2c8a0f4b75184a06b4b0c5bc0bc31",
+            "enum_value": 446946336
         },
         "X_SYMMETRY": {
             "name": "X Symmetry ",
@@ -2736,7 +3171,9 @@
             },
             "search_name": "Toggle Sculpt Symmetry on X",
             "description": "Toggle sculpt stroke mirroring across the X axis.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d7f183a9060b54c98f310e0088b88ea0",
+            "enum_value": 1221845200
         },
         "FLIP_X": {
             "name": "Flip X",
@@ -2747,7 +3184,9 @@
             },
             "search_name": "Flip Symmetrize Direction on X",
             "description": "Switch the X symmetrize direction between positive-to-negative and negative-to-positive.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8c499db10069572d9ac2fd43eda5f0b9",
+            "enum_value": 1743212615
         },
         "FLIP_Y": {
             "name": "Flip Y",
@@ -2758,7 +3197,9 @@
             },
             "search_name": "Flip Symmetrize Direction on Y",
             "description": "Switch the Y symmetrize direction between positive-to-negative and negative-to-positive.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e2c1171599485b41ac59357b813654c3",
+            "enum_value": 1710709690
         },
         "FLIP_Z": {
             "name": "Flip Z",
@@ -2769,7 +3210,9 @@
             },
             "search_name": "Flip Symmetrize Direction on Z",
             "description": "Switch the Z symmetrize direction between positive-to-negative and negative-to-positive.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_741de805cf915bf1b0556e9c6c301656",
+            "enum_value": 909699328
         },
         "DELETE_HIGHER": {
             "name": "Delete Higher",
@@ -2780,7 +3223,9 @@
             },
             "search_name": "Delete Higher Multiresolution Levels",
             "description": "Delete Multiresolution levels above the current base level.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_a50e529d4b5f51c2932eb5498f56c959",
+            "enum_value": 1638872452
         },
         "APPLY_TO_BASE": {
             "name": "Apply To Base ",
@@ -2791,7 +3236,9 @@
             },
             "search_name": "Apply Multiresolution Detail to Base Mesh",
             "description": "Apply the Multiresolution modifier’s sculpted displacement to the base mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fcab3f86f269594981fbcd8f2e506f33",
+            "enum_value": 1662914747
         },
         "INCREASE_SCULPT_LEVEL": {
             "name": "Increase Sculpt Level ",
@@ -2802,7 +3249,9 @@
             },
             "search_name": "Increase Multiresolution Sculpt Level",
             "description": "Increase the Multiresolution modifier’s sculpt level by one, up to the highest available level.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ed3a93546fc05d7096d090e8048af3ba",
+            "enum_value": 1336749985
         },
         "INCREASE_VEIWPORT_LEVEL": {
             "name": "Increase Veiwport Level ",
@@ -2813,7 +3262,9 @@
             },
             "search_name": "Increase Multiresolution Viewport Level",
             "description": "Increase the Multiresolution modifier’s viewport display level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_08b26e8d872050768173f0a5a87b48fa",
+            "enum_value": 920496410
         },
         "SUBDIVIDE": {
             "name": "Subdivide",
@@ -2824,7 +3275,9 @@
             },
             "search_name": "Subdivide Multiresolution Mesh",
             "description": "Subdivide the Multiresolution modifier once, adding another detail level.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_cd95f40b83e35440b75ade5c5a1d4f15",
+            "enum_value": 342500012
         },
         "DECREASE_SCULPT_LEVEL": {
             "name": "Decrease Sculpt Level",
@@ -2835,7 +3288,9 @@
             },
             "search_name": "Decrease Multiresolution Sculpt Level",
             "description": "Decrease the Multiresolution modifier’s sculpt level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_f58a7397831e50c89fc8684daf8aeee2",
+            "enum_value": 2022380564
         },
         "DECREASE_VIEWPORT_LEVEL": {
             "name": "Decrease Viewport Level",
@@ -2846,7 +3301,9 @@
             },
             "search_name": "Decrease Multiresolution Viewport Level",
             "description": "Decrease the Multiresolution modifier’s viewport display level by one.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d50582fa779d5b36b00ddad3c9c62cf8",
+            "enum_value": 1796160000
         },
         "SET_RENDER_LEVEL": {
             "name": "Set Render Level",
@@ -2857,7 +3314,9 @@
             },
             "search_name": "Set Render Level to Sculpt Level",
             "description": "Set the Multiresolution render level to match the current sculpt level.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_9bd56b0bcdcc5430807d807687b9e18d",
+            "enum_value": 1935788212
         },
         "RESET_PIVOT": {
             "name": "Reset Pivot",
@@ -2868,7 +3327,9 @@
             },
             "search_name": "Reset Sculpt Pivot to Object Origin",
             "description": "Set the sculpt pivot position back to the object origin.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_55780177534552a1b7907ef08d403d64",
+            "enum_value": 1217701313
         },
         "COLOR_PICKER": {
             "name": "Color Picker",
@@ -2877,7 +3338,9 @@
             "properties": {},
             "search_name": "Open Sculpt Brush Color Picker",
             "description": "Open AllPie’s sculpt brush color popup for primary/secondary color selection and palette access.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_01effb928b605020b620fc32de4dddf3",
+            "enum_value": 1159860139
         },
         "MASK_LASSO": {
             "name": "Mask Lasso",
@@ -2888,7 +3351,9 @@
             },
             "search_name": "Lasso Mask Tool",
             "description": "Activate the Lasso Mask tool for painting a freehand mask region.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_d72df586a5e75c4d84b6b9634d44c922",
+            "enum_value": 1049185271
         },
         "MASK_LINE": {
             "name": "Mask Line",
@@ -2899,7 +3364,9 @@
             },
             "search_name": "Line Mask Tool",
             "description": "Activate the Line Mask tool for drawing a straight mask stroke.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8de126af6838511a93f51eca13ac50a7",
+            "enum_value": 1197227587
         },
         "SET_PIVOT": {
             "name": "Set Pivot",
@@ -2910,7 +3377,9 @@
             },
             "search_name": "Set Sculpt Pivot to Surface",
             "description": "Set the sculpt pivot position to the surface under the cursor.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_dcb10e8f248b5e2da0921d67bfd8b3fe",
+            "enum_value": 1880655850
         },
         "GROW_VISIBILITY": {
             "name": "Grow Visibility",
@@ -2921,7 +3390,9 @@
             },
             "search_name": "Expand Visible Mesh Region",
             "description": "Expand the visible mesh region by one visibility step, revealing adjacent hidden geometry.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_46d468cbff49549387001044834c9aa5",
+            "enum_value": 1445992369
         },
         "SHRINK_VISIBILITY": {
             "name": "Shrink Visibility",
@@ -2932,7 +3403,9 @@
             },
             "search_name": "Shrink Visible Mesh Region",
             "description": "Shrink the visible mesh region by one visibility step, hiding boundary geometry.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_800983ea5e9c533bbe2f65ee9b6cf8ba",
+            "enum_value": 494643821
         },
         "HIDE_LASSO": {
             "name": "Hide Lasso",
@@ -2943,7 +3416,9 @@
             },
             "search_name": "Lasso Hide Tool",
             "description": "Activate the Lasso Hide tool for hiding a freehand region of the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e591a8a788245780a2d1260c20b66332",
+            "enum_value": 533211879
         },
         "HIDE_MASKED": {
             "name": "Hide Masked",
@@ -2954,7 +3429,9 @@
             },
             "search_name": "Hide Masked Mesh Region",
             "description": "Hide mesh geometry covered by the current sculpt mask.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_697a351df96150e9832a042ef0c97324",
+            "enum_value": 1698022352
         },
         "SOLO_FACESET": {
             "name": "Solo Faceset",
@@ -2965,7 +3442,9 @@
             },
             "search_name": "Toggle Isolation of Active Face Set",
             "description": "Toggle isolation of the active Face Set, hiding or revealing other Face Sets.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_2c41df6646d45217ba1887c81984dd5a",
+            "enum_value": 1697947432
         },
         "INVERT_VISIBLE": {
             "name": "Invert Visible",
@@ -2974,7 +3453,9 @@
             "properties": {},
             "search_name": "Invert Mesh Visibility",
             "description": "Invert mesh visibility: hidden geometry becomes visible and visible geometry becomes hidden.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_fc1c211a16ce5d8186755077be54b196",
+            "enum_value": 1183029828
         },
         "UNHIDE_ALL_84FA0F": {
             "name": "Unhide All",
@@ -2985,7 +3466,9 @@
             },
             "search_name": "Reveal Hidden Mesh Geometry",
             "description": "Reveal all hidden mesh geometry.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_ae846e7ab69e56a0828282a55be8d61d",
+            "enum_value": 2031311624
         },
         "HIDE_FACESET": {
             "name": "Hide Faceset",
@@ -2996,7 +3479,9 @@
             },
             "search_name": "Hide Active Face Set",
             "description": "Hide the active Face Set.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c54963183a9e5e8caf59281f57da9fc0",
+            "enum_value": 972562885
         },
         "INVERT_MASK": {
             "name": "Invert Mask",
@@ -3007,7 +3492,9 @@
             },
             "search_name": "Invert Sculpt Mask",
             "description": "Invert the current sculpt mask so masked and unmasked regions are swapped.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_797c256b408d5b3c87d60b8835398802",
+            "enum_value": 690872676
         },
         "CLEAR_MASK": {
             "name": "Clear Mask",
@@ -3019,7 +3506,9 @@
             },
             "search_name": "Clear Sculpt Mask",
             "description": "Clear the sculpt mask by setting the mask value to zero across the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_89b068c61d1c5ab1ac530c6f8e7ab59d",
+            "enum_value": 1218441482
         },
         "SHARPEN_MASK": {
             "name": "Sharpen Mask",
@@ -3030,7 +3519,9 @@
             },
             "search_name": "Sharpen Sculpt Mask Edge",
             "description": "Sharpen the boundary of the current sculpt mask.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e02c4e78b07d5424b65579747c02fb58",
+            "enum_value": 56342728
         },
         "SMOOTH_MASK": {
             "name": "Smooth Mask",
@@ -3041,7 +3532,9 @@
             },
             "search_name": "Smooth Sculpt Mask",
             "description": "Smooth the current sculpt mask to soften transitions along its boundary.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_39fbc6d5bb485ea3af89b271b36cbd49",
+            "enum_value": 1951121641
         },
         "DECREASE_CONTRAST": {
             "name": "Decrease Contrast",
@@ -3053,7 +3546,9 @@
             },
             "search_name": "Decrease Sculpt Mask Contrast",
             "description": "Decrease contrast in the sculpt mask, making the transition between masked and unmasked areas softer.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8952d4b45264579cb83e1e486f32ddba",
+            "enum_value": 23822375
         },
         "INCREASE_CONTRAST": {
             "name": "Increase Contrast",
@@ -3065,7 +3560,9 @@
             },
             "search_name": "Increase Sculpt Mask Contrast",
             "description": "Increase contrast in the sculpt mask, making the transition between masked and unmasked areas harder.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_371f86e437d7550fb0c5bde2275e0670",
+            "enum_value": 1501076334
         },
         "GROW_MASK": {
             "name": "Grow Mask",
@@ -3076,7 +3573,9 @@
             },
             "search_name": "Expand Sculpt Mask",
             "description": "Expand the sculpt mask into neighboring vertices.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_e4d38c23f13c5724b35e9861972f5c7f",
+            "enum_value": 307340183
         },
         "SHRINK_MASK": {
             "name": "Shrink Mask",
@@ -3087,7 +3586,9 @@
             },
             "search_name": "Shrink Sculpt Mask",
             "description": "Shrink the sculpt mask away from its boundary.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_aa34afbfbe335769a6a6be24fdf7a176",
+            "enum_value": 669851914
         },
         "CAVITY_MASK_INVERTED": {
             "name": "Cavity Mask Inverted",
@@ -3099,7 +3600,9 @@
             },
             "search_name": "Create Inverted Mask from Surface Cavity",
             "description": "Generate a sculpt mask from surface cavities, with the result inverted.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_cc17d2abfd6d5e2d95d359cd6d50cae1",
+            "enum_value": 1762409564
         },
         "CAVITY_MASK": {
             "name": "Cavity Mask",
@@ -3111,7 +3614,9 @@
             },
             "search_name": "Create Mask from Surface Cavity",
             "description": "Generate a sculpt mask from surface cavities using the current cavity settings.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_8746885438775d82812619d72c448944",
+            "enum_value": 1759854999
         },
         "FACESET_FROM_MASK": {
             "name": "Faceset From Mask",
@@ -3122,7 +3627,9 @@
             },
             "search_name": "Create Face Set from Masked Area",
             "description": "Create a Face Set from the currently masked region.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_dd41e302d25e59fbab440d1b45148a1c",
+            "enum_value": 765537200
         },
         "MASK_FROM_EDIT_MODE": {
             "name": "Mask From Edit Mode",
@@ -3131,7 +3638,9 @@
             "properties": {},
             "search_name": "Create Sculpt Mask from Edit-Mode Selection",
             "description": "Convert the current Edit Mode selection into a sculpt mask.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_3cea73285cde5b35a2be0fa66c754723",
+            "enum_value": 1889338517
         },
         "MASK_FROM_FACESET": {
             "name": "Mask From Faceset",
@@ -3140,7 +3649,9 @@
             "properties": {},
             "search_name": "Create Sculpt Mask from Face Set",
             "description": "Create a sculpt mask from the Face Set visibility/selection workflow, then reveal the mesh.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_c912ad97023c595f9f9aa48f77e9dfc7",
+            "enum_value": 212086203
         },
         "MASK_EXTRACT": {
             "name": "Mask Extract",
@@ -3149,7 +3660,9 @@
             "properties": {},
             "search_name": "Extract Masked Region into New Geometry",
             "description": "Extract the masked region from the sculpt mesh, creating separate geometry from the masked area.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_563b5d2f7a5359bdbcbf83da894a135f",
+            "enum_value": 55209478
         },
         "MASK_SLICE": {
             "name": "Mask Slice",
@@ -3160,7 +3673,9 @@
             },
             "search_name": "Slice Mesh Along Mask (Keep in Same Object)",
             "description": "Slice the mesh along the sculpt mask without creating a separate new object.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_245d53eed4bd598caa57bc53c20d6aa9",
+            "enum_value": 1649951935
         },
         "MASK_SLICE_NEW_OBJ": {
             "name": "Mask Slice New Obj",
@@ -3171,7 +3686,9 @@
             },
             "search_name": "Slice Mesh Along Mask into a New Object",
             "description": "Slice the mesh along the sculpt mask and place the sliced result in a new object.",
-            "contexts": []
+            "contexts": [],
+            "preset_id": "op_142eca0288e35eef97d5907cbe947996",
+            "enum_value": 1579654765
         },
         "SCULPT_BRUSH_BLOB": {
             "name": "BLOB",
@@ -3185,7 +3702,9 @@
             "description": "Activate the Blob brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_e4156cf90d325634aca67c600ba9a1f4",
+            "enum_value": 1760529414
         },
         "SCULPT_BRUSH_CLAY_THUMB": {
             "name": "CLAY THUMB",
@@ -3199,7 +3718,9 @@
             "description": "Activate the Clay Thumb brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_caa963542a7e51c5b99586497f01b3e3",
+            "enum_value": 1437907775
         },
         "SCULPT_BRUSH_CREASE_POLISH": {
             "name": "CREASE POLISH",
@@ -3213,7 +3734,9 @@
             "description": "Activate the Crease Polish brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_fde732631edb5b2997e5079f9bb37170",
+            "enum_value": 1797108703
         },
         "SCULPT_BRUSH_LAYER": {
             "name": "LAYER",
@@ -3227,7 +3750,9 @@
             "description": "Activate the Layer brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_0697ff63962e588492f16bb5834bd71a",
+            "enum_value": 1427568788
         },
         "SCULPT_BRUSH_FILL_DEEPEN": {
             "name": "FILL/DEEPEN",
@@ -3241,7 +3766,9 @@
             "description": "Activate the Fill/Deepen brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_9614fc8ec8465489b996eeb88d0f0948",
+            "enum_value": 1671127844
         },
         "SCULPT_BRUSH_FLATTEN_CONTRAST": {
             "name": "FLATTEN/CONTRAST",
@@ -3255,7 +3782,9 @@
             "description": "Activate the Flatten/Contrast brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_57369afc3b6c53b38686dfec65168f14",
+            "enum_value": 1930228123
         },
         "SCULPT_BRUSH_PLATEAU": {
             "name": "PLATEAU",
@@ -3269,7 +3798,9 @@
             "description": "Activate the Plateau brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_2f27cde2f1065eebb1c562b0e6ebc7cc",
+            "enum_value": 396509327
         },
         "SCULPT_BRUSH_SCRAPE_MULTIPLANE": {
             "name": "SCRAPE MULTIPLANE",
@@ -3283,7 +3814,9 @@
             "description": "Activate the Scrape Multiplane brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_0943630f11e25337b34bbac638563585",
+            "enum_value": 317937904
         },
         "SCULPT_BRUSH_SMOOTH": {
             "name": "SMOOTH",
@@ -3297,7 +3830,9 @@
             "description": "Activate the Smooth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_693e3038c0575f97a7aec99bae854dc1",
+            "enum_value": 540054041
         },
         "SCULPT_BRUSH_GRAB_2D": {
             "name": "GRAB 2D",
@@ -3311,7 +3846,9 @@
             "description": "Activate the Grab 2D brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_5d744292f73d583fa369d28234dc6ffc",
+            "enum_value": 941693583
         },
         "SCULPT_BRUSH_GRAB_SILHOUETTE": {
             "name": "GRAB SILHOUETTE",
@@ -3325,7 +3862,9 @@
             "description": "Activate the Grab Silhouette brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_7d2914056056556cbd838f6b3d87d4e7",
+            "enum_value": 1816979463
         },
         "SCULPT_BRUSH_ELASTIC_GRAB": {
             "name": "ELASTIC GRAB",
@@ -3339,7 +3878,9 @@
             "description": "Activate the Elastic Grab brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_56a5ead62c945af28a68ace0680773af",
+            "enum_value": 673439676
         },
         "SCULPT_BRUSH_ELASTIC_SNAKE_HOOK": {
             "name": "ELASTIC SNAKE HOOK",
@@ -3353,7 +3894,9 @@
             "description": "Activate the Elastic Snake Hook brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_0d79a26b6142504ba1217185bed7a62b",
+            "enum_value": 254548087
         },
         "SCULPT_BRUSH_THUMB": {
             "name": "THUMB",
@@ -3367,7 +3910,9 @@
             "description": "Activate the Thumb brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_9e6dcba27e895ed2a158a00c8e3ba9a7",
+            "enum_value": 1108716011
         },
         "SCULPT_BRUSH_POSE": {
             "name": "POSE",
@@ -3381,7 +3926,9 @@
             "description": "Activate the Pose brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_f421a83c5625516dbca6f125f320f758",
+            "enum_value": 1690189798
         },
         "SCULPT_BRUSH_NUDGE": {
             "name": "NUDGE",
@@ -3395,7 +3942,9 @@
             "description": "Activate the Nudge brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4ae91b7a0b1b5f91abfe304b7f3f4485",
+            "enum_value": 2122808380
         },
         "SCULPT_BRUSH_PULL": {
             "name": "PULL",
@@ -3409,7 +3958,9 @@
             "description": "Activate the Pull brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_1120286d62f457b98134128f380a4cdf",
+            "enum_value": 1572645609
         },
         "SCULPT_BRUSH_TWIST": {
             "name": "TWIST",
@@ -3423,7 +3974,9 @@
             "description": "Activate the Twist brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_e79c215b765a57a1b00ef61a6343944e",
+            "enum_value": 65744832
         },
         "SCULPT_BRUSH_RELAX_PINCH": {
             "name": "RELAX PINCH",
@@ -3437,7 +3990,9 @@
             "description": "Activate the Relax Pinch brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_45f6de85a36d5d14b9b45d19f9c3bc40",
+            "enum_value": 1100763163
         },
         "SCULPT_BRUSH_BOUNDARY": {
             "name": "BOUNDARY",
@@ -3451,7 +4006,9 @@
             "description": "Activate the Boundary brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_7f5ae9cbd02050ebbe95417d302861dd",
+            "enum_value": 1260840158
         },
         "SCULPT_BRUSH_DENSITY": {
             "name": "DENSITY",
@@ -3465,7 +4022,9 @@
             "description": "Activate the Density brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_b30d8ce16794588fad83217a440343e0",
+            "enum_value": 1483839793
         },
         "SCULPT_BRUSH_SMEAR_MULTIRES_DISPLACEMENT": {
             "name": "SMEAR MULTIRES DISPLACEMENT",
@@ -3479,7 +4038,9 @@
             "description": "Activate the Smear Multires Displacement brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_c268696f546d5bd084e7b044de37512d",
+            "enum_value": 2056535358
         },
         "SCULPT_BRUSH_SCENE_PROJECT": {
             "name": "SCENE PROJECT",
@@ -3493,7 +4054,9 @@
             "description": "Activate the Scene Project brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_5cc7ac92d3dd598fadba7c9e314993df",
+            "enum_value": 284495528
         },
         "SCULPT_BRUSH_BLEND_HARD": {
             "name": "BLEND HARD",
@@ -3507,7 +4070,9 @@
             "description": "Activate the Blend Hard brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_36ad618706685451929a09723a6a6f14",
+            "enum_value": 197630977
         },
         "SCULPT_BRUSH_BLEND_SOFT": {
             "name": "BLEND SOFT",
@@ -3521,7 +4086,9 @@
             "description": "Activate the Blend Soft brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_0758f951cdf6515d9e5e1be3d89cf2fd",
+            "enum_value": 288866973
         },
         "SCULPT_BRUSH_BLEND_SQUARE": {
             "name": "BLEND SQUARE",
@@ -3535,7 +4102,9 @@
             "description": "Activate the Blend Square brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_e9cd978eecca56ea8a514e70820906a5",
+            "enum_value": 1865574401
         },
         "SCULPT_BRUSH_BLUR": {
             "name": "BLUR",
@@ -3549,7 +4118,9 @@
             "description": "Activate the Blur brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_e412e08813e651a8b7cc3e9d54211ef2",
+            "enum_value": 129513919
         },
         "SCULPT_BRUSH_SHARPEN": {
             "name": "SHARPEN",
@@ -3563,7 +4134,9 @@
             "description": "Activate the Sharpen brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_5dde78cb0b57517faefd5090ca1d9a86",
+            "enum_value": 346325552
         },
         "SCULPT_BRUSH_SMEAR": {
             "name": "SMEAR",
@@ -3577,7 +4150,9 @@
             "description": "Activate the Smear brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_99458a7cbf8955a29277ceeed719ca94",
+            "enum_value": 1833442875
         },
         "SCULPT_BRUSH_DRAG_CLOTH": {
             "name": "DRAG CLOTH",
@@ -3591,7 +4166,9 @@
             "description": "Activate the Drag Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_77d33fbf48165fd9b751386bef42e7ee",
+            "enum_value": 147834438
         },
         "SCULPT_BRUSH_PUSH_CLOTH": {
             "name": "PUSH CLOTH",
@@ -3605,7 +4182,9 @@
             "description": "Activate the Push Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_f3f402a73cdd5704b8990e164708ab48",
+            "enum_value": 482468056
         },
         "SCULPT_BRUSH_GRAB_CLOTH": {
             "name": "GRAB CLOTH",
@@ -3619,7 +4198,9 @@
             "description": "Activate the Grab Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_45af38da9983553b8e86edf347d52163",
+            "enum_value": 860588736
         },
         "SCULPT_BRUSH_GRAB_PLANAR_CLOTH": {
             "name": "GRAB PLANAR CLOTH",
@@ -3633,7 +4214,9 @@
             "description": "Activate the Grab Planar Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4e2dfb1df2915676893069004c024f3e",
+            "enum_value": 188590227
         },
         "SCULPT_BRUSH_GRAB_RANDOM_CLOTH": {
             "name": "GRAB RANDOM CLOTH",
@@ -3647,7 +4230,9 @@
             "description": "Activate the Grab Random Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_629d3d9ad0a455deb46909afb8131ccc",
+            "enum_value": 188674916
         },
         "SCULPT_BRUSH_INFLATE_CLOTH": {
             "name": "INFLATE CLOTH",
@@ -3661,7 +4246,9 @@
             "description": "Activate the Inflate Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4a03a7bc2e3950a3833bf41d7db79108",
+            "enum_value": 59677746
         },
         "SCULPT_BRUSH_EXPAND_CONTRACT_CLOTH": {
             "name": "EXPAND/CONTRACT CLOTH",
@@ -3675,7 +4262,9 @@
             "description": "Activate the Expand/Contract Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_c613d5dce6fd57c8ae011a25538da974",
+            "enum_value": 273968700
         },
         "SCULPT_BRUSH_PINCH_POINT_CLOTH": {
             "name": "PINCH POINT CLOTH",
@@ -3689,7 +4278,9 @@
             "description": "Activate the Pinch Point Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_28397661b41d5f90841626e75c718dc6",
+            "enum_value": 1175090477
         },
         "SCULPT_BRUSH_PINCH_FOLDS_CLOTH": {
             "name": "PINCH FOLDS CLOTH",
@@ -3703,7 +4294,9 @@
             "description": "Activate the Pinch Folds Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_4bc42b8ea9a85d9cb9c8170ffed05ae7",
+            "enum_value": 520945084
         },
         "SCULPT_BRUSH_BEND_TWIST_CLOTH": {
             "name": "BEND/TWIST CLOTH",
@@ -3717,7 +4310,9 @@
             "description": "Activate the Bend/Twist Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_3184590b1a685b0b8ea47406aea7b069",
+            "enum_value": 923582993
         },
         "SCULPT_BRUSH_STRETCH_MOVE_CLOTH": {
             "name": "STRETCH/MOVE CLOTH",
@@ -3731,7 +4326,9 @@
             "description": "Activate the Stretch/Move Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_3554817306a953c2966a147401fa22b5",
+            "enum_value": 626482914
         },
         "SCULPT_BRUSH_BEND_BOUNDARY_CLOTH": {
             "name": "BEND BOUNDARY CLOTH",
@@ -3745,7 +4342,9 @@
             "description": "Activate the Bend Boundary Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_299dbab3f93852ca8e0f13c8a0360934",
+            "enum_value": 1025428563
         },
         "SCULPT_BRUSH_TWIST_BOUNDARY_CLOTH": {
             "name": "TWIST BOUNDARY CLOTH",
@@ -3759,7 +4358,54 @@
             "description": "Activate the Twist Boundary Cloth brush from Blender’s Sculpt Essentials asset library.",
             "contexts": [
                 "Sculpt"
-            ]
+            ],
+            "preset_id": "op_009b9d42a6c154b491269a32286d6a96",
+            "enum_value": 1191812363
+        },
+        "IMAGE_EDITOR_MODE_VIEW": {
+            "name": "View Mode",
+            "operator_id": "allpie.image_editor_set_mode",
+            "invoke": false,
+            "properties": {
+                "mode": "VIEW"
+            },
+            "search_name": "Image Editor View Mode",
+            "description": "Switch the Image Editor to View mode.",
+            "contexts": [
+                "Image"
+            ],
+            "preset_id": "op_52a7ff7059f459e89a082c3776650cf4",
+            "enum_value": 2013438836
+        },
+        "IMAGE_EDITOR_MODE_PAINT": {
+            "name": "Paint Mode",
+            "operator_id": "allpie.image_editor_set_mode",
+            "invoke": false,
+            "properties": {
+                "mode": "PAINT"
+            },
+            "search_name": "Image Editor Paint Mode",
+            "description": "Switch the Image Editor to Paint mode.",
+            "contexts": [
+                "Image"
+            ],
+            "preset_id": "op_399f4d6399495ac7876e77829729f7d4",
+            "enum_value": 1574198562
+        },
+        "IMAGE_EDITOR_MODE_MASK": {
+            "name": "Mask Mode",
+            "operator_id": "allpie.image_editor_set_mode",
+            "invoke": false,
+            "properties": {
+                "mode": "MASK"
+            },
+            "search_name": "Image Editor Mask Mode",
+            "description": "Switch the Image Editor to Mask mode.",
+            "contexts": [
+                "Image"
+            ],
+            "preset_id": "op_3c36a10db77e5561978b4a4354b26d28",
+            "enum_value": 144551738
         }
     },
     "ThirdParty": {},

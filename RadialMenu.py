@@ -9,6 +9,7 @@ from bpy.props import StringProperty
 from . import Preferences
 from .core import runtime as ConfigRuntime
 from .core.operator_validation import validate_operator_preset
+from .core.schema import keymap_registration_spec
 
 # Compatibility views are compiled once from the JSON-backed runtime cache.
 # The modal menu continues to consume the same legacy menu-item structure.
@@ -47,6 +48,72 @@ OUTLINE_COLORS = (
 ACTIVE_FONT_COLOR = (1.0, 1.0, 1.0, 1.0)
 FONT_COLOR = (0.45, 0.35, 0.75, 1.0)
 MARK_COLOR = (0.50, 0.50, 0.50, 0.20)
+
+
+_DRAW_SPACE_TYPES = {
+    "VIEW_3D": "SpaceView3D",
+    "IMAGE_EDITOR": "SpaceImageEditor",
+    "NODE_EDITOR": "SpaceNodeEditor",
+}
+
+
+def _is_uv_editor_context(context):
+    """Return whether an Image Editor area is currently showing UV editing.
+
+    Blender uses the same IMAGE_EDITOR space for both the Image Editor and UV
+    Editor. ``SpaceImageEditor.show_uvedit`` is the runtime distinction: it is
+    true when UV editing is active, even though ``ui_mode`` can still be VIEW.
+    """
+    area = getattr(context, "area", None)
+    if getattr(area, "type", None) != "IMAGE_EDITOR":
+        return False
+
+    space = getattr(context, "space_data", None)
+    if space is None:
+        spaces = getattr(area, "spaces", None)
+        space = getattr(spaces, "active", None) if spaces is not None else None
+
+    try:
+        return bool(getattr(space, "show_uvedit", False))
+    except (AttributeError, ReferenceError, RuntimeError):
+        return False
+
+
+def _resolve_context_menu_id(menu_id, context):
+    """Resolve editor-specific mode menus and suppress Image modes in UV editing.
+
+    Blender uses one IMAGE_EDITOR space class for both the Image Editor and UV
+    Editor. Their keymaps can therefore overlap. The Image Editor's View/Paint/
+    Mask menu is valid only when UV editing is not active.
+    """
+    area = getattr(context, "area", None)
+    if getattr(area, "type", None) != "IMAGE_EDITOR":
+        return None if menu_id == "IMAGE.MODE" else menu_id
+
+    is_uv_editor = _is_uv_editor_context(context)
+    if menu_id == "IMAGE.MODE":
+        return None if is_uv_editor else menu_id
+
+    source_menu = ConfigRuntime.REGISTRY.get_menu(menu_id)
+    if source_menu is None or str(source_menu.keymap).casefold() != "common":
+        return menu_id
+
+    if menu_id == "OBJECT.MODE":
+        if is_uv_editor:
+            return None
+        image_mode = ConfigRuntime.REGISTRY.get_menu("IMAGE.MODE")
+        return "IMAGE.MODE" if image_mode is not None and image_mode.enabled else None
+
+    return menu_id
+
+
+def _draw_space_class(area_type):
+    """Resolve the Blender Space subclass used to draw in an editor area."""
+    class_name = _DRAW_SPACE_TYPES.get(str(area_type or ""))
+    space_class = getattr(bpy.types, class_name, None) if class_name else None
+    if space_class is None:
+        raise RuntimeError(f"AllPie does not support drawing in the {area_type!r} editor")
+    return space_class
 
 
 def _pointer_id(value):
@@ -124,20 +191,24 @@ def get_box_rect(self, angle, width, height):
 
 
 def set_menu(self, space, x, y):
-    self.space = space
-
-    if space and self.menu_id in SPACE_MENUS:
-        self.menu = SPACE_MENUS[self.menu_id]
+    """Switch menu data only when the requested layout actually exists."""
+    requested_space = bool(space)
+    if requested_space:
+        target_menu = SPACE_MENUS.get(self.menu_id)
+        if target_menu is None:
+            return False
     else:
-        self.menu = MENUS.get(self.menu_id)
-    self.menu = self.menu or []
+        target_menu = MENUS.get(self.menu_id)
 
+    self.space = requested_space
+    self.menu = target_menu or []
     self.slices = SLICES
     self.active = -1
     self.menu_name = MENU_NAMES.get(self.menu_id, "")
 
     build_geometry(self)
     update_active(self, x, y)
+    return True
 
 
 def _report_execution_issue(message, report=None, level="WARNING"):
@@ -194,7 +265,7 @@ def _is_expected_noop_cancelled(operator_id, properties, context):
         return False
 
 
-def execute_slot(index, menu, report=None, context=None):
+def _execute_slot_in_context(index, menu, report=None, context=None):
     if menu is None:
         return
 
@@ -203,6 +274,11 @@ def execute_slot(index, menu, report=None, context=None):
         return
 
     operator_id = item.get("operator", "")
+    # Empty radial positions are now represented explicitly so the full pie
+    # remains visible even when nothing has been assigned. Selecting one in
+    # normal mode is a harmless no-op.
+    if not operator_id:
+        return
     props = item.get("props", {})
     invoke = item.get("invoke", False)
     action_label = item.get("label", operator_id or "Unnamed Action")
@@ -277,6 +353,48 @@ def execute_slot(index, menu, report=None, context=None):
             f"{type(error).__name__}: {error}",
             report,
         )
+
+
+def execute_slot(
+    index,
+    menu,
+    report=None,
+    context=None,
+    origin_window=None,
+    origin_area=None,
+    origin_region=None,
+):
+    """Execute an action in the editor that originally opened the radial menu.
+
+    Blender's modal context may follow the pointer as it crosses editor areas.
+    Keep both operator.poll() and the operator call inside an override built
+    from the invoking window, area and region so editor-specific actions see
+    the context in which their radial menu was opened.
+    """
+    if (
+        context is not None
+        and origin_window is not None
+        and origin_area is not None
+        and origin_region is not None
+    ):
+        try:
+            with context.temp_override(
+                window=origin_window,
+                area=origin_area,
+                region=origin_region,
+            ):
+                _execute_slot_in_context(index, menu, report=report, context=context)
+            return
+        except Exception as error:
+            _report_execution_issue(
+                "Could not restore the original editor context for this action: "
+                f"{type(error).__name__}: {error}",
+                report,
+                level="ERROR",
+            )
+            return
+
+    _execute_slot_in_context(index, menu, report=report, context=context)
 
 
 def update_active(self, x, y):
@@ -395,6 +513,44 @@ def draw_menu_name(self, font_color):
     blf.draw(FONT_ID, self.menu_name)
 
 
+def _is_assignment_mode(operator):
+    """Identify the dedicated assignment operator by its registered type.
+
+    Separate Blender operator IDs keep last-used operator properties from
+    leaking assignment state into ordinary radial-menu keymap invocations.
+    """
+    return bool(getattr(type(operator), "_allpie_assignment_mode", False))
+
+
+def draw_assignment_info(self, font_color):
+    """Show the captured action and active slot group in assignment mode."""
+    if not _is_assignment_mode(self):
+        return
+
+    action_name = (
+        getattr(self, "assignment_operator_label", "")
+        or getattr(self, "assignment_operator_id", "")
+        or "Captured Operator"
+    )
+    action_text = f"Assign: {action_name}"
+    group_text = "Spaced Slots" if self.space else "Main Slots"
+    help_text = "Space: switch  ·  Click: assign  ·  Esc: cancel"
+
+    blf.color(FONT_ID, *font_color)
+    blf.size(FONT_ID, max(11, FONT_SIZE - 2))
+    action_width, _ = blf.dimensions(FONT_ID, action_text)
+    group_width, _ = blf.dimensions(FONT_ID, group_text)
+    blf.position(FONT_ID, self.cx - action_width / 2, self.cy - 8, 0)
+    blf.draw(FONT_ID, action_text)
+    blf.position(FONT_ID, self.cx - group_width / 2, self.cy - 25, 0)
+    blf.draw(FONT_ID, group_text)
+
+    blf.size(FONT_ID, max(9, FONT_SIZE - 5))
+    help_width, _ = blf.dimensions(FONT_ID, help_text)
+    blf.position(FONT_ID, self.cx - help_width / 2, self.cy - 41, 0)
+    blf.draw(FONT_ID, help_text)
+
+
 def draw_gesture(self):
     if getattr(self, "finished", True) or self.gesture_batch is None:
         return
@@ -427,6 +583,7 @@ def draw_menu(self):
     font_color = self.font_colors[self.space]
     draw_labels(self)
     draw_menu_name(self, font_color)
+    draw_assignment_info(self, font_color)
 
     gpu.state.blend_set("NONE")
     gpu.state.depth_test_set("LESS_EQUAL")
@@ -444,6 +601,39 @@ def draw(self):
         draw_menu(self)
     else:
         draw_gesture(self)
+
+
+def _pointer_inside_origin_region(self, x, y):
+    """Return whether a region-relative pointer sample lies in the draw area."""
+    region = getattr(self, "origin_region", None)
+    try:
+        width = int(region.width)
+        height = int(region.height)
+    except (AttributeError, ReferenceError, RuntimeError, TypeError, ValueError):
+        return False
+    return 0 <= x <= width and 0 <= y <= height
+
+
+def update_pointer(self, event):
+    """Apply one pointer sample consistently to selection and gesture state."""
+    x, y = _get_origin_mouse_position(self, event)
+
+    if (
+        _is_assignment_mode(self)
+        and not _pointer_inside_origin_region(self, x, y)
+    ):
+        # The assignment pie may be drawn in a different editor from the
+        # button that launched it. Do not let a pointer outside that editor's
+        # Window region select one of the eight directions.
+        self.active = -1
+        self.gesture_batch = None
+        self.gesture_endpoint_batch = None
+        _tag_origin_redraw(self)
+        return
+
+    update_active(self, x, y)
+    update_gesture(self, x, y)
+    _tag_origin_redraw(self)
 
 
 def update_gesture(self, x, y):
@@ -534,7 +724,10 @@ def finish(self, context=None):
     self.handle = None
     if handle is not None:
         try:
-            bpy.types.SpaceView3D.draw_handler_remove(handle, "WINDOW")
+            draw_space_type = getattr(self, "draw_space_type", None)
+            if draw_space_type is None:
+                raise RuntimeError("The original radial draw space is unavailable")
+            draw_space_type.draw_handler_remove(handle, "WINDOW")
         except Exception as error:
             print(f"[AllPie Warning] Could not remove radial draw handler: {error}")
 
@@ -593,9 +786,12 @@ def register_keymaps(kc, name):
         if keymap_name != name or default_key == "NONE":
             continue
 
-        km = kc.keymaps.get(keymap_name)
-        if km is None:
-            km = kc.keymaps.new(name=keymap_name)
+        space_type, region_type = keymap_registration_spec(keymap_name)
+        km = kc.keymaps.new(
+            name=keymap_name,
+            space_type=space_type,
+            region_type=region_type,
+        )
 
         kmi = km.keymap_items.new(
             "view3d.modal_radial_menu",
@@ -614,20 +810,74 @@ def register_keymaps(kc, name):
         addon_keymaps.append((km, kmi))
 
 
-# RADIAL MENU
-class ModalRadialMenu(bpy.types.Operator):
-    bl_idname = "view3d.modal_radial_menu"
-    bl_label = "Radial Menu"
+def _schedule_captured_slot_assignment(self, slot_number, spaced):
+    """Continue into AllPie's existing replacement/configuration workflow.
 
-    menu_id: StringProperty()
-    hotkey: StringProperty()
-    pref_id: StringProperty()
+    The radial modal must finish before invoking another popup operator. Keep
+    the original viewport context and use Blender's timer queue, matching the
+    deferred-popup pattern already used by the operator editor.
+    """
+    window = getattr(self, "origin_window", None)
+    area = getattr(self, "origin_area", None)
+    region = getattr(self, "origin_region", None)
+    properties = {
+        "menu_id": self.menu_id,
+        "slot_number": int(slot_number),
+        "spaced": bool(spaced),
+        "operator_id": self.assignment_operator_id,
+        "operator_label": self.assignment_operator_label,
+        "context_name": self.assignment_context_name,
+        "button_properties_json": self.assignment_button_properties_json or "{}",
+        "button_unsupported_properties_json": (
+            self.assignment_button_unsupported_properties_json or "[]"
+        ),
+    }
+
+    def invoke_assignment():
+        try:
+            operator = bpy.ops.allpie.assign_captured_operator_slot
+            if window is not None and area is not None and region is not None:
+                with bpy.context.temp_override(window=window, area=area, region=region):
+                    result = operator("INVOKE_DEFAULT", **properties)
+            else:
+                result = operator("INVOKE_DEFAULT", **properties)
+            if isinstance(result, set) and "CANCELLED" in result:
+                print("[AllPie] The captured operator slot assignment was cancelled")
+        except Exception as error:
+            print(
+                "[AllPie] Could not continue the radial assignment workflow: "
+                f"{type(error).__name__}: {error}"
+            )
+        return None
+
+    try:
+        bpy.app.timers.register(invoke_assignment, first_interval=0.0)
+    except Exception as error:
+        print(
+            "[AllPie] Could not schedule the captured operator assignment: "
+            f"{type(error).__name__}: {error}"
+        )
+
+
+# RADIAL MENU
+class _RadialMenuOperatorMixin:
+    """Shared modal implementation for normal and assignment radial menus."""
 
     def invoke(self, context, event):
+        # A shared Image Paint keymap can also be active in the Image Editor.
+        # Resolve Common Mode only for normal invocation; assignment mode must
+        # respect the exact menu the user selected in the context-menu workflow.
+        if not _is_assignment_mode(self):
+            resolved_menu_id = _resolve_context_menu_id(self.menu_id, context)
+            if resolved_menu_id is None:
+                return {"CANCELLED"}
+            self.menu_id = resolved_menu_id
+
         # Initialize cleanup-safe state before creating any Blender resources.
         self.finished = False
         self.menu_visible = False
         self.handle = None
+        self.draw_space_type = None
         self.hold_timer = None
         self.hold_timer_active = False
         self.box_batches = []
@@ -645,12 +895,26 @@ class ModalRadialMenu(bpy.types.Operator):
         self.origin_region_x = context.region.x
         self.origin_region_y = context.region.y
 
-        self.cx = event.mouse_region_x
-        self.cy = event.mouse_region_y
+        if _is_assignment_mode(self):
+            # Assignment mode opens as a visible editor immediately and is
+            # centered in the viewport, even when the source button lived in a
+            # sidebar region. The deferred invoke may not have a live input event.
+            self.cx = context.region.width * 0.5
+            self.cy = context.region.height * 0.5
+        else:
+            if event is None:
+                self.report({"ERROR"}, "AllPie needs the opening input event to start a normal radial menu")
+                return {"CANCELLED"}
+            self.cx = event.mouse_region_x
+            self.cy = event.mouse_region_y
         self.active = -1
-        self.opening_key = event.type
+        self.opening_key = getattr(event, "type", "")
 
         try:
+            if context.area is None or context.region is None or context.region.type != "WINDOW":
+                raise RuntimeError("AllPie must be invoked from an editor Window region")
+            self.draw_space_type = _draw_space_class(context.area.type)
+
             prefs = Preferences.get_preferences()
             self.hold_time = prefs.hold_time if prefs is not None else HOLD_TIME
             self.deadzone = prefs.deadzone if prefs is not None else DEADZONE
@@ -660,14 +924,18 @@ class ModalRadialMenu(bpy.types.Operator):
             self.separator_shader = gpu.shader.from_builtin("UNIFORM_COLOR")
             set_menu(self, False, self.cx, self.cy)
 
-            self.hold_timer = self.window_manager.event_timer_add(
-                self.hold_time,
-                window=self.origin_window,
-            )
-            self.hold_timer_active = True
-            self.hold_deadline = time.perf_counter() + self.hold_time
+            if not _is_assignment_mode(self):
+                self.hold_timer = self.window_manager.event_timer_add(
+                    self.hold_time,
+                    window=self.origin_window,
+                )
+                self.hold_timer_active = True
+                self.hold_deadline = time.perf_counter() + self.hold_time
+            else:
+                self.menu_visible = True
+                _remove_hold_timer(self)
 
-            self.handle = bpy.types.SpaceView3D.draw_handler_add(
+            self.handle = self.draw_space_type.draw_handler_add(
                 draw,
                 (self,),
                 "WINDOW",
@@ -699,19 +967,39 @@ class ModalRadialMenu(bpy.types.Operator):
                 _tag_origin_redraw(self)
             return {"RUNNING_MODAL"}
 
-        if event.type == "MOUSEMOVE":
-            x, y = _get_origin_mouse_position(self, event)
-            update_active(self, x, y)
-            update_gesture(self, x, y)
-            _tag_origin_redraw(self)
+        if event.type in {"MOUSEMOVE", "INBETWEEN_MOUSEMOVE"}:
+            update_pointer(self, event)
             return {"RUNNING_MODAL"}
 
         if event.type == "SPACE" and event.value == "PRESS" and not getattr(event, "is_repeat", False):
             x, y = _get_origin_mouse_position(self, event)
-            set_menu(self, not self.space, x, y)
-            self.menu_visible = True
-            _remove_hold_timer(self)
-            _tag_origin_redraw(self)
+            if set_menu(self, not self.space, x, y):
+                self.menu_visible = True
+                _remove_hold_timer(self)
+                _tag_origin_redraw(self)
+            return {"RUNNING_MODAL"}
+
+        if _is_assignment_mode(self):
+            # Assignment mode never executes an existing action. A left click
+            # selects the highlighted destination; Escape/right-click cancels.
+            if event.type == "LEFTMOUSE" and event.value == "PRESS":
+                x, y = _get_origin_mouse_position(self, event)
+                if _pointer_inside_origin_region(self, x, y):
+                    update_active(self, x, y)
+                else:
+                    self.active = -1
+                if self.active >= 0:
+                    slot_number = self.active + 1
+                    spaced = bool(self.space)
+                    finish(self, context)
+                    _schedule_captured_slot_assignment(self, slot_number, spaced)
+                    return {"FINISHED"}
+                return {"RUNNING_MODAL"}
+
+            if event.type in {"ESC", "RIGHTMOUSE"} and event.value == "PRESS":
+                finish(self, context)
+                return {"CANCELLED"}
+
             return {"RUNNING_MODAL"}
 
         if event.type == self.opening_key and event.value == "RELEASE":
@@ -719,7 +1007,15 @@ class ModalRadialMenu(bpy.types.Operator):
             menu = self.menu
             finish(self, context)
             if active >= 0:
-                execute_slot(active, menu, report=self.report, context=context)
+                execute_slot(
+                    active,
+                    menu,
+                    report=self.report,
+                    context=context,
+                    origin_window=self.origin_window,
+                    origin_area=self.origin_area,
+                    origin_region=self.origin_region,
+                )
             return {"FINISHED"}
 
         if event.type == "ESC" and event.value == "PRESS":
@@ -734,6 +1030,32 @@ class ModalRadialMenu(bpy.types.Operator):
         finish(self, context)
 
 
+class ModalRadialMenu(_RadialMenuOperatorMixin, bpy.types.Operator):
+    """Normal radial menu operator used by AllPie's shortcut keymaps."""
+
+    bl_idname = "view3d.modal_radial_menu"
+    bl_label = "Radial Menu"
+    _allpie_assignment_mode = False
+
+    menu_id: StringProperty()
+    hotkey: StringProperty()
+    pref_id: StringProperty()
+
+
+class ModalRadialAssignment(_RadialMenuOperatorMixin, bpy.types.Operator):
+    """Dedicated assignment operator that cannot execute menu actions."""
+
+    bl_idname = "view3d.modal_radial_assignment"
+    bl_label = "Assign Operator to Radial Slot"
+    _allpie_assignment_mode = True
+
+    menu_id: StringProperty()
+    assignment_operator_id: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    assignment_operator_label: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    assignment_context_name: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    assignment_button_properties_json: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+    assignment_button_unsupported_properties_json: StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+
 
 addon_keymaps = []
 
@@ -741,6 +1063,7 @@ addon_keymaps = []
 def register():
     ConfigRuntime.initialize()
     bpy.utils.register_class(ModalRadialMenu)
+    bpy.utils.register_class(ModalRadialAssignment)
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -760,6 +1083,7 @@ def unregister():
         _remove_all_radial_keymaps(kc)
     else:
         addon_keymaps.clear()
+    bpy.utils.unregister_class(ModalRadialAssignment)
     bpy.utils.unregister_class(ModalRadialMenu)
 
 

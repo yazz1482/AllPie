@@ -12,7 +12,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple
 
-from .schema import CompiledConfig, OperatorPreset
+from .schema import CompiledConfig, OperatorPreset, SLOT_COUNT
 
 LegacyMenu = List[dict]
 LegacyMenuMap = Dict[str, LegacyMenu]
@@ -21,17 +21,29 @@ LegacyNameMap = Dict[str, str]
 
 def _convert_slots(
     slots: Tuple[Optional[OperatorPreset], ...],
-    order: Tuple[int, ...],
 ) -> LegacyMenu:
-    """Convert a compiled eight-slot tuple to the radial engine's old list.
+    """Convert all eight compiled positions into drawable radial entries.
 
-    Slot order is retained from the JSON object so the compatibility view
-    preserves the legacy source-list ordering as well as each slot index.
+    Empty positions are deliberately retained. The radial UI must still show
+    the complete pie when a menu has only a few assigned actions—or no actions
+    at all—so users can understand the available directions and assign into
+    those positions. Empty entries are harmless at execution time because they
+    carry no operator identifier.
     """
     result: LegacyMenu = []
-    for index in order:
-        action = slots[index]
+    for index in range(SLOT_COUNT):
+        action = slots[index] if index < len(slots) else None
         if action is None:
+            result.append(
+                {
+                    "slot": index,
+                    "label": "Empty",
+                    "operator": "",
+                    "invoke": False,
+                    "props": {},
+                    "empty": True,
+                }
+            )
             continue
         result.append(
             {
@@ -40,6 +52,7 @@ def _convert_slots(
                 "operator": action.operator_id,
                 "invoke": action.invoke,
                 "props": deepcopy(dict(action.properties)),
+                "empty": False,
             }
         )
     return result
@@ -56,9 +69,9 @@ def build_legacy_views(compiled: CompiledConfig) -> tuple[LegacyMenuMap, LegacyM
     menu_names: LegacyNameMap = {}
 
     for menu_id, menu in compiled.menus.items():
-        menus[menu_id] = _convert_slots(menu.slots, menu.slot_order)
+        menus[menu_id] = _convert_slots(menu.slots)
         menu_names[menu_id] = menu.name
         if menu.spaced_slots is not None and menu.spaced_slot_order is not None:
-            spaced_menus[menu_id] = _convert_slots(menu.spaced_slots, menu.spaced_slot_order)
+            spaced_menus[menu_id] = _convert_slots(menu.spaced_slots)
 
     return menus, spaced_menus, menu_names

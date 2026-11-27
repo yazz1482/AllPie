@@ -620,6 +620,77 @@ class AllPie_OT_Crease(Operator):
         return {"FINISHED"}
 
 
+class AllPie_OT_ImageEditorSetMode(Operator):
+    """Switch the active Image Editor between View, Paint and Mask modes."""
+
+    bl_idname = "allpie.image_editor_set_mode"
+    bl_label = "Set Image Editor Mode"
+    bl_options = {"INTERNAL"}
+
+    mode: EnumProperty(
+        name="Mode",
+        items=(
+            ("VIEW", "View", "Show the image without paint or mask editing"),
+            ("PAINT", "Paint", "Switch the Image Editor to Paint mode"),
+            ("MASK", "Mask", "Switch the Image Editor to Mask mode"),
+        ),
+    )
+
+    @classmethod
+    def poll(cls, context):
+        if context.area is None or context.area.type != "IMAGE_EDITOR":
+            return False
+        space = getattr(context, "space_data", None)
+        if space is None:
+            spaces = getattr(context.area, "spaces", None)
+            space = getattr(spaces, "active", None) if spaces is not None else None
+        return not bool(getattr(space, "show_uvedit", False))
+
+    def execute(self, context):
+        space = getattr(context, "space_data", None)
+        if space is None:
+            self.report({"WARNING"}, "No active Image Editor space")
+            return {"CANCELLED"}
+
+        rna = getattr(space, "bl_rna", None)
+        properties = getattr(rna, "properties", None)
+        required_modes = {"VIEW", "PAINT", "MASK"}
+        mode_property = None
+
+        for candidate_name in ("ui_mode", "mode"):
+            try:
+                candidate = properties.get(candidate_name) if properties is not None else None
+                if candidate is None:
+                    continue
+                enum_items = getattr(candidate, "enum_items", ())
+                identifiers = {
+                    str(item.identifier)
+                    for item in enum_items
+                    if getattr(item, "identifier", None)
+                }
+                if required_modes.issubset(identifiers):
+                    mode_property = candidate_name
+                    break
+            except (AttributeError, ReferenceError, TypeError, RuntimeError):
+                continue
+
+        if mode_property is None:
+            self.report(
+                {"ERROR"},
+                "Could not find the Image Editor mode property (View/Paint/Mask)",
+            )
+            return {"CANCELLED"}
+
+        try:
+            setattr(space, mode_property, self.mode)
+            context.area.tag_redraw()
+        except (AttributeError, ReferenceError, TypeError, RuntimeError, ValueError) as error:
+            self.report({"ERROR"}, f"Could not switch Image Editor mode: {error}")
+            return {"CANCELLED"}
+
+        return {"FINISHED"}
+
+
 classes = (
     AllPie_OT_Symmetry,
     AllPie_OT_Remesh,
@@ -633,6 +704,7 @@ classes = (
     AllPie_OT_OriginSet,
     AllPie_OT_SubD,
     AllPie_OT_Crease,
+    AllPie_OT_ImageEditorSetMode,
 )
 
 addon_keymaps = []

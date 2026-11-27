@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "AllPie"
-version = "1.6.4"
+version = "1.6.27"
 name = "AllPie"
 tagline = "Pie Menus Everywhere"
 maintainer = "YAZZ"

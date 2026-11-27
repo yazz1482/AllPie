@@ -82,7 +82,6 @@ def _invalidate_editor_state(context: Any) -> None:
         prefs.editor_menu_id = ""
         prefs.editor_config_generation = -1
         prefs.editor_config_signature = ""
-        prefs.user_action_registry_generation = -1
         prefs.operator_search_catalog_generation = -1
         prefs.operator_search_last_added = ""
         try:
@@ -403,6 +402,12 @@ def draw_configuration_editor(layout: Any, prefs: Any, context: Any) -> None:
         grid.label(text=f"Normal slots: {counts['normal_slots']}")
         grid.label(text=f"Spaced slots: {counts['spaced_slots']}")
         summary.label(text=f"Third-party namespaces: {counts['third_party']}")
+
+    # Operator RNA validation remains available without retaining a separate
+    # Operators preferences page. The unified search owns preset editing and
+    # deletion; Configuration is the appropriate home for diagnostics.
+    from . import operator_editor
+    operator_editor.draw_operator_validation(layout, prefs)
 
     layout.separator()
     layout.operator("allpie.restore_bundled_defaults", text="Restore Bundled Defaults", icon="LOOP_BACK")

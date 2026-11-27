@@ -21,7 +21,7 @@ class RegistryBuildError(ValueError):
 
 def _make_action(identifier: str, raw: Mapping[str, Any], addon_id: Optional[str] = None) -> OperatorPreset:
     return OperatorPreset(
-        identifier=identifier,
+        identifier=str(raw.get("preset_id") or identifier),
         name=raw["name"],
         operator_id=raw["operator_id"],
         invoke=raw.get("invoke", False),
@@ -39,12 +39,7 @@ def _resolve_preset(
 ) -> Optional[OperatorPreset]:
     if reference is None:
         return None
-    if ":" in reference:
-        return actions[reference]
-    if owner_addon:
-        local_reference = f"{owner_addon}:{reference}"
-        if local_reference in actions:
-            return actions[local_reference]
+    # Validated menu slot references are always permanent preset IDs.
     return actions[reference]
 
 
@@ -75,12 +70,13 @@ def build_registry(config: Mapping[str, Any]) -> CompiledConfig:
     actions: Dict[str, OperatorPreset] = {}
 
     for action_id, action_data in normalized["Operators"].items():
-        actions[action_id] = _make_action(action_id, action_data)
+        preset_id = str(action_data["preset_id"])
+        actions[preset_id] = _make_action(preset_id, action_data)
 
     for addon_id, addon_data in normalized["ThirdParty"].items():
         for action_id, action_data in addon_data["Operators"].items():
-            qualified_id = f"{addon_id}:{action_id}"
-            actions[qualified_id] = _make_action(qualified_id, action_data, addon_id)
+            preset_id = str(action_data["preset_id"])
+            actions[preset_id] = _make_action(preset_id, action_data, addon_id)
 
     menus: Dict[str, CompiledMenu] = {}
 
@@ -91,7 +87,10 @@ def build_registry(config: Mapping[str, Any]) -> CompiledConfig:
         owner_enabled: bool = True,
     ) -> None:
         spaced_data = menu_data.get("spaced_slots", {})
-        has_spaced_slots = any(reference is not None for reference in spaced_data.values())
+        # An enabled but currently empty Spaced Slots layout is still a real
+        # destination: it must be available to the radial assignment workflow
+        # and should render eight empty positions in normal radial use.
+        has_spaced_slots = bool(menu_data.get("spaced_slots_enabled", False))
         spaced_slots = (
             _compile_slots(spaced_data, owner_addon, actions)
             if has_spaced_slots

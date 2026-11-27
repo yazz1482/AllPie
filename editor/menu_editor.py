@@ -8,7 +8,7 @@ radial modal interaction and drawing implementation are not modified here.
 from __future__ import annotations
 
 from itertools import count
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import bpy
 import json
@@ -23,17 +23,17 @@ from bpy.props import (
 )
 
 from ..core import runtime as ConfigRuntime
-from ..core.validation import validate_config
+from ..core.validation import reserved_menu_shortcut_message, validate_config
 from . import menu_data, menu_exchange, operator_data
 
-MENU_EDITOR_API_VERSION = 18
+MENU_EDITOR_API_VERSION = 36
 
 _EMPTY_ACTION = "__EMPTY__"
-_ALL_ACTION_ENUM_ITEMS: Tuple[Tuple[str, str, str], ...] = (
-    (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty"),
+_ALL_ACTION_ENUM_ITEMS: Tuple[Tuple[Any, ...], ...] = (
+    (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty", 0),
 )
-_ACTION_ENUM_ITEMS: Tuple[Tuple[str, str, str], ...] = (
-    (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty"),
+_ACTION_ENUM_ITEMS: Tuple[Tuple[Any, ...], ...] = (
+    (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty", 0),
 )
 _ACTION_ALLOWED_TOKENS = {_EMPTY_ACTION}
 _ACTION_REFERENCE_TO_TOKEN: Dict[str, str] = {}
@@ -170,12 +170,12 @@ def _format_shortcut(key: str, modifiers: Iterable[str]) -> str:
     return " + ".join(parts)
 
 
-def action_enum_items(_self: Any, _context: Any) -> Tuple[Tuple[str, str, str], ...]:
+def action_enum_items(_self: Any, _context: Any) -> Tuple[Tuple[Any, ...], ...]:
     """Return actions scoped to the keymap context of the active menu picker."""
     return _ACTION_ENUM_ITEMS
 
 
-def all_action_enum_items(_self: Any, _context: Any) -> Tuple[Tuple[str, str, str], ...]:
+def all_action_enum_items(_self: Any, _context: Any) -> Tuple[Tuple[Any, ...], ...]:
     """Return all presets for persistent slot-value storage in RNA."""
     return _ALL_ACTION_ENUM_ITEMS
 
@@ -196,8 +196,6 @@ def _operator_rna_description(operator_id: str) -> str:
 def _refresh_action_enum_items(
     config: Dict[str, Any],
     keymap: str | None = None,
-    *,
-    brush_only: bool = False,
 ) -> None:
     """Refresh stable action tokens and the current menu's scoped search list.
 
@@ -214,26 +212,27 @@ def _refresh_action_enum_items(
     all_records = sorted(
         menu_data.iter_action_records(config),
         key=lambda record: (
-            action_metadata.get(record[0], {}).get("search_name", record[1]).casefold(),
+            action_metadata.get(record[0], {}).get("name", record[1]).casefold(),
             record[0],
         ),
     )
-    all_items: List[Tuple[str, str, str]] = [
-        (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty")
+    all_items: List[Tuple[Any, ...]] = [
+        (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty", 0)
     ]
     reference_to_token: Dict[str, str] = {}
     token_to_reference: Dict[str, str] = {}
     token_to_label: Dict[str, str] = {}
-    token_items: Dict[str, Tuple[str, str, str]] = {}
+    token_items: Dict[str, Tuple[Any, ...]] = {}
 
-    for index, (identifier, name, operator_id) in enumerate(all_records):
-        # Tokens are assigned from the complete, sorted preset registry. They
-        # therefore remain stable when the active menu category changes.
-        token = f"ACTION_{index:04d}"
+    for identifier, name, operator_id in all_records:
+        # The enum identifier is the preset's permanent UUID. Never derive it
+        # from sort order: inserting or renaming another preset cannot change
+        # the identity held by an existing Main or Spaced slot.
+        token = identifier
         reference_to_token[identifier] = token
         token_to_reference[token] = identifier
         metadata = action_metadata.get(identifier, {})
-        label = metadata.get("search_name") or name or identifier
+        label = metadata.get("name") or name or identifier
         if isinstance(label, str) and label.isupper():
             label = label.title()
         description = metadata.get("description") or _operator_rna_description(operator_id)
@@ -243,7 +242,10 @@ def _refresh_action_enum_items(
         # search popup. Keep it focused on what the action does; internal IDs
         # and Blender operator identifiers stay out of the user-facing text.
         tooltip = description
-        token_item = (token, label, tooltip)
+        enum_value = int(metadata.get("enum_value", 0))
+        if enum_value <= 0:
+            raise RuntimeError(f"Preset '{identifier}' has no stable Blender enum value")
+        token_item = (token, label, tooltip, enum_value)
         all_items.append(token_item)
         token_items[identifier] = token_item
         token_to_label[token] = label
@@ -253,14 +255,10 @@ def _refresh_action_enum_items(
     else:
         scoped_records = menu_data.iter_action_records(config, keymap=keymap)
 
-    scoped_references = {
-        identifier
-        for identifier, _name, operator_id in scoped_records
-        if not brush_only or operator_id in menu_data.BRUSH_MENU_OPERATOR_IDS
-    }
+    scoped_references = {identifier for identifier, _name, _operator_id in scoped_records}
 
     scoped_items = [
-        (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty")
+        (_EMPTY_ACTION, "(Empty)", "Leave this radial slot empty", 0)
     ]
     for identifier, _name, _operator_id in all_records:
         if identifier in scoped_references:
@@ -286,39 +284,138 @@ def _preferences_from_context(context: Any) -> Any:
     return addon.preferences if addon is not None else None
 
 
+def _serialize_editor_config(config: Dict[str, Any]) -> str:
+    """Serialize a detached editor draft without changing the active runtime."""
+    return json.dumps(config, ensure_ascii=False, separators=(",", ":"))
+
+
+def _mark_menu_draft_dirty(prefs: Any) -> None:
+    """Start a detached full-config draft on the first edit, then mark it dirty.
+
+    Menu properties and slot collections are transient RNA controls. Operator
+    assignment/configuration must be able to update the same detached config
+    while those controls remain unapplied. Keeping the base configuration in a
+    hidden SKIP_SAVE string lets Apply commit all changes together and Discard
+    throw them away without leaving orphan presets behind.
+    """
+    if prefs is None or getattr(prefs, "editor_loading", False):
+        return
+
+    draft_json = str(getattr(prefs, "editor_draft_config_json", "") or "")
+    if not draft_json:
+        prefs.editor_draft_config_json = _serialize_editor_config(
+            ConfigRuntime.get_config_copy()
+        )
+    else:
+        # Detect stale/corrupt transient state before any editor operation
+        # mutates it. A malformed draft must never silently overwrite the live
+        # configuration with a fresh copy.
+        try:
+            draft = json.loads(draft_json)
+        except (TypeError, ValueError) as error:
+            raise RuntimeError(f"The pending menu draft is invalid: {error}") from error
+        if not isinstance(draft, dict):
+            raise RuntimeError("The pending menu draft is not a configuration object")
+    prefs.editor_dirty = True
+
+
+def get_menu_operation_config(prefs: Any, target_menu_id: str) -> Dict[str, Any]:
+    """Return the menu's current draft when editing it, otherwise live config.
+
+    Operators invoked from a slot can work while the menu editor is dirty only
+    when they target the menu whose draft is currently open. This avoids
+    silently editing a different menu or writing around an unapplied draft.
+    """
+    if prefs is not None and getattr(prefs, "editor_dirty", False):
+        if not target_menu_id or prefs.editor_active_menu_id != target_menu_id:
+            raise RuntimeError(
+                "Apply or discard the current menu draft before editing another menu"
+            )
+        return _build_menu_draft_config(prefs)
+    return ConfigRuntime.get_config_copy()
+
+
+def store_menu_operation_draft(
+    prefs: Any,
+    config: Dict[str, Any],
+    *,
+    slot_assignment: Optional[Tuple[int, bool, str]] = None,
+) -> None:
+    """Store an operator/preset edit inside the pending menu draft.
+
+    slot_assignment is (slot_number, spaced, action_id). It synchronizes the
+    visible RNA slot row so the next Apply does not overwrite the assignment
+    with stale collection values.
+    """
+    if prefs is None or not getattr(prefs, "editor_active_menu_id", ""):
+        raise RuntimeError("No active menu draft is available")
+
+    # Resolve every UI-side dependency before publishing the new draft JSON.
+    # If the slot cannot be synchronized, the previous draft remains intact.
+    pending_slot = None
+    pending_token = ""
+    _refresh_action_enum_items(config, None)
+    if slot_assignment is not None:
+        slot_number, spaced, action_id = slot_assignment
+        pending_token = _ACTION_REFERENCE_TO_TOKEN.get(str(action_id or ""))
+        if not pending_token:
+            raise RuntimeError(f"Could not resolve the newly assigned preset '{action_id}'")
+        collection = prefs.editor_spaced_slots if spaced else prefs.editor_slots
+        pending_slot = next((item for item in collection if item.slot_number == slot_number), None)
+        if pending_slot is None:
+            raise RuntimeError(f"Draft Slot {slot_number} is unavailable")
+
+    pending_json = _serialize_editor_config(config)
+    if pending_slot is not None:
+        previous_action_id = pending_slot.action_id
+        prefs.editor_loading = True
+        try:
+            pending_slot.action_id = pending_token
+        except Exception:
+            # Keep the transient slot and saved draft coherent if an RNA enum
+            # assignment unexpectedly fails.
+            try:
+                pending_slot.action_id = previous_action_id
+            except Exception:
+                pass
+            raise
+        finally:
+            prefs.editor_loading = False
+
+    prefs.editor_draft_config_json = pending_json
+    prefs.editor_dirty = True
+    # A newly-created preset exists only in this draft, so force the unified
+    # operator picker to rebuild against the draft on its next open.
+    try:
+        prefs.operator_search_config_generation = -1
+        prefs.operator_search_config_fingerprint = ""
+    except (AttributeError, TypeError):
+        pass
+
+
 def mark_editor_dirty(self: Any, context: Any) -> None:
     """Mark the current draft dirty when a preference editor field changes."""
     if getattr(self, "editor_loading", False):
         return
     try:
-        self.editor_dirty = True
+        _mark_menu_draft_dirty(self)
     except (AttributeError, TypeError):
         prefs = _preferences_from_context(context) if context is not None else None
         if prefs is not None and not getattr(prefs, "editor_loading", False):
-            prefs.editor_dirty = True
-
-
-def on_editor_menu_mode_changed(self: Any, context: Any) -> None:
-    """Keep the brush-menu toggle limited to supported paint contexts."""
-    if getattr(self, "editor_loading", False):
-        return
-    if not menu_data.supports_brush_menu(getattr(self, "editor_menu_mode", "")):
-        self.editor_loading = True
-        try:
-            self.editor_menu_is_brush_menu = False
-        finally:
-            self.editor_loading = False
-    mark_editor_dirty(self, context)
+            _mark_menu_draft_dirty(prefs)
 
 
 def mark_slot_dirty(self: Any, context: Any) -> None:
-    """Mark the owning AddonPreferences draft dirty from a slot enum update."""
+    """Start/mark the owning AddonPreferences draft after a slot edit."""
     prefs = _preferences_from_context(context) if context is not None else None
     if prefs is not None and not getattr(prefs, "editor_loading", False):
-        prefs.editor_dirty = True
+        _mark_menu_draft_dirty(prefs)
 
 
-def _fill_slot_collection(collection: Any, slot_config: Dict[str, Any]) -> None:
+def _fill_slot_collection(
+    collection: Any,
+    slot_config: Dict[str, Any],
+) -> None:
     collection.clear()
     for slot_number in range(1, 9):
         item = collection.add()
@@ -342,7 +439,6 @@ def load_selected_menu(prefs: Any) -> None:
             prefs.editor_menu_mode = "OBJECT_MODE"
             prefs.editor_custom_keymap = ""
             prefs.editor_menu_enabled = False
-            prefs.editor_menu_is_brush_menu = False
             prefs.editor_menu_shift = False
             prefs.editor_menu_ctrl = False
             prefs.editor_menu_alt = False
@@ -352,6 +448,7 @@ def load_selected_menu(prefs: Any) -> None:
             _fill_slot_collection(prefs.editor_spaced_slots, {})
             prefs.editor_spaced_enabled = False
             prefs.editor_config_generation = ConfigRuntime.REGISTRY.generation
+            prefs.editor_draft_config_json = ""
             prefs.editor_dirty = False
         finally:
             prefs.editor_loading = False
@@ -364,12 +461,9 @@ def load_selected_menu(prefs: Any) -> None:
     except (RuntimeError, KeyError):
         return
 
-    is_brush_menu = bool(menu.get("is_brush_menu", False))
-    _refresh_action_enum_items(
-        config,
-        menu.get("keymap", "Object Mode"),
-        brush_only=is_brush_menu,
-    )
+    # The compact slot enum remains unfiltered. Context filters live in the
+    # unified search popup opened by clicking a slot button.
+    _refresh_action_enum_items(config, None)
     prefs.editor_loading = True
     try:
         prefs.editor_active_menu_id = menu_id
@@ -389,13 +483,13 @@ def load_selected_menu(prefs: Any) -> None:
         prefs.editor_menu_hyper = "HYPER" in modifiers
 
         prefs.editor_menu_enabled = bool(menu.get("enabled", True))
-        prefs.editor_menu_is_brush_menu = is_brush_menu
 
         _fill_slot_collection(prefs.editor_slots, menu.get("slots", {}))
         spaced = menu.get("spaced_slots", {})
-        prefs.editor_spaced_enabled = any(value is not None for value in spaced.values())
+        prefs.editor_spaced_enabled = menu_data.spaced_slots_enabled(menu)
         _fill_slot_collection(prefs.editor_spaced_slots, spaced)
         prefs.editor_config_generation = ConfigRuntime.REGISTRY.generation
+        prefs.editor_draft_config_json = ""
         prefs.editor_dirty = False
     finally:
         prefs.editor_loading = False
@@ -574,11 +668,7 @@ class ALLPIE_OT_menu_pick_action(Operator):
             if slot.slot_number == self.slot_number:
                 current_reference = _ACTION_TOKEN_TO_REFERENCE.get(slot.action_id)
                 break
-        _refresh_action_enum_items(
-            config,
-            _selected_keymap(prefs),
-            brush_only=bool(prefs.editor_menu_is_brush_menu),
-        )
+        _refresh_action_enum_items(config, None)
         current_token = _ACTION_REFERENCE_TO_TOKEN.get(current_reference, _EMPTY_ACTION)
         self.action_id = current_token if current_token in _ACTION_ALLOWED_TOKENS else _EMPTY_ACTION
         # Blender expects the operator invoke callback itself to return an
@@ -604,137 +694,7 @@ class ALLPIE_OT_menu_pick_action(Operator):
             return {"CANCELLED"}
 
         slot.action_id = self.action_id or _EMPTY_ACTION
-        prefs.editor_dirty = True
-        return {"FINISHED"}
-
-
-class ALLPIE_OT_menu_assign_active_brush(Operator):
-    """Assign the currently active Blender brush asset to a Brush Menu slot."""
-
-    bl_idname = "allpie.menu_editor_assign_active_brush"
-    bl_label = "Assign Active Brush"
-    bl_description = "Assign the active brush asset from Blender's Asset Shelf to this slot"
-    bl_options = {"INTERNAL"}
-
-    target_menu_id: StringProperty(options={"HIDDEN"})
-    slot_number: IntProperty(min=1, max=8, options={"HIDDEN"})
-    spaced: BoolProperty(default=False, options={"HIDDEN"})
-
-    _PAINT_SETTINGS = {
-        "sculpt": ("sculpt", "Sculpt"),
-        "image paint": ("image_paint", "Texture Paint"),
-        "vertex paint": ("vertex_paint", "Vertex Paint"),
-        "weight paint": ("weight_paint", "Weight Paint"),
-    }
-
-    def execute(self, context):
-        prefs = _preferences_from_context(context)
-        if prefs is None or prefs.editor_active_menu_id != self.target_menu_id:
-            self.report({"ERROR"}, "The target menu is no longer selected")
-            return {"CANCELLED"}
-        if prefs.editor_dirty:
-            self.report({"WARNING"}, "Apply or discard the current menu changes before assigning an active brush")
-            return {"CANCELLED"}
-
-        try:
-            config = ConfigRuntime.get_config_copy()
-            menu = menu_data.get_menu(config, self.target_menu_id)
-        except Exception as error:
-            self.report({"ERROR"}, f"Could not read the target menu: {error}")
-            return {"CANCELLED"}
-
-        if not menu.get("is_brush_menu", False):
-            self.report({"ERROR"}, "The selected menu is not a Brush Menu")
-            return {"CANCELLED"}
-
-        context_name = str(menu.get("keymap", "")).strip()
-        paint_info = self._PAINT_SETTINGS.get(context_name.casefold())
-        if paint_info is None:
-            self.report({"ERROR"}, f"'{context_name}' does not support brush assignment")
-            return {"CANCELLED"}
-
-        paint_attr, display_mode = paint_info
-        scene = getattr(context, "scene", None)
-        if scene is None:
-            try:
-                scene = bpy.context.scene
-            except (AttributeError, ReferenceError):
-                scene = None
-        tool_settings = getattr(scene, "tool_settings", None) if scene is not None else None
-        paint_settings = getattr(tool_settings, paint_attr, None) if tool_settings is not None else None
-        if paint_settings is None:
-            self.report({"ERROR"}, f"Blender's {display_mode} brush settings are unavailable")
-            return {"CANCELLED"}
-
-        brush = getattr(paint_settings, "brush", None)
-        asset_reference = getattr(paint_settings, "brush_asset_reference", None)
-        if brush is None or asset_reference is None:
-            self.report(
-                {"WARNING"},
-                f"No active {display_mode} brush asset. Select a brush from Blender's Asset Shelf first.",
-            )
-            return {"CANCELLED"}
-
-        try:
-            library_type = str(asset_reference.asset_library_type)
-            library_identifier = str(asset_reference.asset_library_identifier or "")
-            relative_identifier = str(asset_reference.relative_asset_identifier or "")
-            brush_name = str(brush.name or "Custom Brush")
-        except (AttributeError, ReferenceError, TypeError) as error:
-            self.report({"ERROR"}, f"Could not read the active brush asset reference: {error}")
-            return {"CANCELLED"}
-
-        if library_type not in {"LOCAL", "ESSENTIALS", "ONLINE_ESSENTIALS", "CUSTOM"}:
-            self.report({"ERROR"}, f"Unsupported brush asset library type: {library_type or '(empty)'}")
-            return {"CANCELLED"}
-        if not relative_identifier:
-            self.report({"WARNING"}, "The active brush has no asset reference. Mark it as an asset and select it from the Asset Shelf.")
-            return {"CANCELLED"}
-        if library_type == "CUSTOM" and not library_identifier:
-            self.report({"ERROR"}, "Blender did not provide the name of the custom brush library")
-            return {"CANCELLED"}
-
-        properties = {
-            "asset_library_type": library_type,
-            "asset_library_identifier": library_identifier,
-            "relative_asset_identifier": relative_identifier,
-        }
-        search_name = f"{brush_name} Brush"
-        description = (
-            f"Activate the '{brush_name}' brush asset from the "
-            f"{library_type.replace('_', ' ').title()} asset library."
-        )
-
-        try:
-            action_id, created = operator_data.create_or_reuse_blender_operator(
-                config,
-                operator_id=menu_data.BRUSH_ASSET_OPERATOR_ID,
-                name=brush_name,
-                search_name=search_name,
-                description=description,
-                context_name=context_name,
-                context_names=menu_data.keymap_contexts(context_name),
-                properties=properties,
-                invoke=True,
-            )
-            menu_container, local_menu_id = menu_data.get_menu_container(config, self.target_menu_id)
-            target_menu = menu_container[local_menu_id]
-            slot_field = "spaced_slots" if self.spaced else "slots"
-            target_menu.setdefault(slot_field, {})[str(self.slot_number)] = action_id
-            ConfigRuntime.replace_and_save_configuration(config)
-        except Exception as error:
-            self.report({"ERROR"}, f"Could not assign brush '{brush_name}': {error}")
-            return {"CANCELLED"}
-
-        prefs.editor_config_generation = -1
-        prefs.editor_dirty = False
-        try:
-            _ensure_editor_state(prefs)
-        except Exception as error:
-            self.report({"WARNING"}, f"Brush assigned, but the editor could not refresh: {error}")
-
-        verb = "Added" if created else "Reused"
-        self.report({"INFO"}, f"{verb} '{brush_name}' in Slot {self.slot_number}")
+        _mark_menu_draft_dirty(prefs)
         return {"FINISHED"}
 
 
@@ -765,7 +725,7 @@ class ALLPIE_OT_menu_clear_slot(Operator):
             return {"CANCELLED"}
 
         slot.action_id = _EMPTY_ACTION
-        prefs.editor_dirty = True
+        _mark_menu_draft_dirty(prefs)
         self.report({"INFO"}, f"Cleared Slot {self.slot_number}")
         return {"FINISHED"}
 
@@ -798,7 +758,7 @@ class ALLPIE_OT_menu_clear_shortcut(Operator):
             prefs.editor_menu_hyper = False
         finally:
             prefs.editor_loading = False
-        prefs.editor_dirty = True
+        _mark_menu_draft_dirty(prefs)
         self.report({"INFO"}, "Shortcut cleared. Apply to save the change.")
         return {"FINISHED"}
 
@@ -809,7 +769,7 @@ class ALLPIE_OT_menu_assign_shortcut(Operator):
 
     bl_idname = "allpie.menu_editor_assign_shortcut"
     bl_label = "Assign Shortcut"
-    bl_description = "Capture a keyboard or mouse shortcut using Blender's keymap editor"
+    bl_description = "Capture a keyboard or mouse shortcut; Space and Esc are reserved for radial controls"
     bl_options = {"INTERNAL"}
 
     target_menu_id: StringProperty(options={"HIDDEN"})
@@ -857,6 +817,7 @@ class ALLPIE_OT_menu_assign_shortcut(Operator):
         row = layout.row(align=True)
         row.prop(item, "type", text="Shortcut", full_event=True)
         layout.label(text="Modifier keys are captured automatically.", icon="INFO")
+        layout.label(text="Space and Esc are reserved for radial controls and cannot be assigned.", icon="INFO")
 
     def execute(self, context):
         record = _SHORTCUT_CAPTURE_ITEMS.get(self.capture_token)
@@ -875,6 +836,12 @@ class ALLPIE_OT_menu_assign_shortcut(Operator):
             self.report({"WARNING"}, "Choose a valid key or mouse event")
             return {"CANCELLED"}
 
+        reserved_message = reserved_menu_shortcut_message(item.type)
+        if reserved_message:
+            _remove_shortcut_capture_item(self.capture_token)
+            self.report({"ERROR"}, reserved_message + ". Choose another menu shortcut.")
+            return {"CANCELLED"}
+
         modifiers = _shortcut_modifier_values(item)
         prefs.editor_loading = True
         try:
@@ -886,7 +853,7 @@ class ALLPIE_OT_menu_assign_shortcut(Operator):
             prefs.editor_menu_hyper = modifiers["HYPER"]
         finally:
             prefs.editor_loading = False
-        prefs.editor_dirty = True
+        _mark_menu_draft_dirty(prefs)
         _remove_shortcut_capture_item(self.capture_token)
         self.report({"INFO"}, "Shortcut updated. Apply to save the change.")
         return {"FINISHED"}
@@ -896,10 +863,24 @@ class ALLPIE_OT_menu_assign_shortcut(Operator):
 
 
 def _build_menu_draft_config(prefs: Any) -> Dict[str, Any]:
-    """Build a detached config containing the currently edited menu draft."""
+    """Build the complete detached config containing the currently edited menu.
+
+    When the draft contains new/edited operator presets, start from the stored
+    draft rather than the active runtime. This preserves those pending operator
+    changes while the menu's RNA controls are merged into the selected menu.
+    """
     if prefs is None or not prefs.editor_active_menu_id:
         raise ValueError("No menu is selected")
-    config = ConfigRuntime.get_config_copy()
+    draft_json = str(getattr(prefs, "editor_draft_config_json", "") or "")
+    if getattr(prefs, "editor_dirty", False) and draft_json:
+        try:
+            config = json.loads(draft_json)
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"The pending menu draft could not be read: {error}") from error
+        if not isinstance(config, dict):
+            raise ValueError("The pending menu draft is not a configuration object")
+    else:
+        config = ConfigRuntime.get_config_copy()
     menu_data.update_menu(
         config,
         prefs.editor_active_menu_id,
@@ -919,7 +900,6 @@ def _build_menu_draft_config(prefs: Any) -> Dict[str, Any]:
         slots=_slot_values(prefs.editor_slots),
         spaced_enabled=prefs.editor_spaced_enabled,
         spaced_slots=_slot_values(prefs.editor_spaced_slots),
-        is_brush_menu=bool(prefs.editor_menu_is_brush_menu),
     )
     return config
 
@@ -1003,6 +983,7 @@ class ALLPIE_OT_menu_apply(Operator):
             return {"CANCELLED"}
 
         prefs.editor_dirty = False
+        prefs.editor_draft_config_json = ""
         prefs.editor_config_generation = -1
         # A keymap edit can move a menu into a different browser category.
         # Follow it automatically so the edited menu remains selected.
@@ -1017,16 +998,15 @@ class ALLPIE_OT_menu_add(Operator):
     bl_label = "Add Menu"
     bl_description = "Create a new empty AllPie menu"
 
-    menu_id: StringProperty(name="Menu ID", default="CUSTOM.MENU")
     name: StringProperty(name="Name", default="Custom Menu")
     key: StringProperty(name="Key", default="A", options={"HIDDEN"})
-    keymap: EnumProperty(name="Mode(s)", items=menu_data.KEYMAP_ENUM_ITEMS, default="OBJECT_MODE")
-    custom_keymap: StringProperty(name="Custom Keymap", default="")
-    is_brush_menu: BoolProperty(
-        name="Brush Menu",
-        description="Only show brush asset activation presets when assigning actions",
-        default=False,
+    keymap: EnumProperty(
+        name="Context",
+        description="Blender mode or editor context in which this radial menu is available",
+        items=menu_data.KEYMAP_ENUM_ITEMS,
+        default="OBJECT_MODE",
     )
+    custom_keymap: StringProperty(name="Custom Keymap", default="")
 
     def invoke(self, context, event):
         prefs = _preferences_from_context(context)
@@ -1044,13 +1024,19 @@ class ALLPIE_OT_menu_add(Operator):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, "menu_id")
         layout.prop(self, "name")
+        try:
+            preview_config = ConfigRuntime.get_config_copy()
+            generated_id = menu_data.generate_menu_id(preview_config, self.name)
+        except Exception:
+            generated_id = "CUSTOM.MENU"
+        preview = layout.row()
+        preview.enabled = False
+        preview.label(text=f"Generated ID: {generated_id}", icon="INFO")
+        preview.label(text="ID remains stable after creation")
         layout.prop(self, "keymap")
         if self.keymap == "CUSTOM":
             layout.prop(self, "custom_keymap")
-        if menu_data.supports_brush_menu(self.keymap):
-            layout.prop(self, "is_brush_menu")
         layout.label(text="The new menu starts disabled with a default A shortcut and eight empty slots.", icon="INFO")
         layout.label(text="You can assign its shortcut in the menu editor after creation.")
 
@@ -1061,13 +1047,13 @@ class ALLPIE_OT_menu_add(Operator):
             return {"CANCELLED"}
         try:
             config = ConfigRuntime.get_config_copy()
-            menu_data.add_menu(
+            if not self.name.strip():
+                raise ValueError("Menu name cannot be empty")
+            menu_id = menu_data.add_menu(
                 config,
-                menu_id=self.menu_id,
                 name=self.name,
                 key=self.key,
                 keymap=menu_data.keymap_value(self.keymap, self.custom_keymap),
-                is_brush_menu=self.is_brush_menu,
             )
             ConfigRuntime.replace_and_save_configuration(config)
             _rebuild_keymaps()
@@ -1077,12 +1063,13 @@ class ALLPIE_OT_menu_add(Operator):
 
         prefs = _preferences_from_context(context)
         if prefs is not None:
-            prefs.editor_active_menu_id = self.menu_id
+            prefs.editor_active_menu_id = menu_id
             prefs.editor_dirty = False
+            prefs.editor_draft_config_json = ""
             prefs.editor_config_generation = -1
-            prefs.editor_category = menu_data.category_for_menu(config, self.menu_id)
+            prefs.editor_category = menu_data.category_for_menu(config, menu_id)
             _ensure_editor_state(prefs)
-        self.report({"INFO"}, f"Created menu '{self.menu_id}'")
+        self.report({"INFO"}, f"Created menu '{menu_id}'")
         return {"FINISHED"}
 
 
@@ -1113,6 +1100,7 @@ class ALLPIE_OT_menu_duplicate(Operator):
 
         prefs.editor_active_menu_id = new_id
         prefs.editor_dirty = False
+        prefs.editor_draft_config_json = ""
         prefs.editor_config_generation = -1
         _ensure_editor_state(prefs)
         self.report({"INFO"}, f"Duplicated menu as '{new_id}'")
@@ -1151,6 +1139,7 @@ class ALLPIE_OT_menu_remove(Operator):
 
         prefs.editor_active_menu_id = ""
         prefs.editor_dirty = False
+        prefs.editor_draft_config_json = ""
         prefs.editor_config_generation = -1
         _ensure_editor_state(prefs)
         self.report({"INFO"}, f"Removed menu '{menu_id}'")
@@ -1173,6 +1162,7 @@ class ALLPIE_OT_menu_discard(Operator):
             )
             prefs.editor_active_menu_id = selected_id
             prefs.editor_dirty = False
+            prefs.editor_draft_config_json = ""
             prefs.editor_config_generation = -1
             _ensure_editor_state(prefs)
         return {"FINISHED"}
@@ -1323,6 +1313,7 @@ class ALLPIE_OT_menu_import_json(Operator):
                 prefs.editor_category = "ALL"
                 prefs.editor_active_menu_id = imported_menu_id
                 prefs.editor_dirty = False
+                prefs.editor_draft_config_json = ""
                 prefs.editor_config_generation = -1
             finally:
                 prefs.editor_loading = False
@@ -1364,87 +1355,147 @@ class ALLPIE_OT_menu_refresh(Operator):
             )
             prefs.editor_active_menu_id = selected_id
             prefs.editor_dirty = False
+            prefs.editor_draft_config_json = ""
             prefs.editor_config_generation = -1
             _ensure_editor_state(prefs)
         return {"FINISHED"}
 
 
-def _draw_slot_grid(layout: Any, prefs: Any, collection: Any, menu_id: str, spaced: bool) -> None:
-    """Draw eight compact buttons that open a searchable action picker."""
-    row = layout.row(align=True)
-    columns = (row.column(align=True), row.column(align=True))
-    for index, slot in enumerate(collection):
-        column = columns[0] if index < 4 else columns[1]
-        slot_row = column.row(align=True)
-        token = slot.action_id or _EMPTY_ACTION
-        label = _ACTION_TOKEN_TO_LABEL.get(token, "(Empty)")
-        picker = slot_row.operator(
-            "allpie.menu_editor_pick_action",
-            text=f"Slot {slot.slot_number}: {label}",
-            icon="VIEWZOOM",
-            emboss=True,
+def _configurable_slot_action_ids(prefs: Any) -> set[str]:
+    """Return AllPie's locally editable preset IDs used by the visible slots.
+
+    Use the active config by reference during ordinary drawing. When the menu
+    has unapplied edits, build one detached draft so newly assigned presets are
+    also recognized without repeatedly parsing the draft for every slot.
+    """
+    try:
+        config = (
+            _build_menu_draft_config(prefs)
+            if getattr(prefs, "editor_dirty", False)
+            else ConfigRuntime.ACTIVE_CONFIG
         )
-        picker.target_menu_id = menu_id
-        picker.slot_number = slot.slot_number
-        picker.spaced = spaced
-        # Brush Menus accept brush activation presets and Asset Shelf popovers.
-        # Keep any other existing token out of the scoped enum property while
-        # drawing the button; invoke() seeds the picker only for allowed actions.
-        picker.action_id = token if token in _ACTION_ALLOWED_TOKENS else _EMPTY_ACTION
+        if not isinstance(config, dict):
+            return set()
 
-        # In Brush Menus, the + button assigns the active Blender brush asset
-        # directly. Regular menus retain the existing F3-style operator search.
-        search_column = slot_row.column()
-        search_column.enabled = not prefs.editor_dirty
-        if prefs.editor_menu_is_brush_menu:
-            assign = search_column.operator(
-                "allpie.menu_editor_assign_active_brush",
-                text="",
-                icon="ADD",
-                emboss=True,
-            )
-            assign.target_menu_id = menu_id
-            assign.slot_number = slot.slot_number
-            assign.spaced = spaced
-        else:
-            search = search_column.operator(
-                "allpie.search_blender_operator",
-                text="",
-                icon="ADD",
-                emboss=True,
-            )
-            search.target_menu_id = menu_id
-            search.slot_number = slot.slot_number
-            search.spaced = spaced
+        tokens = {
+            str(slot.action_id or "")
+            for collection in (prefs.editor_slots, prefs.editor_spaced_slots)
+            for slot in collection
+        }
+        action_ids = {
+            _ACTION_TOKEN_TO_REFERENCE.get(token, "")
+            for token in tokens
+            if token and token != _EMPTY_ACTION
+        }
 
-        clear_column = slot_row.column()
-        clear_column.enabled = token != _EMPTY_ACTION
-        clear = clear_column.operator(
-            "allpie.menu_editor_clear_slot",
-            text="",
-            icon="REMOVE",
-            emboss=True,
+        configurable: set[str] = set()
+        for action_id in action_ids:
+            if not action_id:
+                continue
+            try:
+                _container, _local_id, owner_addon = operator_data.get_action_container(
+                    config, action_id
+                )
+            except (KeyError, TypeError, ValueError):
+                continue
+            if owner_addon is None:
+                configurable.add(action_id)
+        return configurable
+    except Exception:
+        # A temporary draft/configuration issue should not break Preferences
+        # drawing. The search and clear controls remain available regardless.
+        return set()
+
+
+def _draw_slot_button(
+    layout: Any,
+    prefs: Any,
+    slot: Any,
+    menu_id: str,
+    spaced: bool,
+    configurable_action_ids: set[str],
+) -> None:
+    """Draw the numbered slot picker with compact configure and clear icons."""
+    token = slot.action_id or _EMPTY_ACTION
+    action_id = _ACTION_TOKEN_TO_REFERENCE.get(token, "")
+    action_label = _ACTION_TOKEN_TO_LABEL.get(token, "Empty") if action_id else "Empty"
+    label = f"{slot.slot_number}. {action_label}"
+
+    # Reserve most of the row for the action label and keep the two utility
+    # icons compact and consistently aligned at the right edge.
+    slot_split = layout.split(factor=0.84, align=True)
+    picker = slot_split.operator(
+        "allpie.search_blender_operator",
+        text=label,
+        emboss=True,
+    )
+    picker.target_menu_id = menu_id
+    picker.slot_number = slot.slot_number
+    picker.spaced = spaced
+    picker.context_name = _selected_keymap(prefs)
+    picker.assigned_action_id = action_id
+
+    controls = slot_split.row(align=True)
+
+    gear_column = controls.column(align=True)
+    gear_column.enabled = bool(action_id and action_id in configurable_action_ids)
+    configure = gear_column.operator(
+        "allpie.setup_blender_operator",
+        text="",
+        icon="PREFERENCES",
+    )
+    configure.action_id = action_id
+    configure.operator_id = ""
+    configure.create_new_action = False
+    configure.source_action_id = ""
+    configure.prefill_from_action = False
+    configure.source_contexts_json = "[]"
+    configure.expose_preset_name = False
+    configure.target_menu_id = menu_id
+    configure.slot_number = slot.slot_number
+    configure.spaced = spaced
+    configure.context_name = ""
+    configure.capture_button_properties = False
+    configure.button_properties_json = "{}"
+    configure.button_unsupported_properties_json = "[]"
+
+    clear_column = controls.column(align=True)
+    clear_column.enabled = bool(action_id)
+    clear = clear_column.operator(
+        "allpie.menu_editor_clear_slot",
+        text="",
+        icon="X",
+    )
+    clear.target_menu_id = menu_id
+    clear.slot_number = slot.slot_number
+    clear.spaced = spaced
+
+
+def _draw_slot_list(
+    layout: Any,
+    prefs: Any,
+    collection: Any,
+    menu_id: str,
+    spaced: bool,
+    configurable_action_ids: set[str],
+) -> None:
+    """Draw eight vertically stacked numbered buttons for one slot set."""
+    slots_by_number = {slot.slot_number: slot for slot in collection}
+    slot_list = layout.column(align=False)
+
+    for slot_number in range(1, 9):
+        slot = slots_by_number.get(slot_number)
+        if slot is None:
+            continue
+        button_row = slot_list.row(align=True)
+        _draw_slot_button(
+            button_row,
+            prefs,
+            slot,
+            menu_id,
+            spaced,
+            configurable_action_ids,
         )
-        clear.target_menu_id = menu_id
-        clear.slot_number = slot.slot_number
-        clear.spaced = spaced
-
-        action_id = _ACTION_TOKEN_TO_REFERENCE.get(token, "")
-        configure_column = slot_row.column()
-        configure_column.enabled = bool(action_id) and not prefs.editor_dirty and ":" not in action_id
-        configure = configure_column.operator(
-            "allpie.setup_blender_operator",
-            text="",
-            icon="PREFERENCES",
-            emboss=True,
-        )
-        configure.action_id = action_id
-        configure.operator_id = ""
-        configure.create_new_action = False
-        configure.target_menu_id = menu_id
-        configure.slot_number = slot.slot_number
-        configure.spaced = spaced
-
 
 
 def draw_menu_editor(layout: Any, prefs: Any, context: Any) -> None:
@@ -1497,6 +1548,14 @@ def draw_menu_editor(layout: Any, prefs: Any, context: Any) -> None:
     buttons.operator("allpie.menu_editor_duplicate", text="", icon="DUPLICATE")
     buttons.operator("allpie.menu_editor_remove", text="", icon="REMOVE")
 
+    cleanup = browser.row(align=True)
+    cleanup.enabled = not prefs.editor_dirty
+    cleanup.operator(
+        "allpie.cleanup_unused_operator_presets",
+        text="Clean Unused Presets",
+        icon="TRASH",
+    )
+
     exchange = browser.row(align=True)
     exchange.enabled = not prefs.editor_dirty
     exchange.operator("allpie.menu_editor_import_json", text="Import Menu", icon="IMPORT")
@@ -1523,9 +1582,7 @@ def draw_menu_editor(layout: Any, prefs: Any, context: Any) -> None:
 
     editor_header = editor.row(align=True)
     editor_header.label(text=prefs.editor_menu_name or prefs.editor_active_menu_id, icon="MENU_PANEL")
-    editor_header.operator("allpie.menu_editor_apply", text="Apply", icon="CHECKMARK")
     if prefs.editor_dirty:
-        editor_header.operator("allpie.menu_editor_discard", text="Discard", icon="LOOP_BACK")
         warning = editor.box()
         warning.alert = True
         warning.label(text="Unapplied changes. Apply or discard before switching menus.", icon="ERROR")
@@ -1536,10 +1593,13 @@ def draw_menu_editor(layout: Any, prefs: Any, context: Any) -> None:
 
     details = editor.box()
     details.label(text="Menu Settings")
-    details.prop(prefs, "editor_menu_name", text="Name")
 
-    row = details.row(align=True)
-    shortcut = row.operator(
+    # Keep the two most frequently edited menu properties together. The
+    # category/list already communicates the menu context, so repeating it in
+    # every menu's settings only consumes vertical space.
+    name_shortcut_row = details.row(align=True)
+    name_shortcut_row.prop(prefs, "editor_menu_name", text="Name")
+    shortcut = name_shortcut_row.operator(
         "allpie.menu_editor_assign_shortcut",
         text=_format_shortcut(
             prefs.editor_menu_key,
@@ -1556,53 +1616,64 @@ def draw_menu_editor(layout: Any, prefs: Any, context: Any) -> None:
         icon="KEYINGSET",
     )
     shortcut.target_menu_id = prefs.editor_active_menu_id
-    clear_shortcut = row.operator(
+    clear_shortcut = name_shortcut_row.operator(
         "allpie.menu_editor_clear_shortcut",
         text="",
         icon="X",
     )
     clear_shortcut.target_menu_id = prefs.editor_active_menu_id
-    row.prop(prefs, "editor_menu_mode", text="Mode(s)")
-    if prefs.editor_menu_mode == "COMMON":
-        details.label(
-            text="This menu is registered in all six supported modes. Some operators may still be mode-specific.",
-            icon="INFO",
-        )
-    if prefs.editor_menu_mode == "CUSTOM":
-        details.prop(prefs, "editor_custom_keymap", text="Custom Keymap")
 
     row = details.row(align=True)
     row.prop(prefs, "editor_menu_enabled", text="Enabled")
-    if menu_data.supports_brush_menu(prefs.editor_menu_mode):
-        details.prop(prefs, "editor_menu_is_brush_menu", text="Brush Menu")
-        if prefs.editor_menu_is_brush_menu:
-            details.label(
-                text="Choose a brush preset or Asset Shelf popup in a slot; + assigns the active brush.",
-                icon="INFO",
-            )
+    # Keep both slot sets side by side, but list their eight actions vertically.
+    # Each action button has compact gear and clear icons at its right edge.
+    configurable_action_ids = _configurable_slot_action_ids(prefs)
+    slot_panels = editor.split(factor=0.5, align=False)
 
-    normal_box = editor.box()
-    if prefs.editor_menu_is_brush_menu:
-        normal_box.label(
-            text="Main Slots — choose a brush or Asset Shelf action; + assigns active brush, X clears",
-            icon="GRID",
-        )
-    else:
-        normal_box.label(text="Main Slots — select an action, + adds an operator, settings edits its properties, X clears", icon="GRID")
-    _draw_slot_grid(normal_box, prefs, prefs.editor_slots, prefs.editor_active_menu_id, False)
-    spaced_box = editor.box()
-    spaced_box.prop(prefs, "editor_spaced_enabled", text="Enable Spaced Slots")
-    if prefs.editor_spaced_enabled:
-        _draw_slot_grid(spaced_box, prefs, prefs.editor_spaced_slots, prefs.editor_active_menu_id, True)
+    normal_panel = slot_panels.column(align=False)
+    normal_header = normal_panel.row(align=True)
+    normal_header.alignment = "CENTER"
+    normal_header.label(text="Normal Slots")
+    _draw_slot_list(
+        normal_panel,
+        prefs,
+        prefs.editor_slots,
+        prefs.editor_active_menu_id,
+        False,
+        configurable_action_ids,
+    )
+
+    spaced_panel = slot_panels.column(align=False)
+    spaced_header = spaced_panel.row(align=True)
+    spaced_header.alignment = "CENTER"
+    spaced_header.label(text="Spaced Slots")
+    spaced_header.prop(prefs, "editor_spaced_enabled", text="")
+    spaced_controls = spaced_panel.column(align=False)
+    spaced_controls.enabled = bool(prefs.editor_spaced_enabled)
+    _draw_slot_list(
+        spaced_controls,
+        prefs,
+        prefs.editor_spaced_slots,
+        prefs.editor_active_menu_id,
+        True,
+        configurable_action_ids,
+    )
 
     note = editor.row()
     note.label(text="Apply saves changes to your AllPie user configuration.", icon="INFO")
+
+    # Keep commit controls at the bottom of the editing surface, close to the
+    # slots they apply to, rather than in the menu title/header row.
+    actions = editor.row(align=True)
+    actions.alignment = "RIGHT"
+    actions.operator("allpie.menu_editor_apply", text="Apply", icon="CHECKMARK")
+    if prefs.editor_dirty:
+        actions.operator("allpie.menu_editor_discard", text="Discard", icon="LOOP_BACK")
 
 
 CLASSES = (
     AllPieMenuListItem,
     ALLPIE_OT_menu_pick_action,
-    ALLPIE_OT_menu_assign_active_brush,
     ALLPIE_OT_menu_clear_slot,
     ALLPIE_OT_menu_clear_shortcut,
     ALLPIE_OT_menu_assign_shortcut,

@@ -9,8 +9,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from .brush_assets import operator_properties_match
+from .preset_identity import MAX_ENUM_VALUE
 from .schema import (
-    BRUSH_MENU_KEYMAPS,
     DEFAULT_PREFERENCES,
     SCHEMA_VERSION,
     SLOT_IDS,
@@ -22,14 +22,36 @@ _MENU_ID_RE = re.compile(r"^[A-Z][A-Z0-9_]*(?:\.[A-Z][A-Z0-9_]*)*$")
 _OPERATOR_ID_RE = re.compile(r"^[A-Z][A-Z0-9_]*(?:\.[A-Z][A-Z0-9_]*)*$")
 _ADDON_ID_RE = re.compile(r"^[a-z][a-z0-9_.-]*$")
 _BLENDER_OPERATOR_RE = re.compile(r"^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$")
+_PRESET_ID_RE = re.compile(r"^op_[0-9a-f]{32}$")
 
 _TOP_LEVEL_KEYS = {"schema_version", "Menus", "Operators", "ThirdParty", "Preferences"}
-_MENU_KEYS = {"name", "key", "keymodifiers", "keymap", "enabled", "is_brush_menu", "slots", "spaced_slots"}
-_OPERATOR_KEYS = {"name", "operator_id", "invoke", "properties", "search_name", "description", "contexts", "user_defined"}
+_MENU_KEYS = {
+    # is_brush_menu remains accepted as a legacy key and is dropped during
+    # normalization so older user configurations continue to load cleanly.
+    "name", "key", "keymodifiers", "keymap", "enabled", "is_brush_menu",
+    "slots", "spaced_slots", "spaced_slots_enabled",
+}
+_OPERATOR_KEYS = {"preset_id", "enum_value", "name", "operator_id", "invoke", "properties", "search_name", "description", "contexts", "user_defined"}
 _THIRD_PARTY_KEYS = {"name", "enabled", "Operators", "Menus"}
 _PREFERENCE_KEYS = {"radial", "colors"}
 _RADIAL_PREFERENCE_KEYS = {"hold_time", "deadzone"}
 _COLOR_PREFERENCE_KEYS = set(DEFAULT_PREFERENCES["colors"])
+
+RADIAL_RESERVED_MENU_SHORTCUTS = frozenset({"SPACE", "ESC"})
+_RADIAL_RESERVED_SHORTCUT_MESSAGES = {
+    "SPACE": "Space is reserved for switching to the Spaced Menu",
+    "ESC": "Esc is reserved for cancelling the radial menu",
+}
+
+
+def reserved_menu_shortcut_message(key: Any) -> Optional[str]:
+    """Return why a key cannot be used to open an AllPie radial menu."""
+    if not isinstance(key, str):
+        return None
+    normalized = key.upper()
+    if normalized not in RADIAL_RESERVED_MENU_SHORTCUTS:
+        return None
+    return _RADIAL_RESERVED_SHORTCUT_MESSAGES.get(normalized)
 
 
 @dataclass(frozen=True)
@@ -187,9 +209,25 @@ def _validate_action(
 
     _check_unknown_keys(raw, _OPERATOR_KEYS, path, errors, warnings, strict=strict_unknown_fields)
     normalized = deepcopy(raw)
-    for required in ("name", "operator_id"):
+    for required in ("preset_id", "enum_value", "name", "operator_id"):
         if required not in raw:
             errors.append(ValidationIssue("error", f"{path}.{required}", "is required"))
+
+    preset_id = raw.get("preset_id")
+    if not isinstance(preset_id, str) or not _PRESET_ID_RE.fullmatch(preset_id):
+        errors.append(ValidationIssue("error", f"{path}.preset_id", "must be a permanent AllPie ID in the form op_ followed by 32 lowercase hexadecimal characters"))
+    else:
+        normalized["preset_id"] = preset_id
+
+    enum_value = raw.get("enum_value")
+    if (
+        isinstance(enum_value, bool)
+        or not isinstance(enum_value, int)
+        or not 1 <= enum_value <= MAX_ENUM_VALUE
+    ):
+        errors.append(ValidationIssue("error", f"{path}.enum_value", f"must be a unique positive integer from 1 to {MAX_ENUM_VALUE}"))
+    else:
+        normalized["enum_value"] = enum_value
 
     name = raw.get("name")
     if not isinstance(name, str) or not name.strip():
@@ -299,6 +337,10 @@ def _validate_menu(
 
     _check_unknown_keys(raw, _MENU_KEYS, path, errors, warnings, strict=strict_unknown_fields)
     normalized = deepcopy(raw)
+    # ``is_brush_menu`` was a legacy UI mode. Brush assets now use ordinary
+    # captured operator presets and may be assigned to any menu, so accept the
+    # old field for compatibility but remove it from normalized configs.
+    normalized.pop("is_brush_menu", None)
     for required in ("name", "key", "keymap", "slots"):
         if required not in raw:
             errors.append(ValidationIssue("error", f"{path}.{required}", "is required"))
@@ -310,12 +352,16 @@ def _validate_menu(
     key = raw.get("key")
     if not isinstance(key, str) or not key.strip() or any(character.isspace() for character in key):
         errors.append(ValidationIssue("error", f"{path}.key", "must be a non-empty Blender event identifier without whitespace"))
-    elif key != "NONE" and valid_event_types is not None and key not in valid_event_types:
-        errors.append(ValidationIssue(
-            "error",
-            f"{path}.key",
-            f"'{key}' is not a recognized Blender event identifier",
-        ))
+    elif key != "NONE":
+        reserved_message = reserved_menu_shortcut_message(key)
+        if reserved_message:
+            errors.append(ValidationIssue("error", f"{path}.key", reserved_message + " and cannot open a menu"))
+        elif valid_event_types is not None and key not in valid_event_types:
+            errors.append(ValidationIssue(
+                "error",
+                f"{path}.key",
+                f"'{key}' is not a recognized Blender event identifier",
+            ))
 
     keymap = raw.get("keymap")
     if not isinstance(keymap, str) or not keymap.strip():
@@ -341,29 +387,32 @@ def _validate_menu(
         errors.append(ValidationIssue("error", f"{path}.enabled", "must be a boolean"))
     normalized["enabled"] = enabled
 
-    is_brush_menu = raw.get("is_brush_menu", False)
-    if not isinstance(is_brush_menu, bool):
-        errors.append(ValidationIssue("error", f"{path}.is_brush_menu", "must be a boolean"))
-        is_brush_menu = False
-    elif is_brush_menu and isinstance(keymap, str) and keymap.strip().casefold() not in {
-        name.casefold() for name in BRUSH_MENU_KEYMAPS
-    }:
-        errors.append(ValidationIssue(
-            "error",
-            f"{path}.is_brush_menu",
-            f"is only supported in {', '.join(BRUSH_MENU_KEYMAPS)} contexts",
-        ))
-    normalized["is_brush_menu"] = is_brush_menu
-
     if "slots" in raw:
         normalized["slots"] = _validate_slots(raw["slots"], f"{path}.slots", errors)
     else:
         normalized["slots"] = {}
 
+    raw_spaced_slots = raw.get("spaced_slots", {})
     if "spaced_slots" in raw:
-        normalized["spaced_slots"] = _validate_slots(raw["spaced_slots"], f"{path}.spaced_slots", errors)
+        normalized["spaced_slots"] = _validate_slots(raw_spaced_slots, f"{path}.spaced_slots", errors)
     else:
         normalized["spaced_slots"] = {}
+
+    # The enabled state must be independent of slot occupancy. An enabled
+    # Spaced Slots grid can legitimately be empty while the user configures it.
+    inferred_spaced_enabled = (
+        isinstance(raw_spaced_slots, dict)
+        and any(reference is not None for reference in raw_spaced_slots.values())
+    )
+    spaced_enabled = raw.get("spaced_slots_enabled", inferred_spaced_enabled)
+    if not isinstance(spaced_enabled, bool):
+        errors.append(ValidationIssue(
+            "error",
+            f"{path}.spaced_slots_enabled",
+            "must be a boolean",
+        ))
+        spaced_enabled = False
+    normalized["spaced_slots_enabled"] = spaced_enabled
 
     return normalized
 
@@ -373,16 +422,23 @@ def _resolve_action_reference(
     owner_addon: Optional[str],
     global_operators: Mapping[str, Any],
     third_party: Mapping[str, Any],
-) -> bool:
+    preset_index: Optional[Mapping[str, Any]] = None,
+) -> Optional[str]:
+    """Resolve legacy aliases or permanent preset IDs to a canonical ID."""
+    if preset_index and reference in preset_index:
+        return reference
     if ":" in reference:
         addon_id, action_id = reference.split(":", 1)
         addon = third_party.get(addon_id)
-        return isinstance(addon, dict) and action_id in addon.get("Operators", {})
+        action = addon.get("Operators", {}).get(action_id) if isinstance(addon, Mapping) else None
+        return action.get("preset_id") if isinstance(action, Mapping) else None
     if owner_addon:
         own_addon = third_party.get(owner_addon, {})
-        if reference in own_addon.get("Operators", {}):
-            return True
-    return reference in global_operators
+        own_action = own_addon.get("Operators", {}).get(reference) if isinstance(own_addon, Mapping) else None
+        if isinstance(own_action, Mapping):
+            return own_action.get("preset_id")
+    action = global_operators.get(reference)
+    return action.get("preset_id") if isinstance(action, Mapping) else None
 
 
 def validate_config(
@@ -500,6 +556,42 @@ def validate_config(
         }
     normalized["ThirdParty"] = third_party
 
+    # Preset IDs are the canonical identity across the global and third-party
+    # libraries. Reject collisions before any menu references are resolved.
+    preset_index: Dict[str, Dict[str, Any]] = {}
+    enum_value_index: Dict[int, str] = {}
+    for collection_path, action_collection in (
+        [("Operators", global_operators)]
+        + [
+            (f"ThirdParty.{addon_id}.Operators", addon.get("Operators", {}))
+            for addon_id, addon in third_party.items()
+        ]
+    ):
+        for action_id, action in action_collection.items():
+            preset_id = str(action.get("preset_id", ""))
+            if not preset_id:
+                continue
+            previous = preset_index.get(preset_id)
+            if previous is not None:
+                errors.append(ValidationIssue(
+                    "error",
+                    f"{collection_path}.{action_id}.preset_id",
+                    f"duplicates permanent preset ID '{preset_id}'",
+                ))
+            else:
+                preset_index[preset_id] = action
+            enum_value = action.get("enum_value")
+            if isinstance(enum_value, int) and not isinstance(enum_value, bool):
+                previous_enum_path = enum_value_index.get(enum_value)
+                if previous_enum_path is not None:
+                    errors.append(ValidationIssue(
+                        "error",
+                        f"{collection_path}.{action_id}.enum_value",
+                        f"duplicates persistent Blender enum value {enum_value} from {previous_enum_path}",
+                    ))
+                else:
+                    enum_value_index[enum_value] = f"{collection_path}.{action_id}"
+
     menus: Dict[str, Any] = {}
     for menu_id, menu_data in normalized["Menus"].items():
         menu = _validate_menu(
@@ -530,36 +622,31 @@ def validate_config(
     inferred_action_contexts: Dict[str, set[str]] = {}
 
     def _action_for_reference(reference: str, owner_addon: Optional[str]):
-        if ":" in reference:
-            addon_id, local_id = reference.split(":", 1)
-            addon = third_party.get(addon_id, {})
-            return addon.get("Operators", {}).get(local_id)
-        if owner_addon:
-            own_addon = third_party.get(owner_addon, {})
-            own_action = own_addon.get("Operators", {}).get(reference)
-            if own_action is not None:
-                return own_action
-        return global_operators.get(reference)
+        canonical_id = _resolve_action_reference(
+            reference, owner_addon, global_operators, third_party, preset_index
+        )
+        return canonical_id, preset_index.get(canonical_id) if canonical_id else None
 
     for menu_path, menu, owner_addon in all_menus:
         menu_contexts = keymap_contexts(menu.get("keymap", ""))
         for slot_collection in ("slots", "spaced_slots"):
-            for slot, action_ref in menu.get(slot_collection, {}).items():
+            slot_map = menu.get(slot_collection, {})
+            for slot, action_ref in list(slot_map.items()):
                 if action_ref is None:
                     continue
-                if not _resolve_action_reference(action_ref, owner_addon, global_operators, third_party):
+                canonical_id, action = _action_for_reference(action_ref, owner_addon)
+                if action is None or canonical_id is None:
                     errors.append(ValidationIssue(
                         "error",
                         f"{menu_path}.{slot_collection}.{slot}",
                         f"references unknown action '{action_ref}'",
                     ))
                     continue
+                # Normalize legacy action-key references to permanent IDs.
+                # This makes every runtime/menu-editor slot reference stable.
+                slot_map[slot] = canonical_id
                 if menu_contexts:
-                    inferred_action_contexts.setdefault(action_ref, set()).update(menu_contexts)
-                    if owner_addon and ":" not in action_ref:
-                        own_actions = third_party.get(owner_addon, {}).get("Operators", {})
-                        if action_ref in own_actions:
-                            inferred_action_contexts.setdefault(f"{owner_addon}:{action_ref}", set()).update(menu_contexts)
+                    inferred_action_contexts.setdefault(canonical_id, set()).update(menu_contexts)
 
         owner_enabled = owner_addon is None or third_party.get(owner_addon, {}).get("enabled", True)
         if menu.get("enabled", True) and owner_enabled:
@@ -592,11 +679,11 @@ def validate_config(
             action_collections.append((f"ThirdParty.{addon_id}.Operators", addon.get("Operators", {})))
     for collection_path, action_collection in action_collections:
         for action_id, action in action_collection.items():
-            label = str(action.get("search_name") or action.get("name") or action_id).strip()
+            label = str(action.get("name") or action_id).strip()
             if not label:
                 continue
             contexts = set(str(item).strip() for item in action.get("contexts", []) if str(item).strip())
-            local_reference = action_id if collection_path == "Operators" else f"{collection_path.split('.')[1]}:{action_id}"
+            local_reference = str(action.get("preset_id", ""))
             contexts.update(inferred_action_contexts.get(local_reference, set()))
             action_path = f"{collection_path}.{action_id}"
             for context_name in contexts:
@@ -619,8 +706,8 @@ def validate_config(
                     if not same_action:
                         warnings.append(ValidationIssue(
                             "warning",
-                            f"{action_path}.search_name",
-                            f"search label '{label}' duplicates {previous_path} in the '{context_name}' context",
+                            f"{action_path}.name",
+                            f"preset name '{label}' duplicates {previous_path} in the '{context_name}' context",
                         ))
                 else:
                     action_label_owners[signature] = (action_path, action)

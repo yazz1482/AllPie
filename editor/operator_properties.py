@@ -10,7 +10,14 @@ from __future__ import annotations
 import math
 from typing import Any, Iterable, Mapping
 
-OPERATOR_PROPERTIES_API_VERSION = 2
+OPERATOR_PROPERTIES_API_VERSION = 5
+
+_BRUSH_ASSET_OPERATOR_ID = "brush.asset_activate"
+_BRUSH_ASSET_REFERENCE_PROPERTIES = frozenset({
+    "asset_library_type",
+    "asset_library_identifier",
+    "relative_asset_identifier",
+})
 
 SUPPORTED_SCALAR_TYPES = frozenset({"BOOLEAN", "INT", "FLOAT", "STRING", "ENUM"})
 
@@ -114,11 +121,22 @@ def build_property_specs(operator_id: str, rna_properties: Iterable[Any]) -> dic
         identifier = str(_get(prop, "identifier", "") or "")
         if not identifier or identifier == "rna_type":
             continue
-        if bool(_get(prop, "is_readonly", False)) or bool(_get(prop, "is_hidden", False)):
+        if bool(_get(prop, "is_readonly", False)):
             continue
 
         options = set(_get(prop, "options", ()) or ())
-        if "HIDDEN" in options:
+        # Blender deliberately marks the three asset-reference properties of
+        # brush.asset_activate as HIDDEN | SKIP_SAVE. They are nevertheless
+        # essential to a reusable brush preset. Keep them in AllPie's internal
+        # dynamic PropertyGroup so captured asset references are recognized,
+        # validated, and retained, but mark them as UI-hidden below. Other
+        # hidden fields (notably use_toggle) remain excluded.
+        is_brush_asset_reference = (
+            operator_id == _BRUSH_ASSET_OPERATOR_ID
+            and identifier in _BRUSH_ASSET_REFERENCE_PROPERTIES
+        )
+        is_hidden = bool(_get(prop, "is_hidden", False)) or "HIDDEN" in options
+        if is_hidden and not is_brush_asset_reference:
             continue
 
         prop_type = str(_get(prop, "type", "") or "").upper()
@@ -165,6 +183,7 @@ def build_property_specs(operator_id: str, rna_properties: Iterable[Any]) -> dic
         spec = {
             "identifier": identifier,
             "name": str(_get(prop, "name", identifier) or identifier),
+            "ui_hidden": bool(is_brush_asset_reference),
             "description": str(_get(prop, "description", "") or ""),
             "type": prop_type,
             "is_array": is_array,
@@ -230,12 +249,59 @@ def validate_required_values(specs: Iterable[Mapping[str, Any]], values: Mapping
     return missing
 
 
+def default_values_from_schema(schema: Mapping[str, Any]) -> dict[str, Any]:
+    """Return JSON-safe RNA defaults for the properties exposed by a setup dialog."""
+    defaults: dict[str, Any] = {}
+    for spec in schema.get("properties", ()):
+        identifier = str(spec.get("identifier", "")).strip()
+        if identifier and "default" in spec:
+            defaults[identifier] = json_safe_value(spec.get("default"))
+    return defaults
+
+
+def strip_default_properties(
+    values: Mapping[str, Any],
+    defaults: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Remove properties equal to Blender's current RNA defaults.
+
+    Omitting a property and storing its current RNA default have the same
+    effective operator behavior. Canonicalizing both forms prevents a newly
+    configured default action from becoming a duplicate of an older preset
+    whose properties were stored sparsely.
+    """
+    result: dict[str, Any] = {}
+    normalized_defaults = {
+        str(key): json_safe_value(value)
+        for key, value in defaults.items()
+    }
+    for key, value in values.items():
+        identifier = str(key)
+        safe_value = json_safe_value(value)
+        if identifier in normalized_defaults and safe_value == normalized_defaults[identifier]:
+            continue
+        result[identifier] = safe_value
+    return result
+
+
 def merge_configured_values(
     original: Mapping[str, Any],
     edited: Mapping[str, Any],
+    defaults: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Update supported fields while preserving unknown legacy properties."""
+    """Update supported fields, omit current defaults, and preserve unknown values.
+
+    Known fields are rebuilt from the edited values so changing a property back
+    to its Blender default removes the redundant stored key. Properties not
+    exposed by this Blender RNA schema remain untouched for forward/backward
+    compatibility unless the caller explicitly removes them.
+    """
+    normalized_defaults = {
+        str(key): json_safe_value(value)
+        for key, value in (defaults or {}).items()
+    }
     result = {str(key): json_safe_value(value) for key, value in original.items()}
-    for key, value in edited.items():
-        result[str(key)] = json_safe_value(value)
+    for identifier in normalized_defaults:
+        result.pop(identifier, None)
+    result.update(strip_default_properties(edited, normalized_defaults))
     return result

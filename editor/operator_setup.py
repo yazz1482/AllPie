@@ -26,13 +26,15 @@ from bpy.props import (
 )
 
 from ..core import runtime as ConfigRuntime
-from . import operator_data, operator_properties
+from . import menu_data, operator_data, operator_properties
 
-OPERATOR_SETUP_API_VERSION = 5
+OPERATOR_SETUP_API_VERSION = 25
 _DRIVER_STATE_KEY = "_allpie_operator_setup_dynamic_groups_v2"
 _LEGACY_DRIVER_STATE_KEY = "_allpie_operator_setup_dynamic_groups_v1"
 _PANEL_SEARCH_CACHE = None
 _MENU_SEARCH_CACHE = None
+_PANEL_ID_PICKER_ITEMS = None
+_MENU_ID_PICKER_ITEMS = None
 
 
 def _driver_state() -> dict:
@@ -70,7 +72,7 @@ def _operator_rna(operator_id: str):
 
 
 def _walk_subclasses(base_type):
-    """Yield subclasses recursively; Blender panels/menus are nested by addon."""
+    """Yield Python subclasses recursively as a secondary discovery source."""
     seen = set()
     stack = list(getattr(base_type, "__subclasses__", lambda: [])())
     while stack:
@@ -85,11 +87,132 @@ def _walk_subclasses(base_type):
             pass
 
 
+def _ui_type_identifier(cls) -> str:
+    """Return the registered RNA identifier for a Panel/Menu class."""
+    try:
+        identifier = str(getattr(cls, "bl_idname", "") or "").strip()
+        if identifier:
+            return identifier
+        class_rna = getattr(cls, "bl_rna", None)
+        return str(getattr(class_rna, "identifier", "") or "").strip()
+    except Exception:
+        return ""
+
+
+def _registered_python_subclass(base_type, cls, *, from_bpy_types: bool = False):
+    """Resolve a candidate to its registered Python RNA class.
+
+    Blender exposes registered extension types through ``bpy.types`` using
+    their RNA identifier. Walking ``__subclasses__`` alone is incomplete for
+    some registered UI types, while walking it without validation also picks
+    up Python classes that have never been registered. Use both sources and
+    verify each candidate against the base type's RNA subclass registry.
+    """
+    try:
+        identifiers = []
+        bl_idname = _ui_type_identifier(cls)
+        if bl_idname:
+            identifiers.append(bl_idname)
+        class_rna = getattr(cls, "bl_rna", None)
+        rna_identifier = str(getattr(class_rna, "identifier", "") or "").strip()
+        if rna_identifier and rna_identifier not in identifiers:
+            identifiers.append(rna_identifier)
+    except Exception:
+        return None
+    if not identifiers:
+        return None
+
+    try:
+        lookup = getattr(base_type, "bl_rna_get_subclass_py", None)
+    except Exception:
+        lookup = None
+    if callable(lookup):
+        for identifier in identifiers:
+            try:
+                registered = lookup(identifier, None)
+            except TypeError:
+                try:
+                    registered = lookup(identifier)
+                except Exception:
+                    registered = None
+            except Exception:
+                registered = None
+            if registered is not None:
+                try:
+                    if issubclass(registered, base_type):
+                        return registered
+                except TypeError:
+                    pass
+        # bpy.types is Blender's public registered-type namespace. Trust a
+        # class found there if an RNA build exposes it under a nonstandard
+        # lookup identifier. Subclass-only candidates still require a match.
+        return cls if from_bpy_types else None
+
+    # Compatibility fallback for Blender builds without the Python lookup.
+    # Classes obtained from bpy.types are registered by definition; for the
+    # subclass fallback, require a distinct class-level RNA definition.
+    if from_bpy_types:
+        return cls
+    try:
+        class_rna = cls.__dict__.get("bl_rna")
+        base_rna = getattr(base_type, "bl_rna", None)
+        if class_rna is not None and class_rna is not base_rna:
+            return cls
+    except Exception:
+        pass
+    return None
+
+
+def _iter_registered_ui_types(base_type):
+    """Yield registered Panel/Menu Python classes from all available sources."""
+    found = {}
+    bpy_types = getattr(bpy, "types", None)
+
+    # Primary source: Blender's public registered-type namespace. Add-on
+    # classes are exposed here under their bl_idname, not necessarily their
+    # original Python class name.
+    if bpy_types is not None:
+        for attribute_name in dir(bpy_types):
+            try:
+                cls = getattr(bpy_types, attribute_name)
+                if not isinstance(cls, type) or cls is base_type:
+                    continue
+                if not issubclass(cls, base_type):
+                    continue
+            except Exception:
+                continue
+            registered = _registered_python_subclass(
+                base_type, cls, from_bpy_types=True
+            )
+            if registered is None:
+                continue
+            identifier = _ui_type_identifier(registered)
+            if identifier:
+                found[identifier] = registered
+
+    # Secondary source: recursive subclass discovery catches registered
+    # classes that are not exposed as ordinary attributes on bpy.types in
+    # some Blender versions/add-on registration patterns. RNA lookup filters
+    # out unregistered Python subclasses.
+    for cls in _walk_subclasses(base_type):
+        try:
+            registered = _registered_python_subclass(base_type, cls)
+        except Exception:
+            continue
+        if registered is None:
+            continue
+        identifier = _ui_type_identifier(registered)
+        if identifier:
+            found[identifier] = registered
+
+    return tuple(found.values())
+
+
 def _search_registered_types(base_type, edit_text: str):
     needle = str(edit_text or "").casefold().strip()
     results = []
-    for cls in _walk_subclasses(base_type):
-        identifier = str(getattr(cls, "bl_idname", "") or "").strip()
+    for cls in _iter_registered_ui_types(base_type):
+        identifier = _ui_type_identifier(cls)
         label = str(getattr(cls, "bl_label", "") or identifier).strip()
         if not identifier:
             continue
@@ -124,8 +247,186 @@ def _menu_name_search(_self, _context, edit_text):
 
 def refresh_special_search_catalogs() -> None:
     global _PANEL_SEARCH_CACHE, _MENU_SEARCH_CACHE
+    global _PANEL_ID_PICKER_ITEMS, _MENU_ID_PICKER_ITEMS
     _PANEL_SEARCH_CACHE = None
     _MENU_SEARCH_CACHE = None
+    _PANEL_ID_PICKER_ITEMS = None
+    _MENU_ID_PICKER_ITEMS = None
+
+
+def _panel_id_picker_items(_self, _context):
+    """Keep a stable enum-item list for Blender's searchable ID picker."""
+    global _PANEL_SEARCH_CACHE, _PANEL_ID_PICKER_ITEMS
+    if _PANEL_SEARCH_CACHE is None:
+        _PANEL_SEARCH_CACHE = _search_registered_types(bpy.types.Panel, "")
+    if _PANEL_ID_PICKER_ITEMS is None:
+        _PANEL_ID_PICKER_ITEMS = [
+            (identifier, f"{label} ({identifier})", f"Copy {identifier} to the clipboard")
+            for identifier, label in _PANEL_SEARCH_CACHE
+        ]
+    return _PANEL_ID_PICKER_ITEMS
+
+
+def _menu_id_picker_items(_self, _context):
+    """Keep a stable enum-item list for Blender's searchable ID picker."""
+    global _MENU_SEARCH_CACHE, _MENU_ID_PICKER_ITEMS
+    if _MENU_SEARCH_CACHE is None:
+        _MENU_SEARCH_CACHE = _search_registered_types(bpy.types.Menu, "")
+    if _MENU_ID_PICKER_ITEMS is None:
+        _MENU_ID_PICKER_ITEMS = [
+            (identifier, f"{label} ({identifier})", f"Copy {identifier} to the clipboard")
+            for identifier, label in _MENU_SEARCH_CACHE
+        ]
+    return _MENU_ID_PICKER_ITEMS
+
+
+class ALLPIE_OT_copy_panel_id(Operator):
+    """Search registered Blender panels and copy the selected panel ID."""
+
+    bl_idname = "allpie.copy_panel_id"
+    bl_label = "Copy Panel ID"
+    bl_description = "Search registered Blender panels and copy the selected bl_idname"
+    bl_property = "panel_id"
+
+    panel_id: EnumProperty(name="Panel", items=_panel_id_picker_items)
+
+    def invoke(self, context, event):
+        refresh_special_search_catalogs()
+        items = _panel_id_picker_items(self, context)
+        if not items:
+            self.report({"WARNING"}, "No registered Blender panels were found")
+            return {"CANCELLED"}
+        self.panel_id = items[0][0]
+        # invoke_search_popup() is a fire-and-forget WindowManager API in
+        # Blender: it returns None. The operator invoke callback must return
+        # a valid operator status set itself.
+        context.window_manager.invoke_search_popup(self)
+        return {"RUNNING_MODAL"}
+
+    def execute(self, context):
+        identifier = str(self.panel_id or "").strip()
+        if not identifier:
+            self.report({"WARNING"}, "No panel ID was selected")
+            return {"CANCELLED"}
+        try:
+            context.window_manager.clipboard = identifier
+        except Exception as error:
+            self.report({"ERROR"}, f"Could not copy panel ID: {error}")
+            return {"CANCELLED"}
+        self.report({"INFO"}, f"Copied panel ID: {identifier}")
+        return {"FINISHED"}
+
+
+class ALLPIE_OT_copy_menu_id(Operator):
+    """Search registered Blender menus and copy the selected menu ID."""
+
+    bl_idname = "allpie.copy_menu_id"
+    bl_label = "Copy Menu ID"
+    bl_description = "Search registered Blender menus and copy the selected bl_idname"
+    bl_property = "menu_id"
+
+    menu_id: EnumProperty(name="Menu", items=_menu_id_picker_items)
+
+    def invoke(self, context, event):
+        refresh_special_search_catalogs()
+        items = _menu_id_picker_items(self, context)
+        if not items:
+            self.report({"WARNING"}, "No registered Blender menus were found")
+            return {"CANCELLED"}
+        self.menu_id = items[0][0]
+        # See the panel picker above: invoke_search_popup() does not return
+        # an operator status set. Keep the popup running explicitly.
+        context.window_manager.invoke_search_popup(self)
+        return {"RUNNING_MODAL"}
+
+    def execute(self, context):
+        identifier = str(self.menu_id or "").strip()
+        if not identifier:
+            self.report({"WARNING"}, "No menu ID was selected")
+            return {"CANCELLED"}
+        try:
+            context.window_manager.clipboard = identifier
+        except Exception as error:
+            self.report({"ERROR"}, f"Could not copy menu ID: {error}")
+            return {"CANCELLED"}
+        self.report({"INFO"}, f"Copied menu ID: {identifier}")
+        return {"FINISHED"}
+
+
+class ALLPIE_OT_browse_panel_id(Operator):
+    """Choose a registered Panel ID and write it into an operator setup field."""
+
+    bl_idname = "allpie.browse_panel_id"
+    bl_label = "Browse Panel IDs"
+    bl_description = "Choose a registered Blender panel and fill its bl_idname into this field"
+    bl_property = "panel_id"
+
+    panel_id: EnumProperty(name="Panel", items=_panel_id_picker_items)
+    target_group_attr: StringProperty(options={"HIDDEN"})
+    target_property: StringProperty(options={"HIDDEN"})
+
+    def invoke(self, context, event):
+        refresh_special_search_catalogs()
+        items = _panel_id_picker_items(self, context)
+        if not items:
+            self.report({"WARNING"}, "No registered Blender panels were found")
+            return {"CANCELLED"}
+        self.panel_id = items[0][0]
+        context.window_manager.invoke_search_popup(self)
+        return {"RUNNING_MODAL"}
+
+    def execute(self, context):
+        identifier = str(self.panel_id or "").strip()
+        if not identifier:
+            self.report({"WARNING"}, "No panel ID was selected")
+            return {"CANCELLED"}
+        try:
+            group = getattr(context.window_manager, self.target_group_attr)
+            if not self.target_property or not hasattr(group, self.target_property):
+                raise AttributeError(f"Operator setup field '{self.target_property}' is no longer available")
+            setattr(group, self.target_property, identifier)
+        except Exception as error:
+            self.report({"ERROR"}, f"Could not set the Panel ID field: {error}")
+            return {"CANCELLED"}
+        return {"FINISHED"}
+
+
+class ALLPIE_OT_browse_menu_id(Operator):
+    """Choose a registered Menu ID and write it into an operator setup field."""
+
+    bl_idname = "allpie.browse_menu_id"
+    bl_label = "Browse Menu IDs"
+    bl_description = "Choose a registered Blender menu and fill its bl_idname into this field"
+    bl_property = "menu_id"
+
+    menu_id: EnumProperty(name="Menu", items=_menu_id_picker_items)
+    target_group_attr: StringProperty(options={"HIDDEN"})
+    target_property: StringProperty(options={"HIDDEN"})
+
+    def invoke(self, context, event):
+        refresh_special_search_catalogs()
+        items = _menu_id_picker_items(self, context)
+        if not items:
+            self.report({"WARNING"}, "No registered Blender menus were found")
+            return {"CANCELLED"}
+        self.menu_id = items[0][0]
+        context.window_manager.invoke_search_popup(self)
+        return {"RUNNING_MODAL"}
+
+    def execute(self, context):
+        identifier = str(self.menu_id or "").strip()
+        if not identifier:
+            self.report({"WARNING"}, "No menu ID was selected")
+            return {"CANCELLED"}
+        try:
+            group = getattr(context.window_manager, self.target_group_attr)
+            if not self.target_property or not hasattr(group, self.target_property):
+                raise AttributeError(f"Operator setup field '{self.target_property}' is no longer available")
+            setattr(group, self.target_property, identifier)
+        except Exception as error:
+            self.report({"ERROR"}, f"Could not set the Menu ID field: {error}")
+            return {"CANCELLED"}
+        return {"FINISHED"}
 
 
 def _numeric_kwargs(spec: Mapping[str, Any], *, integer: bool = False) -> dict:
@@ -417,17 +718,49 @@ def _draw_property_group(
     group: Any,
     schema: Mapping[str, Any],
     operator_id: str = "",
+    group_attr: str = "",
 ) -> None:
     properties = schema.get("properties", ())
     if not properties:
         layout.label(text="This operator has no supported configurable properties.", icon="INFO")
     for spec in properties:
+        if spec.get("ui_hidden"):
+            continue
         identifier = spec["identifier"]
         is_panel_id = operator_id == "wm.call_panel" and identifier == "name"
         is_menu_id = operator_id in {"wm.call_menu", "wm.call_menu_pie"} and identifier == "name"
+        is_tool_target_space = operator_id == "wm.tool_set_by_id" and identifier == "space_type"
         row = layout.row()
-        label = "Panel ID" if is_panel_id else "Menu ID" if is_menu_id else spec.get("name", identifier)
+        label = (
+            "Panel ID" if is_panel_id else
+            "Menu ID" if is_menu_id else
+            "Target Editor" if is_tool_target_space else
+            spec.get("name", identifier)
+        )
         row.prop(group, identifier, text=label)
+        if is_panel_id:
+            browse = row.operator(
+                "allpie.browse_panel_id",
+                text="",
+                icon="VIEWZOOM",
+                emboss=True,
+            )
+            browse.target_group_attr = group_attr
+            browse.target_property = identifier
+        elif is_menu_id:
+            browse = row.operator(
+                "allpie.browse_menu_id",
+                text="",
+                icon="VIEWZOOM",
+                emboss=True,
+            )
+            browse.target_group_attr = group_attr
+            browse.target_property = identifier
+        if is_tool_target_space:
+            layout.label(
+                text="Controls where Blender activates the tool; it does not control which AllPie menu context lists this preset.",
+                icon="INFO",
+            )
         if is_panel_id:
             layout.label(
                 text="Enter the exact panel bl_idname manually (for example, VIEW3D_PT_overlay).",
@@ -452,19 +785,32 @@ class ALLPIE_OT_setup_blender_operator(Operator):
     """Configure RNA properties, then create or update an AllPie action preset."""
 
     bl_idname = "allpie.setup_blender_operator"
-    bl_label = "Configure Blender Operator"
-    bl_description = "Configure this Blender operator's properties before adding it to AllPie"
+    bl_label = "Configure Operator Preset"
+    bl_description = "Configure a reusable AllPie operator preset"
     bl_options = {"INTERNAL"}
 
     operator_id: StringProperty(options={"HIDDEN"})
     action_id: StringProperty(options={"HIDDEN"})
+    preset_name: StringProperty(
+        name="Preset Name",
+        description="Name shown in AllPie's operator list. Give different operator settings distinct names.",
+        default="",
+        maxlen=64,
+    )
     # Explicitly distinguish a fresh search result from editing a saved preset.
     # Blender can retain the previous button/operator properties between calls.
     create_new_action: BoolProperty(default=False, options={"HIDDEN"})
+    source_action_id: StringProperty(default="", options={"HIDDEN"})
+    prefill_from_action: BoolProperty(default=False, options={"HIDDEN"})
+    expose_preset_name: BoolProperty(default=False, options={"HIDDEN"})
+    source_contexts_json: StringProperty(default="[]", options={"HIDDEN"})
     target_menu_id: StringProperty(options={"HIDDEN"})
     slot_number: IntProperty(min=1, max=8, default=1, options={"HIDDEN"})
     spaced: BoolProperty(default=False, options={"HIDDEN"})
-    context_name: StringProperty(default="Object Mode", options={"HIDDEN"})
+    context_name: StringProperty(default="", options={"HIDDEN"})
+    capture_button_properties: BoolProperty(default=False, options={"HIDDEN"})
+    button_properties_json: StringProperty(default="{}", options={"HIDDEN"})
+    button_unsupported_properties_json: StringProperty(default="[]", options={"HIDDEN"})
     invoke_operator: BoolProperty(name="Invoke Operator", description="Use Blender's invoke context instead of direct execution", default=True)
     invalid_saved_values: StringProperty(options={"HIDDEN"})
     replace_invalid_saved_values: BoolProperty(
@@ -486,18 +832,86 @@ class ALLPIE_OT_setup_blender_operator(Operator):
             # Do not allow Blender's last-used action_id to redirect a new
             # operator search result into the edit-existing-preset path.
             self.action_id = ""
-        if prefs is not None and prefs.editor_dirty:
-            self.report({"WARNING"}, "Apply or discard menu changes before configuring an operator")
+        draft_mode = bool(prefs is not None and getattr(prefs, "editor_dirty", False))
+        if draft_mode and (
+            not self.target_menu_id
+            or prefs.editor_active_menu_id != self.target_menu_id
+        ):
+            self.report({"WARNING"}, "Apply or discard the current menu draft before configuring an operator outside this menu")
             return {"CANCELLED"}
 
+        target_menu = None
+        if self.target_menu_id:
+            if prefs is None:
+                self.report({"ERROR"}, "AllPie preferences are unavailable")
+                return {"CANCELLED"}
+            try:
+                config = (
+                    menu_editor.get_menu_operation_config(prefs, self.target_menu_id)
+                    if draft_mode
+                    else ConfigRuntime.get_config_copy()
+                )
+                target_menu = menu_editor.menu_data.get_menu(config, self.target_menu_id)
+                if self.spaced and not menu_data.spaced_slots_enabled(target_menu):
+                    raise ValueError("Spaced Slots are disabled for the target menu")
+            except (RuntimeError, KeyError, ValueError) as error:
+                self.report({"ERROR"}, f"Could not read the target menu: {error}")
+                return {"CANCELLED"}
+
         initial_values = {}
+        if self.capture_button_properties:
+            try:
+                initial_values = json.loads(self.button_properties_json or "{}")
+                if not isinstance(initial_values, dict):
+                    raise ValueError("Captured button properties are not a JSON object")
+            except Exception as error:
+                self.report({"ERROR"}, f"Could not read the clicked button's properties: {error}")
+                return {"CANCELLED"}
+        else:
+            # Search/editor buttons must not inherit a property snapshot from a
+            # previous right-click capture. Keep the row's preset name only when
+            # the unified picker explicitly exposes it.
+            initial_values = {}
+            if not self.expose_preset_name:
+                self.preset_name = ""
+            self.button_unsupported_properties_json = "[]"
         self.invalid_saved_values = "[]"
         self.unknown_saved_properties = "[]"
         self.replace_invalid_saved_values = False
         self.remove_unknown_saved_properties = False
+
+        if self.prefill_from_action:
+            if not self.source_action_id:
+                self.report({"ERROR"}, "The selected AllPie preset reference is empty")
+                return {"CANCELLED"}
+            try:
+                source_config = _operator_setup_config(prefs, self.target_menu_id)
+                source_action = operator_data.get_operator(source_config, self.source_action_id)
+            except (RuntimeError, KeyError) as error:
+                self.report({"ERROR"}, f"Could not load the selected AllPie preset: {error}")
+                return {"CANCELLED"}
+            self.operator_id = str(source_action.get("operator_id", self.operator_id))
+            initial_values = dict(source_action.get("properties", {}))
+            self.invoke_operator = bool(source_action.get("invoke", True))
+            if not self.preset_name.strip():
+                self.preset_name = str(source_action.get("name") or "")
+            # Contexts are passed separately from the operator's Blender RNA
+            # properties and merged with the target menu context on save.
+            try:
+                source_contexts = json.loads(self.source_contexts_json or "[]")
+                if not isinstance(source_contexts, list):
+                    source_contexts = []
+            except Exception:
+                source_contexts = []
+            explicit_contexts = source_action.get("contexts", [])
+            for value in explicit_contexts:
+                if isinstance(value, str) and value.strip() and value.casefold() not in {str(x).casefold() for x in source_contexts}:
+                    source_contexts.append(value.strip())
+            self.source_contexts_json = json.dumps(source_contexts, separators=(",", ":"))
+
         if self.action_id and not self.create_new_action:
             try:
-                config = ConfigRuntime.get_config_copy()
+                config = _operator_setup_config(prefs, self.target_menu_id)
                 action = operator_data.get_operator(config, self.action_id)
             except (RuntimeError, KeyError) as error:
                 # Blender can retain the last-used values for an operator button.
@@ -517,20 +931,16 @@ class ALLPIE_OT_setup_blender_operator(Operator):
                     return {"CANCELLED"}
             else:
                 if ":" in self.action_id:
-                    self.report({"ERROR"}, "Third-party presets are read-only. Duplicate them before editing.")
+                    self.report({"ERROR"}, "Third-party presets are managed by their owning add-on and cannot be edited here. Duplicate the preset to customize it.")
                     return {"CANCELLED"}
                 self.operator_id = str(action.get("operator_id", ""))
                 initial_values = action.get("properties", {})
                 self.invoke_operator = bool(action.get("invoke", True))
-                if self.target_menu_id and prefs is not None and prefs.editor_active_menu_id != self.target_menu_id:
-                    self.report({"ERROR"}, "The target menu is no longer selected")
-                    return {"CANCELLED"}
+                self.preset_name = str(action.get("name") or self.action_id)[:64]
         if not self.action_id and self.target_menu_id:
-            if prefs is None or prefs.editor_active_menu_id != self.target_menu_id:
-                self.report({"ERROR"}, "The target menu is no longer selected")
-                return {"CANCELLED"}
             try:
-                menu = menu_editor.menu_data.get_menu(ConfigRuntime.get_config_copy(), self.target_menu_id)
+                menu_config = _operator_setup_config(prefs, self.target_menu_id)
+                menu = menu_editor.menu_data.get_menu(menu_config, self.target_menu_id)
             except (RuntimeError, KeyError) as error:
                 self.report({"ERROR"}, f"Could not read the target menu: {error}")
                 return {"CANCELLED"}
@@ -542,6 +952,14 @@ class ALLPIE_OT_setup_blender_operator(Operator):
         try:
             group, entry = _get_setup_group(context, self.operator_id)
             population_issues = _populate_group(group, entry["schema"], initial_values)
+            if not self.action_id and not self.preset_name.strip():
+                # Use Blender's original RNA label as an editable suggestion.
+                # Preset names are explicit library data, never synthesized
+                # from arbitrary operator properties.
+                rna = _operator_rna(self.operator_id)
+                self.preset_name = str(
+                    getattr(rna, "name", "") or self.operator_id
+                ).strip()[:64]
             self.invalid_saved_values = json.dumps(population_issues)
             supported_names = {spec["identifier"] for spec in entry["schema"].get("properties", ())}
             unknown_names = sorted(set(initial_values) - supported_names)
@@ -564,8 +982,46 @@ class ALLPIE_OT_setup_blender_operator(Operator):
         description = str(getattr(rna, "description", "") or "").strip()
         if description:
             layout.label(text=description)
+        # The preset name is shared by every menu slot that references this
+        # action. Keep it visible for both new presets and existing-preset
+        # edits (including the slot gear), so there is only one naming system.
+        name_box = layout.box()
+        name_box.label(text="Operator Preset Name", icon="FONT_DATA")
+        name_box.prop(self, "preset_name", text="Name")
+        if self.action_id and not self.create_new_action:
+            name_box.label(
+                text="Renaming this preset updates every menu slot that uses it.",
+                icon="INFO",
+            )
+        else:
+            name_box.label(
+                text="Blender's operator name is suggested; you can change it.",
+                icon="INFO",
+            )
+        if self.capture_button_properties:
+            context_box = layout.box()
+            captured_context = str(self.context_name or "Unspecified").strip()
+            if captured_context and captured_context.casefold() != "unspecified":
+                context_box.label(text=f"Preset Context Tag: {captured_context}", icon="KEYINGSET")
+                context_box.label(text="This tag is optional discovery metadata; it does not restrict where the preset can be assigned.", icon="INFO")
+            else:
+                context_box.label(text="No context tag was captured. This preset is available in every menu context.", icon="INFO")
+            layout.label(text="Initial values were captured from the right-clicked Blender button.", icon="CHECKMARK")
+            layout.label(text="Confirm Invoke Operator below; Blender's original button invocation mode is not exposed here.", icon="INFO")
+            try:
+                uncaptured = json.loads(self.button_unsupported_properties_json or "[]")
+            except Exception:
+                uncaptured = []
+            if uncaptured:
+                warning = layout.box()
+                warning.alert = True
+                warning.label(text="These advanced properties cannot be copied by AllPie:", icon="INFO")
+                warning.label(text=", ".join(str(value) for value in uncaptured[:6]))
+                if len(uncaptured) > 6:
+                    warning.label(text=f"And {len(uncaptured) - 6} more…")
+                warning.label(text="They will keep Blender defaults in the saved preset.")
         layout.separator()
-        _draw_property_group(layout, group, entry["schema"], self.operator_id)
+        _draw_property_group(layout, group, entry["schema"], self.operator_id, entry["pointer_attr"])
         layout.separator()
         layout.prop(self, "invoke_operator")
         try:
@@ -592,13 +1048,26 @@ class ALLPIE_OT_setup_blender_operator(Operator):
             warning.prop(self, "remove_unknown_saved_properties")
         if self.action_id and not self.create_new_action:
             layout.label(text="Editing a shared preset updates every menu slot that uses it.", icon="INFO")
+        elif self.prefill_from_action:
+            layout.label(
+                text="Starts from the selected preset settings. A matching preset is reused; otherwise a separate preset is created.",
+                icon="INFO",
+            )
+            if self.target_menu_id:
+                layout.label(text=f"Will assign to Slot {self.slot_number}.", icon="INFO")
         elif self.target_menu_id:
-            layout.label(text=f"Will assign to Slot {self.slot_number}.", icon="INFO")
+            layout.label(text=f"Will create or reuse a preset and assign it to Slot {self.slot_number}.", icon="INFO")
         else:
-            layout.label(text=f"Will create an action preset for {self.context_name}.", icon="INFO")
+            if self.context_name.strip():
+                layout.label(text=f"Will create a preset tagged for {self.context_name}.", icon="INFO")
+            else:
+                layout.label(text="Will create an untagged preset available in every menu context.", icon="INFO")
 
     def execute(self, context):
         try:
+            if not self.preset_name.strip():
+                self.report({"ERROR"}, "Enter a name for this AllPie operator preset")
+                return {"CANCELLED"}
             try:
                 invalid_values = json.loads(self.invalid_saved_values or "[]")
                 unknown_values = json.loads(self.unknown_saved_properties or "[]")
@@ -614,6 +1083,11 @@ class ALLPIE_OT_setup_blender_operator(Operator):
 
             group, entry = _get_setup_group(context, self.operator_id)
             edited_values = _collect_group_values(group, entry["schema"])
+            property_defaults = operator_properties.default_values_from_schema(entry["schema"])
+            stored_values = operator_properties.strip_default_properties(
+                edited_values,
+                property_defaults,
+            )
             from ..core.operator_validation import validate_operator_preset
             validation = validate_operator_preset(self.operator_id, edited_values, check_poll=False)
             if validation.errors:
@@ -623,57 +1097,78 @@ class ALLPIE_OT_setup_blender_operator(Operator):
                 self.report({"ERROR"}, f"Operator properties are invalid: {details}")
                 return {"CANCELLED"}
             if self.action_id and not self.create_new_action:
-                config = ConfigRuntime.get_config_copy()
+                prefs = _preferences_from_context(context)
+                draft_mode = bool(
+                    prefs is not None
+                    and getattr(prefs, "editor_dirty", False)
+                    and self.target_menu_id
+                    and prefs.editor_active_menu_id == self.target_menu_id
+                )
+                if prefs is not None and prefs.editor_dirty and not draft_mode:
+                    self.report({"WARNING"}, "Apply or discard the current menu draft before editing a library preset")
+                    return {"CANCELLED"}
+                if draft_mode:
+                    from . import menu_editor
+                    config = menu_editor.get_menu_operation_config(prefs, self.target_menu_id)
+                else:
+                    config = ConfigRuntime.get_config_copy()
                 action = operator_data.get_operator(config, self.action_id)
                 previous_properties = dict(action.get("properties", {}))
                 updated_properties = operator_properties.merge_configured_values(
-                    previous_properties, edited_values
+                    previous_properties,
+                    edited_values,
+                    defaults=property_defaults,
                 )
                 if unknown_values and self.remove_unknown_saved_properties:
                     for property_name in unknown_values:
                         updated_properties.pop(property_name, None)
 
-                # Keep generated labels in sync with parameterized operator
-                # presets (e.g. changing Add Subdivision Modifier to Add Mirror
-                # Modifier). Preserve labels that the user has customized.
-                rna = _operator_rna(self.operator_id)
-                previous_generated_name = _configured_preset_name(
-                    self.operator_id, rna, previous_properties, entry["schema"]
-                )
-                updated_generated_name = _configured_preset_name(
-                    self.operator_id, rna, updated_properties, entry["schema"]
-                )
-                if str(action.get("name", "")) == previous_generated_name:
-                    action["name"] = updated_generated_name
-                if str(action.get("search_name", action.get("name", ""))) == previous_generated_name:
-                    action["search_name"] = updated_generated_name
-
+                preset_name = self.preset_name.strip()
+                if not preset_name:
+                    self.report({"ERROR"}, "Enter a name for this AllPie operator preset")
+                    return {"CANCELLED"}
+                action["name"] = preset_name
+                # Keep search_name as an optional alias. It is searchable but
+                # never used as the canonical visible preset name.
                 action["properties"] = updated_properties
                 action["invoke"] = bool(self.invoke_operator)
-                ConfigRuntime.replace_and_save_configuration(config)
-                prefs = _preferences_from_context(context)
-                if prefs is not None:
-                    prefs.editor_config_generation = -1
-                    if prefs.editor_active_menu_id:
-                        from . import menu_editor
-                        menu_editor._ensure_editor_state(prefs)
+                if draft_mode:
+                    menu_editor.store_menu_operation_draft(prefs, config)
+                else:
+                    ConfigRuntime.replace_and_save_configuration(config)
+                    if prefs is not None:
+                        _refresh_menu_editor(prefs)
                 self.report({"INFO"}, f"Updated operator preset '{self.action_id}'")
                 return {"FINISHED"}
 
             from . import operator_editor
             rna = _operator_rna(self.operator_id)
-            preset_name = _configured_preset_name(self.operator_id, rna, edited_values, entry["schema"])
+            preset_name = self.preset_name.strip()
+            try:
+                additional_context_names = json.loads(self.source_contexts_json or "[]")
+                if not isinstance(additional_context_names, list):
+                    additional_context_names = []
+            except Exception:
+                additional_context_names = []
+            # Right-click capture stores the AllPie context inferred from the
+            # editor where the button was clicked. Menu-slot additions inherit
+            # the target menu context. Library additions stay untagged/global.
+            selected_context_name = self.context_name.strip()
             created = operator_editor._add_operator_to_allpie(
                 context,
                 operator_id=self.operator_id,
                 target_menu_id=self.target_menu_id,
                 slot_number=self.slot_number,
                 spaced=self.spaced,
-                context_name=self.context_name or "Object Mode",
-                properties=edited_values,
+                context_name=selected_context_name,
+                properties=stored_values,
+                property_defaults=property_defaults,
                 invoke=bool(self.invoke_operator),
                 name_override=preset_name,
-                search_name=preset_name,
+                # Use Blender's registered operator label as an optional
+                # search alias; the user-edited preset name remains canonical.
+                search_name="",
+                additional_context_names=additional_context_names,
             )
             state = "Added" if created else "Reused"
             self.report({"INFO"}, f"{state} '{self.operator_id}'")
@@ -685,43 +1180,30 @@ class ALLPIE_OT_setup_blender_operator(Operator):
 
 
 
-def _configured_preset_name(operator_id: str, rna: Any, values: Mapping[str, Any], schema: Mapping[str, Any]) -> str:
-    """Create a useful slot label for common parameterized Blender operators."""
-    base_name = str(getattr(rna, "name", "") or operator_id).strip()
-    specs = {spec["identifier"]: spec for spec in schema.get("properties", ())}
-
-    if operator_id == "object.modifier_add" and values.get("type"):
-        modifier_type = str(values["type"])
-        type_spec = specs.get("type", {})
-        type_label = next(
-            (item["name"] for item in type_spec.get("enum_items", ()) if item["identifier"] == modifier_type),
-            modifier_type.replace("_", " ").title(),
-        )
-        return f"Add {type_label} Modifier"
-
-    if operator_id == "wm.call_panel" and values.get("name"):
-        panel_id = str(values["name"])
-        panel_items = _PANEL_SEARCH_CACHE
-        if panel_items is None:
-            panel_items = _panel_name_search(None, None, "")
-        panel_label = next((label for identifier, label in panel_items if identifier == panel_id), panel_id)
-        return f"Call Panel: {panel_label}"
-
-    if operator_id in {"wm.call_menu", "wm.call_menu_pie"} and values.get("name"):
-        menu_id = str(values["name"])
-        menu_items = _MENU_SEARCH_CACHE
-        if menu_items is None:
-            menu_items = _menu_name_search(None, None, "")
-        menu_label = next((label for identifier, label in menu_items if identifier == menu_id), menu_id)
-        return f"Call Menu: {menu_label}"
-
-    return base_name
-
-
 def _preferences_from_context(context: Any) -> Any:
     from .. import Preferences
     addon = context.preferences.addons.get(Preferences.__package__)
     return addon.preferences if addon is not None else None
+
+
+def _operator_setup_config(prefs: Any, target_menu_id: str) -> Dict[str, Any]:
+    """Read the active menu draft when operator setup belongs to that draft."""
+    if prefs is not None and getattr(prefs, "editor_dirty", False):
+        if not target_menu_id or prefs.editor_active_menu_id != target_menu_id:
+            raise RuntimeError(
+                "Apply or discard the current menu draft before configuring an operator outside this menu"
+            )
+        from . import menu_editor
+        return menu_editor.get_menu_operation_config(prefs, target_menu_id)
+    return ConfigRuntime.get_config_copy()
+
+
+def _refresh_menu_editor(prefs: Any) -> None:
+    from . import menu_editor
+
+    prefs.editor_config_generation = -1
+    if prefs.editor_active_menu_id:
+        menu_editor._ensure_editor_state(prefs)
 
 
 def unregister_dynamic_property_groups() -> None:
@@ -736,5 +1218,9 @@ def unregister_dynamic_property_groups() -> None:
 
 
 CLASSES = (
+    ALLPIE_OT_copy_panel_id,
+    ALLPIE_OT_copy_menu_id,
+    ALLPIE_OT_browse_panel_id,
+    ALLPIE_OT_browse_menu_id,
     ALLPIE_OT_setup_blender_operator,
 )

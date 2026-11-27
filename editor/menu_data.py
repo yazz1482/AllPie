@@ -2,18 +2,14 @@
 
 from __future__ import annotations
 
-ACTION_CONTEXT_CATALOG_API_VERSION = 7
-BRUSH_ASSET_OPERATOR_ID = "brush.asset_activate"
-ASSET_SHELF_OPERATOR_ID = "wm.call_asset_shelf_popover"
-BRUSH_MENU_OPERATOR_IDS = frozenset({
-    BRUSH_ASSET_OPERATOR_ID,
-    ASSET_SHELF_OPERATOR_ID,
-})
+ACTION_CONTEXT_CATALOG_API_VERSION = 16
 
 from copy import deepcopy
+import re
+import unicodedata
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
-from ..core.schema import BRUSH_MENU_KEYMAPS, COMMON_KEYMAP, keymap_contexts
+from ..core.schema import COMMON_KEYMAP, keymap_contexts
 
 
 # Menu browser categories are derived from each menu's Blender keymap context.
@@ -28,6 +24,9 @@ MENU_CATEGORY_ITEMS = (
     ("IMAGE_PAINT", "Texture Paint", "Menus registered in Image Paint mode"),
     ("VERTEX_PAINT", "Vertex Paint", "Menus registered in Vertex Paint mode"),
     ("WEIGHT_PAINT", "Weight Paint", "Menus registered in Weight Paint mode"),
+    ("UV_EDITOR", "UV Editor", "Menus registered in Blender's UV Editor"),
+    ("IMAGE_EDITOR", "Image Editor", "Menus registered in Blender's Image Editor"),
+    ("NODE_EDITOR", "Node Editor", "Menus registered in Shader, Geometry Nodes, Compositor and Texture Node editors"),
     ("THIRD_PARTY", "Third Party", "Menus contributed by external addons"),
     ("OTHER", "Other", "Menus using another Blender keymap context"),
 )
@@ -40,10 +39,14 @@ CATEGORY_TO_KEYMAP = {
     "IMAGE_PAINT": "Image Paint",
     "VERTEX_PAINT": "Vertex Paint",
     "WEIGHT_PAINT": "Weight Paint",
+    "UV_EDITOR": "UV Editor",
+    "IMAGE_EDITOR": "Image",
+    "NODE_EDITOR": "Node Editor",
 }
 
-# Stable RNA identifiers are separate from Blender's displayed keymap names.
-# These are the six contexts used by AllPie's built-in menus and browser.
+# Stable RNA identifiers are separate from Blender's displayed keymap names
+# and stored Blender keymap names. The legacy mode identifiers are preserved;
+# editor contexts use their own identifiers and exact Blender keymap names.
 KEYMAP_ENUM_ITEMS = (
     ("COMMON", "Common (All Modes)", "Register this menu in Object Mode, Mesh, Sculpt, Image Paint, Vertex Paint and Weight Paint"),
     ("OBJECT_MODE", "Object Mode", "Register this menu in Object Mode"),
@@ -52,6 +55,9 @@ KEYMAP_ENUM_ITEMS = (
     ("IMAGE_PAINT", "Texture Paint", "Register this menu in Texture Paint mode"),
     ("VERTEX_PAINT", "Vertex Paint", "Register this menu in Vertex Paint mode"),
     ("WEIGHT_PAINT", "Weight Paint", "Register this menu in Weight Paint mode"),
+    ("UV_EDITOR", "UV Editor", "Register this menu in the UV Editor"),
+    ("IMAGE_EDITOR", "Image Editor", "Register this menu in the Image Editor"),
+    ("NODE_EDITOR", "Node Editor", "Register this menu in Shader, Geometry Nodes, Compositor and Texture Nodes"),
     ("CUSTOM", "Custom Keymap…", "Preserve a custom Blender keymap context name"),
 )
 
@@ -63,6 +69,9 @@ KEYMAP_IDENTIFIER_TO_VALUE = {
     "IMAGE_PAINT": "Image Paint",
     "VERTEX_PAINT": "Vertex Paint",
     "WEIGHT_PAINT": "Weight Paint",
+    "UV_EDITOR": "UV Editor",
+    "IMAGE_EDITOR": "Image",
+    "NODE_EDITOR": "Node Editor",
 }
 
 KEYMAP_VALUE_TO_IDENTIFIER = {
@@ -86,19 +95,6 @@ def keymap_value(identifier: str, custom_value: str = "") -> str:
     return KEYMAP_IDENTIFIER_TO_VALUE.get(identifier, "Object Mode")
 
 
-def supports_brush_menu(keymap: str) -> bool:
-    """Return whether a menu context supports Brush Menu actions."""
-    value = str(keymap or "").strip()
-    supported_names = {name.casefold() for name in BRUSH_MENU_KEYMAPS}
-    supported_ids = {
-        "SCULPT",
-        "IMAGE_PAINT",
-        "VERTEX_PAINT",
-        "WEIGHT_PAINT",
-    }
-    return value.casefold() in supported_names or value.upper() in supported_ids
-
-
 KEYMAP_TO_CATEGORY = {
     keymap.casefold(): category
     for category, keymap in CATEGORY_TO_KEYMAP.items()
@@ -107,6 +103,18 @@ CATEGORY_LABELS = {
     identifier: label
     for identifier, label, _description in MENU_CATEGORY_ITEMS
 }
+
+
+def spaced_slots_enabled(menu: Mapping[str, Any]) -> bool:
+    """Return the explicit Spaced Slots state, with a legacy-data fallback."""
+    enabled = menu.get("spaced_slots_enabled")
+    if isinstance(enabled, bool):
+        return enabled
+    slots = menu.get("spaced_slots", {})
+    return (
+        isinstance(slots, Mapping)
+        and any(reference is not None for reference in slots.values())
+    )
 
 
 def split_menu_id(menu_id: str) -> Tuple[Optional[str], str]:
@@ -207,7 +215,7 @@ def iter_menu_records(config: Mapping[str, Any]) -> List[Dict[str, Any]]:
                 "menu_id": f"{addon_id}:{local_id}",
                 "name": menu.get("name", local_id),
                 "key": menu.get("key", ""),
-            "keymodifiers": tuple(menu.get("keymodifiers", ())),
+                "keymodifiers": tuple(menu.get("keymodifiers", ())),
                 "keymap": menu.get("keymap", ""),
                 "enabled": bool(menu.get("enabled", True) and addon.get("enabled", True)),
                 "owner_addon": addon_name,
@@ -217,95 +225,106 @@ def iter_menu_records(config: Mapping[str, Any]) -> List[Dict[str, Any]]:
     return records
 
 
+def iter_enabled_menus_for_context(
+    config: Mapping[str, Any],
+    context_name: str = "",
+) -> List[Dict[str, Any]]:
+    """Return shortcut-enabled menus registered in one Blender context.
+
+    ``Common`` menus are expanded through :func:`keymap_contexts`, so they
+    appear in each supported built-in mode. When the current editor/mode
+    cannot be identified, all enabled menus with a real shortcut are returned
+    rather than silently hiding valid destinations.
+    """
+    target_context = str(context_name or "").strip().casefold()
+    records = []
+    for record in iter_menu_records(config):
+        if not record.get("enabled", False):
+            continue
+        key = str(record.get("key", "") or "").strip().upper()
+        if not key or key == "NONE":
+            continue
+        registered_contexts = keymap_contexts(str(record.get("keymap", "")))
+        if target_context and target_context not in {value.casefold() for value in registered_contexts}:
+            continue
+        item = dict(record)
+        item["registered_contexts"] = list(registered_contexts)
+        records.append(item)
+    return records
+
+
 def iter_action_records(
     config: Mapping[str, Any],
     keymap: Optional[str] = None,
 ) -> List[Tuple[str, str, str]]:
-    """Return reusable action records, optionally limited to one keymap context.
-
-    With no ``keymap``, all presets are returned. When a keymap is supplied,
-    presets are scoped to menus registered in that context. The Common scope
-    uses the union of all six supported built-in contexts. The scope is inferred
-    from normal and spaced slot
-    assignments, so the JSON schema does not need duplicated category tags on
-    every operator preset.
-
-    A preset referenced by menus in multiple contexts is intentionally
-    available in each of those contexts. Both regular and spaced slots count.
-    Third-party references are resolved using the same local-namespace
-    precedence as the runtime registry.
-    """
+    """Return presets keyed by permanent UUID, optionally scoped to a context."""
     records: Dict[str, Tuple[str, str, str]] = {}
-    for action_id, action in config.get("Operators", {}).items():
-        records[action_id] = (
-            action_id,
-            action.get("name", action_id),
-            action.get("operator_id", ""),
-        )
-
-    third_party = config.get("ThirdParty", {})
-    for addon_id, addon in third_party.items():
-        for action_id, action in addon.get("Operators", {}).items():
-            qualified_id = f"{addon_id}:{action_id}"
-            records[qualified_id] = (
-                qualified_id,
-                action.get("name", action_id),
+    for _legacy_id, action in config.get("Operators", {}).items():
+        preset_id = str(action.get("preset_id", ""))
+        if preset_id:
+            records[preset_id] = (
+                preset_id,
+                action.get("name", preset_id),
                 action.get("operator_id", ""),
             )
+
+    third_party = config.get("ThirdParty", {})
+    for addon in third_party.values():
+        for _legacy_id, action in addon.get("Operators", {}).items():
+            preset_id = str(action.get("preset_id", ""))
+            if preset_id:
+                records[preset_id] = (
+                    preset_id,
+                    action.get("name", preset_id),
+                    action.get("operator_id", ""),
+                )
 
     if keymap is not None:
         target_keymaps = {name.casefold() for name in keymap_contexts(keymap)}
         allowed_references = set()
 
-        # Explicit action contexts form a discoverable catalog in addition to
-        # actions already assigned to slots. A Common menu sees the union of
-        # the six supported mode catalogs, because one menu can be opened in
-        # any of those contexts.
-        def collect_context_catalog(actions: Mapping[str, Any], namespace: Optional[str]) -> None:
-            for action_id, action in actions.items():
+        # Explicit tags make a reusable preset discoverable even before it is
+        # assigned. Slot references are already canonical permanent IDs.
+        for _legacy_id, action in config.get("Operators", {}).items():
+            preset_id = str(action.get("preset_id", ""))
+            contexts = action.get("contexts", ()) if isinstance(action, Mapping) else ()
+            if preset_id and isinstance(contexts, (list, tuple)) and any(
+                isinstance(context_name, str)
+                and context_name.strip().casefold() in target_keymaps
+                for context_name in contexts
+            ):
+                allowed_references.add(preset_id)
+
+        for addon in third_party.values():
+            for _legacy_id, action in addon.get("Operators", {}).items():
+                preset_id = str(action.get("preset_id", ""))
                 contexts = action.get("contexts", ()) if isinstance(action, Mapping) else ()
-                if isinstance(contexts, (list, tuple)) and any(
+                if preset_id and isinstance(contexts, (list, tuple)) and any(
                     isinstance(context_name, str)
                     and context_name.strip().casefold() in target_keymaps
                     for context_name in contexts
                 ):
-                    allowed_references.add(f"{namespace}:{action_id}" if namespace else action_id)
+                    allowed_references.add(preset_id)
 
-        collect_context_catalog(config.get("Operators", {}), None)
-        for catalog_addon_id, catalog_addon in third_party.items():
-            collect_context_catalog(catalog_addon.get("Operators", {}), catalog_addon_id)
-
-        def collect_menu_references(menu: Mapping[str, Any], owner_addon: Optional[str]) -> None:
+        def collect_menu_references(menu: Mapping[str, Any]) -> None:
             menu_contexts = {name.casefold() for name in keymap_contexts(menu.get("keymap", ""))}
             if not menu_contexts.intersection(target_keymaps):
                 return
-
             for slot_field in ("slots", "spaced_slots"):
                 for reference in menu.get(slot_field, {}).values():
-                    if not isinstance(reference, str) or not reference:
-                        continue
-
-                    if ":" in reference:
-                        resolved_reference = reference
-                    elif owner_addon and f"{owner_addon}:{reference}" in records:
-                        resolved_reference = f"{owner_addon}:{reference}"
-                    else:
-                        resolved_reference = reference
-
-                    if resolved_reference in records:
-                        allowed_references.add(resolved_reference)
+                    if isinstance(reference, str) and reference in records:
+                        allowed_references.add(reference)
 
         for menu in config.get("Menus", {}).values():
-            collect_menu_references(menu, None)
-
-        for addon_id, addon in third_party.items():
+            collect_menu_references(menu)
+        for addon in third_party.values():
             for menu in addon.get("Menus", {}).values():
-                collect_menu_references(menu, addon_id)
+                collect_menu_references(menu)
 
         records = {
-            identifier: record
-            for identifier, record in records.items()
-            if identifier in allowed_references
+            preset_id: record
+            for preset_id, record in records.items()
+            if preset_id in allowed_references
         }
 
     result = list(records.values())
@@ -313,26 +332,35 @@ def iter_action_records(
     return result
 
 
-
-def get_action_metadata(config: Mapping[str, Any]) -> Dict[str, Dict[str, str]]:
-    """Return picker-facing names and descriptions for global/third-party presets."""
-    metadata: Dict[str, Dict[str, str]] = {}
-    for action_id, action in config.get("Operators", {}).items():
-        metadata[action_id] = {
-            "search_name": str(action.get("search_name") or action.get("name") or action_id),
+def get_action_metadata(config: Mapping[str, Any]) -> Dict[str, Dict[str, Any]]:
+    """Return preset metadata keyed by permanent ID; name is canonical display text."""
+    metadata: Dict[str, Dict[str, Any]] = {}
+    for _legacy_id, action in config.get("Operators", {}).items():
+        preset_id = str(action.get("preset_id", ""))
+        if not preset_id:
+            continue
+        metadata[preset_id] = {
+            "name": str(action.get("name") or preset_id),
+            "search_name": str(action.get("search_name") or action.get("name") or preset_id),
             "description": str(action.get("description") or ""),
             "operator_id": str(action.get("operator_id") or ""),
+            "enum_value": int(action.get("enum_value", 0)),
         }
 
-    for addon_id, addon in config.get("ThirdParty", {}).items():
-        for action_id, action in addon.get("Operators", {}).items():
-            qualified_id = f"{addon_id}:{action_id}"
-            metadata[qualified_id] = {
-                "search_name": str(action.get("search_name") or action.get("name") or action_id),
+    for addon in config.get("ThirdParty", {}).values():
+        for _legacy_id, action in addon.get("Operators", {}).items():
+            preset_id = str(action.get("preset_id", ""))
+            if not preset_id:
+                continue
+            metadata[preset_id] = {
+                "name": str(action.get("name") or preset_id),
+                "search_name": str(action.get("search_name") or action.get("name") or preset_id),
                 "description": str(action.get("description") or ""),
                 "operator_id": str(action.get("operator_id") or ""),
+                "enum_value": int(action.get("enum_value", 0)),
             }
     return metadata
+
 
 def _make_unique_id(container: Mapping[str, Any], base_id: str) -> str:
     candidate = base_id
@@ -343,30 +371,59 @@ def _make_unique_id(container: Mapping[str, Any], base_id: str) -> str:
     return candidate
 
 
+def generate_menu_id(config: Mapping[str, Any], name: str) -> str:
+    """Generate a valid, unique stable ID from a user-facing menu name.
+
+    IDs are generated only when a menu is created. Renaming an existing menu
+    never changes its ID or breaks references to that menu.
+    """
+    raw_name = unicodedata.normalize("NFKD", str(name or ""))
+    ascii_name = raw_name.encode("ascii", "ignore").decode("ascii")
+    token = re.sub(r"[^A-Za-z0-9]+", "_", ascii_name).strip("_").upper()
+    if not token:
+        token = "MENU"
+    if not token[0].isalpha():
+        token = f"MENU_{token}"
+
+    menus = config.get("Menus", {})
+    base_id = f"CUSTOM.{token}"
+    candidate = base_id
+    suffix = 2
+    while candidate in menus:
+        candidate = f"{base_id}_{suffix}"
+        suffix += 1
+    return candidate
+
+
 def add_menu(
     config: Dict[str, Any],
     *,
-    menu_id: str,
     name: str,
+    menu_id: Optional[str] = None,
     key: str = "A",
     keymap: str = "Object Mode",
-    is_brush_menu: bool = False,
 ) -> str:
-    """Add a disabled blank built-in menu and return its stable ID."""
-    menu_id = menu_id.strip()
-    if not menu_id:
-        raise ValueError("Menu ID cannot be empty")
+    """Add a disabled blank built-in menu and return its stable ID.
+
+    Callers normally omit ``menu_id`` so the ID is generated from the menu
+    name. The optional argument remains for import/compatibility callers that
+    need to preserve an already established ID.
+    """
+    clean_name = str(name or "").strip()
+    if not clean_name:
+        raise ValueError("Menu name cannot be empty")
+    menu_id = str(menu_id or "").strip() or generate_menu_id(config, clean_name)
     if menu_id in config["Menus"]:
         raise ValueError(f"Menu ID '{menu_id}' already exists")
     config["Menus"][menu_id] = {
-        "name": name.strip() or menu_id,
+        "name": clean_name,
         "key": key,
         "keymodifiers": [],
         "keymap": keymap,
         "enabled": False,
-        "is_brush_menu": bool(is_brush_menu and supports_brush_menu(keymap)),
         "slots": {},
         "spaced_slots": {},
+        "spaced_slots_enabled": False,
     }
     return menu_id
 
@@ -379,6 +436,7 @@ def duplicate_menu(config: Dict[str, Any], menu_id: str) -> str:
     duplicate = deepcopy(source)
     duplicate["name"] = f"{source.get('name', local_id)} Copy"
     duplicate["enabled"] = False
+    duplicate.pop("is_brush_menu", None)
     container[new_local_id] = duplicate
     addon_id, _ = split_menu_id(menu_id)
     return f"{addon_id}:{new_local_id}" if addon_id else new_local_id
@@ -405,7 +463,6 @@ def update_menu(
     slots: Mapping[int, Optional[str]],
     spaced_enabled: bool,
     spaced_slots: Mapping[int, Optional[str]],
-    is_brush_menu: bool = False,
 ) -> None:
     """Write editor values into a mutable v1 config without touching operators."""
     menu = get_menu(config, menu_id)
@@ -418,7 +475,8 @@ def update_menu(
         if name in enabled_modifiers
     ]
     menu["enabled"] = bool(enabled)
-    menu["is_brush_menu"] = bool(is_brush_menu and supports_brush_menu(keymap))
+    menu.pop("is_brush_menu", None)
+    menu["spaced_slots_enabled"] = bool(spaced_enabled)
 
     normal = {
         str(slot): action_id
@@ -426,6 +484,10 @@ def update_menu(
         if action_id not in (None, "", "__EMPTY__")
     }
     menu["slots"] = normal
+
+    # Legacy per-slot label maps are no longer part of the menu model.
+    menu.pop("slot_labels", None)
+    menu.pop("spaced_slot_labels", None)
 
     if spaced_enabled:
         menu["spaced_slots"] = {

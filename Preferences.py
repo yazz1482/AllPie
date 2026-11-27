@@ -114,7 +114,10 @@ class AllPiePreferences(AddonPreferences):
         items=(
             ("GENERAL", "General", "Radial menu timing and appearance"),
             ("MENUS", "Menus", "Browse and edit AllPie radial menus"),
-            ("OPERATORS", "Operators", "Search Blender operators and add AllPie actions"),
+            # Retained as a hidden compatibility value for older saved
+            # AddonPreferences. The Operators page is now integrated into the
+            # Menus picker and preset controls, so this item is not drawn.
+            ("OPERATORS", "Operators (retired)", "Legacy page; operator management is integrated into Menus"),
             ("CONFIGURATION", "Configuration", "Import, export and restore AllPie JSON configurations"),
         ),
         default="GENERAL",
@@ -137,42 +140,47 @@ class AllPiePreferences(AddonPreferences):
     )
     editor_slots: CollectionProperty(type=menu_editor.AllPieMenuSlotItem)
     editor_spaced_slots: CollectionProperty(type=menu_editor.AllPieMenuSlotItem)
-    operator_search_context: EnumProperty(
-        name="Add to Context",
-        description="Menu context in which the new Blender operator preset will be searchable",
-        items=operator_editor.SEARCH_CONTEXT_ITEMS,
-        default="OBJECT_MODE",
+    operator_search_context_filters: EnumProperty(
+        name="Context Filters",
+        description="Optional filters inside the slot operator search. Multiple selected contexts are combined with OR.",
+        items=operator_editor.SEARCH_CONTEXT_FILTER_ITEMS,
+        options={"ENUM_FLAG", "SKIP_SAVE"},
+        default=set(),
     )
     operator_search_last_added: StringProperty(default="", options={"HIDDEN"})
     operator_search_items: CollectionProperty(type=operator_editor.AllPieOperatorSearchItem, options={"HIDDEN", "SKIP_SAVE"})
     operator_search_query: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE", "TEXTEDIT_UPDATE"}, update=operator_editor.update_operator_search_query)
     operator_search_active_index: IntProperty(default=0, options={"HIDDEN", "SKIP_SAVE"})
     operator_search_catalog_generation: IntProperty(default=-1, options={"HIDDEN", "SKIP_SAVE"})
+    operator_search_config_generation: IntProperty(default=-1, options={"HIDDEN", "SKIP_SAVE"})
+    operator_search_config_fingerprint: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE"})
+    operator_search_catalog_loading: BoolProperty(default=False, options={"HIDDEN", "SKIP_SAVE"})
+    operator_search_catalog_error: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE"})
     operator_search_target_menu_id: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE"})
-    operator_search_brush_only: BoolProperty(default=False, options={"HIDDEN", "SKIP_SAVE"})
     operator_search_target_slot: IntProperty(default=1, options={"HIDDEN", "SKIP_SAVE"})
     operator_search_target_spaced: BoolProperty(default=False, options={"HIDDEN", "SKIP_SAVE"})
-    operator_search_context_name: StringProperty(default="Object Mode", options={"HIDDEN", "SKIP_SAVE"})
-    user_action_items: CollectionProperty(type=operator_editor.AllPieUserActionItem, options={"HIDDEN", "SKIP_SAVE"})
-    user_action_active_index: IntProperty(default=0, min=0, options={"HIDDEN", "SKIP_SAVE"})
-    user_action_search: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE", "TEXTEDIT_UPDATE"}, update=operator_editor.update_user_action_search)
-    user_action_registry_generation: IntProperty(default=-1, options={"HIDDEN", "SKIP_SAVE"})
-    user_action_loading: BoolProperty(default=False, options={"HIDDEN", "SKIP_SAVE"})
+    operator_search_context_name: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE"})
     operator_validation_items: CollectionProperty(type=operator_editor.AllPieOperatorValidationItem, options={"HIDDEN", "SKIP_SAVE"})
     operator_validation_summary: StringProperty(default="", options={"HIDDEN", "SKIP_SAVE"})
     operator_validation_generation: IntProperty(default=-1, options={"HIDDEN", "SKIP_SAVE"})
     editor_config_generation: IntProperty(default=-1, options={"HIDDEN"})
     editor_config_signature: StringProperty(options={"HIDDEN"})
     editor_active_menu_id: StringProperty(options={"HIDDEN"})
+    # Full detached configuration snapshot for one unapplied menu edit session.
+    # SKIP_SAVE keeps unfinished drafts out of Blender's persistent preferences.
+    editor_draft_config_json: StringProperty(
+        default="",
+        options={"HIDDEN", "SKIP_SAVE"},
+    )
     editor_dirty: BoolProperty(default=False, options={"HIDDEN"})
     editor_menu_id: StringProperty(options={"HIDDEN"})
     editor_menu_name: StringProperty(name="Menu Name", default="", update=menu_editor.mark_editor_dirty)
     editor_menu_key: StringProperty(name="Key", default="A", update=menu_editor.mark_editor_dirty)
-    editor_menu_mode: EnumProperty(name="Mode(s)", items=menu_editor.menu_data.KEYMAP_ENUM_ITEMS, default="OBJECT_MODE", update=menu_editor.on_editor_menu_mode_changed)
-    editor_menu_is_brush_menu: BoolProperty(
-        name="Brush Menu",
-        description="Only show brush asset activation presets when assigning actions",
-        default=False,
+    editor_menu_mode: EnumProperty(
+        name="Context",
+        description="Blender mode or editor context in which this radial menu is available",
+        items=menu_editor.menu_data.KEYMAP_ENUM_ITEMS,
+        default="OBJECT_MODE",
         update=menu_editor.mark_editor_dirty,
     )
     editor_menu_enabled: BoolProperty(name="Enabled", default=True, update=menu_editor.mark_editor_dirty)
@@ -230,8 +238,17 @@ class AllPiePreferences(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+
+        # Redirect preferences saved on the retired Operators page to Menus.
+        # Keep the enum identifier registered above for backwards compatibility,
+        # but never expose it in the visible navigation.
+        if self.editor_page == "OPERATORS":
+            self.editor_page = "MENUS"
+
         navigation = layout.row(align=True)
-        navigation.prop(self, "editor_page", expand=True)
+        navigation.prop_enum(self, "editor_page", "GENERAL", text="General")
+        navigation.prop_enum(self, "editor_page", "MENUS", text="Menus")
+        navigation.prop_enum(self, "editor_page", "CONFIGURATION", text="Configuration")
         if ConfigRuntime.CONFIG_RECOVERY_REQUIRED:
             recovery_box = layout.box()
             recovery_box.alert = True
@@ -247,9 +264,6 @@ class AllPiePreferences(AddonPreferences):
 
         if self.editor_page == "MENUS":
             menu_editor.draw_menu_editor(layout, self, context)
-            return
-        if self.editor_page == "OPERATORS":
-            operator_editor.draw_operator_editor(layout, self, context)
             return
         if self.editor_page == "CONFIGURATION":
             config_editor.draw_configuration_editor(layout, self, context)
@@ -289,9 +303,22 @@ classes = (
 )
 
 
+def _unregister_legacy_brush_menu_operator():
+    """Remove the retired active-brush assignment operator from old sessions."""
+    legacy_class = getattr(bpy.types, "ALLPIE_OT_menu_assign_active_brush", None)
+    if legacy_class is not None and legacy_class not in classes:
+        try:
+            bpy.utils.unregister_class(legacy_class)
+        except (RuntimeError, ValueError, TypeError):
+            pass
+
+
 def register():
+    _unregister_legacy_brush_menu_operator()
     for cls in classes:
         bpy.utils.register_class(cls)
+
+    operator_editor.register_button_context_menu()
 
     prefs = get_preferences()
     if prefs is None:
@@ -302,8 +329,17 @@ def register():
         return
 
     prefs.editor_dirty = False
+    prefs.editor_draft_config_json = ""
     prefs.editor_config_generation = -1
     prefs.editor_config_signature = ""
+    # The unified operator result rows gained in-place Edit/Delete controls.
+    # Rebuild any result collection left in Blender's saved preferences so
+    # every row receives the new can_edit/can_delete metadata.
+    prefs.operator_search_config_fingerprint = ""
+    prefs.operator_search_config_generation = -1
+    prefs.operator_search_catalog_generation = -1
+    if prefs.editor_page == "OPERATORS":
+        prefs.editor_page = "MENUS"
 
     # On first user-config creation, preserve settings stored by older builds
     # (including the old keybind CollectionProperty). Once JSON exists, it is
@@ -326,6 +362,8 @@ def register():
 
 
 def unregister():
+    operator_editor.cancel_operator_catalog_scan()
+    operator_editor.unregister_button_context_menu()
     menu_editor.clear_shortcut_capture_items()
     config_editor.clear_pending_imports()
     try:
@@ -343,6 +381,7 @@ def unregister():
     except Exception as error:
         print(f"[AllPie] Could not clean dynamic operator property groups: {error}")
 
+    _unregister_legacy_brush_menu_operator()
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
 
